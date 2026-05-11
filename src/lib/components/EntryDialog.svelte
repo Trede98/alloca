@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Entry, EntryType, Recurrence } from '$lib/types';
+	import type { Category, Entry, EntryType, Recurrence } from '$lib/types';
 	import type { NewEntryInput } from '$lib/budget';
 	import { MONTH_NAMES } from '$lib/format';
 
@@ -7,12 +7,16 @@
 		open,
 		editEntry,
 		defaultType = 'expense',
+		categories,
+		onAddCategory,
 		onClose,
 		onSave
 	}: {
 		open: boolean;
 		editEntry: Entry | null;
 		defaultType?: EntryType;
+		categories: Category[];
+		onAddCategory: (name: string) => void;
 		onClose: () => void;
 		onSave: (input: NewEntryInput, id?: string) => void;
 	} = $props();
@@ -20,20 +24,31 @@
 	let name = $state('');
 	let type = $state<EntryType>('expense');
 	let recurrence = $state<Recurrence>('monthly');
-	let category = $state('');
+	let categoryId = $state('');
+	let categorySearch = $state('');
+	let comboOpen = $state(false);
 	let baseAmount = $state('0');
 	let month = $state(0);
 	let notes = $state('');
 	let error = $state('');
 
+	// Track a pending category name to auto-select after creation
+	let pendingCategoryName = $state('');
+
 	$effect(() => {
-		if (!open) return;
+		if (!open) {
+			// Reset pending when dialog fully closes
+			pendingCategoryName = '';
+			return;
+		}
 		error = '';
+		comboOpen = false;
 		if (editEntry) {
 			name = editEntry.name;
 			type = editEntry.type;
 			recurrence = editEntry.recurrence;
-			category = editEntry.category;
+			categoryId = editEntry.category;
+			categorySearch = categories.find((c) => c.id === editEntry.category)?.name ?? editEntry.category;
 			baseAmount = editEntry.baseAmount.toString();
 			month = editEntry.month ?? 0;
 			notes = editEntry.notes ?? '';
@@ -41,24 +56,90 @@
 			name = '';
 			type = defaultType;
 			recurrence = 'monthly';
-			category = '';
+			categoryId = '';
+			categorySearch = '';
 			baseAmount = '0';
 			month = 0;
 			notes = '';
 		}
 	});
 
+	// Auto-select newly created category — watches categories for the pending name
+	$effect(() => {
+		if (!pendingCategoryName) return;
+		// Access categories to establish reactivity
+		const found = categories.find(
+			(c) => c.name.toLowerCase() === pendingCategoryName.toLowerCase()
+		);
+		if (found) {
+			categoryId = found.id;
+			categorySearch = found.name;
+			pendingCategoryName = '';
+			comboOpen = false;
+		}
+	});
+
+	const filteredCategories = $derived(
+		categorySearch.trim()
+			? categories.filter((c) => c.name.toLowerCase().includes(categorySearch.toLowerCase()))
+			: categories
+	);
+
+	const showCreateOption = $derived(
+		categorySearch.trim().length > 0 &&
+			!categories.some((c) => c.name.toLowerCase() === categorySearch.trim().toLowerCase())
+	);
+
+	function selectCategory(cat: Category) {
+		categoryId = cat.id;
+		categorySearch = cat.name;
+		comboOpen = false;
+	}
+
+	function createCategory() {
+		const trimmed = categorySearch.trim();
+		if (!trimmed) return;
+		pendingCategoryName = trimmed;
+		onAddCategory(trimmed);
+	}
+
+	function onComboInput() {
+		categoryId = '';
+		comboOpen = true;
+	}
+
+	function onComboKeydown(e: KeyboardEvent) {
+		if (e.key === 'Escape') {
+			comboOpen = false;
+		}
+		if (e.key === 'Enter') {
+			e.preventDefault();
+			if (showCreateOption) {
+				createCategory();
+			} else if (filteredCategories.length === 1) {
+				selectCategory(filteredCategories[0]);
+			}
+		}
+	}
+
+	function closeComboBackdrop() {
+		comboOpen = false;
+		// If user typed but didn't select, restore previous name or clear
+		if (!categoryId) categorySearch = '';
+	}
+
 	function submit() {
 		error = '';
 		const amount = parseFloat(baseAmount);
 		if (!name.trim()) { error = 'Name is required'; return; }
 		if (isNaN(amount) || amount < 0) { error = 'Amount must be a non-negative number'; return; }
+		if (!categoryId) { error = 'Please select or create a category'; return; }
 
 		const input: NewEntryInput = {
 			name: name.trim(),
 			type,
 			recurrence,
-			category: category.trim() || 'Other',
+			category: categoryId,
 			baseAmount: amount,
 			month: recurrence === 'single' ? month : undefined,
 			notes: notes.trim()
@@ -171,27 +252,63 @@
 						/>
 					</label>
 
-					<label class="flex flex-col gap-1">
+					<!-- Category combobox -->
+					<div class="relative flex flex-col gap-1">
 						<span class="text-xs font-medium" style:color="var(--color-muted)">Category</span>
 						<input
-							bind:value={category}
+							bind:value={categorySearch}
 							type="text"
-							placeholder="Other"
-							list="category-suggestions"
+							placeholder={categories.length === 0 ? 'Type to create…' : 'Search or create…'}
 							class={inputClass}
 							style={inputStyle}
+							oninput={onComboInput}
+							onfocus={() => (comboOpen = true)}
+							onkeydown={onComboKeydown}
+							autocomplete="off"
 						/>
-						<datalist id="category-suggestions">
-							<option value="Housing"></option>
-							<option value="Food"></option>
-							<option value="Transport"></option>
-							<option value="Health"></option>
-							<option value="Savings"></option>
-							<option value="Leisure"></option>
-							<option value="Work"></option>
-							<option value="Other"></option>
-						</datalist>
-					</label>
+						{#if comboOpen}
+							<!-- Backdrop to close combo -->
+							<!-- svelte-ignore a11y_no_static_element_interactions -->
+							<div
+								class="fixed inset-0 z-10"
+								onclick={closeComboBackdrop}
+								onkeydown={(e) => e.key === 'Escape' && closeComboBackdrop()}
+							></div>
+							<div
+								class="absolute left-0 top-full z-20 mt-1 w-full max-h-44 overflow-y-auto rounded-lg border shadow-lg"
+								style:background-color="var(--color-surface)"
+								style:border-color="var(--color-border)"
+							>
+								{#each filteredCategories as cat (cat.id)}
+									<button
+										type="button"
+										class="w-full px-3 py-1.5 text-left text-sm transition-colors hover:opacity-80"
+										style:color="var(--color-text)"
+										style:background-color={cat.id === categoryId ? 'color-mix(in srgb, var(--color-blue) 15%, transparent)' : 'transparent'}
+										onclick={() => selectCategory(cat)}
+									>
+										{cat.name}
+									</button>
+								{/each}
+								{#if showCreateOption}
+									<button
+										type="button"
+										class="w-full border-t px-3 py-1.5 text-left text-sm transition-colors hover:opacity-80"
+										style:color="var(--color-blue)"
+										style:border-color="var(--color-border)"
+										onclick={createCategory}
+									>
+										Create «{categorySearch.trim()}»
+									</button>
+								{/if}
+								{#if filteredCategories.length === 0 && !showCreateOption}
+									<div class="px-3 py-1.5 text-sm" style:color="var(--color-muted)">
+										No categories found
+									</div>
+								{/if}
+							</div>
+						{/if}
+					</div>
 				</div>
 
 				<!-- Notes -->

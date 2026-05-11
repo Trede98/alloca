@@ -9,6 +9,16 @@ class AllocaDB extends Dexie {
 		this.version(1).stores({
 			budgets: 'id, year'
 		});
+		this.version(2)
+			.stores({ budgets: 'id, year' })
+			.upgrade((tx) =>
+				tx
+					.table('budgets')
+					.toCollection()
+					.modify((b) => {
+						if (!b.categories) b.categories = [];
+					})
+			);
 	}
 }
 

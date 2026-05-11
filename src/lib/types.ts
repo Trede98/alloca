@@ -1,6 +1,11 @@
 export type EntryType = 'income' | 'expense' | 'savings';
 export type Recurrence = 'monthly' | 'single' | 'annual_distributed';
 
+export interface Category {
+	id: string;
+	name: string;
+}
+
 export interface Entry {
 	id: string;
 	name: string;
@@ -19,6 +24,7 @@ export interface Budget {
 	year: number;
 	currency: string; // ISO 4217, e.g. 'EUR', 'USD'
 	entries: Entry[];
+	categories: Category[];
 	monthlyNotes: Record<number, string>; // 0-11 → note text
 	createdAt: string;
 	updatedAt: string;

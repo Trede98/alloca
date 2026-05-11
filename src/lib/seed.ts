@@ -1,13 +1,34 @@
 import { nanoid } from 'nanoid';
-import type { Budget } from './types';
+import type { Budget, Category } from './types';
 
-export function createSeedBudget(): Budget {
+export function createEmptyBudget(name: string = 'My Budget'): Budget {
 	const now = new Date().toISOString();
 	return {
 		id: nanoid(),
-		name: 'My Budget',
+		name,
 		year: new Date().getFullYear(),
 		currency: 'EUR',
+		categories: [],
+		entries: [],
+		monthlyNotes: {},
+		createdAt: now,
+		updatedAt: now
+	};
+}
+
+export function createSeedBudget(name: string = 'My Budget'): Budget {
+	const now = new Date().toISOString();
+
+	const seedCategoryNames = ['Housing', 'Food', 'Transport', 'Health', 'Savings', 'Leisure', 'Work'];
+	const categories: Category[] = seedCategoryNames.map((n) => ({ id: nanoid(), name: n }));
+	const cat = new Map(categories.map((c) => [c.name, c.id]));
+
+	return {
+		id: nanoid(),
+		name,
+		year: new Date().getFullYear(),
+		currency: 'EUR',
+		categories,
 		monthlyNotes: {},
 		createdAt: now,
 		updatedAt: now,
@@ -17,7 +38,7 @@ export function createSeedBudget(): Budget {
 				name: 'Salary',
 				type: 'income',
 				recurrence: 'monthly',
-				category: 'Work',
+				category: cat.get('Work')!,
 				baseAmount: 3000,
 				monthlyOverrides: {},
 				notes: ''
@@ -27,7 +48,7 @@ export function createSeedBudget(): Budget {
 				name: 'Rent',
 				type: 'expense',
 				recurrence: 'monthly',
-				category: 'Housing',
+				category: cat.get('Housing')!,
 				baseAmount: 900,
 				monthlyOverrides: {},
 				notes: ''
@@ -37,7 +58,7 @@ export function createSeedBudget(): Budget {
 				name: 'Groceries',
 				type: 'expense',
 				recurrence: 'monthly',
-				category: 'Food',
+				category: cat.get('Food')!,
 				baseAmount: 400,
 				monthlyOverrides: {},
 				notes: ''
@@ -47,7 +68,7 @@ export function createSeedBudget(): Budget {
 				name: 'Transport',
 				type: 'expense',
 				recurrence: 'monthly',
-				category: 'Transport',
+				category: cat.get('Transport')!,
 				baseAmount: 150,
 				monthlyOverrides: {},
 				notes: ''
@@ -57,7 +78,7 @@ export function createSeedBudget(): Budget {
 				name: 'Emergency Fund',
 				type: 'savings',
 				recurrence: 'monthly',
-				category: 'Savings',
+				category: cat.get('Savings')!,
 				baseAmount: 300,
 				monthlyOverrides: {},
 				notes: ''
@@ -67,7 +88,7 @@ export function createSeedBudget(): Budget {
 				name: 'Leisure',
 				type: 'expense',
 				recurrence: 'monthly',
-				category: 'Leisure',
+				category: cat.get('Leisure')!,
 				baseAmount: 200,
 				monthlyOverrides: {},
 				notes: ''
@@ -77,7 +98,7 @@ export function createSeedBudget(): Budget {
 				name: 'Utilities',
 				type: 'expense',
 				recurrence: 'monthly',
-				category: 'Housing',
+				category: cat.get('Housing')!,
 				baseAmount: 100,
 				monthlyOverrides: {},
 				notes: ''
@@ -87,7 +108,7 @@ export function createSeedBudget(): Budget {
 				name: 'Health',
 				type: 'expense',
 				recurrence: 'monthly',
-				category: 'Health',
+				category: cat.get('Health')!,
 				baseAmount: 50,
 				monthlyOverrides: {},
 				notes: ''
@@ -97,7 +118,7 @@ export function createSeedBudget(): Budget {
 				name: 'Vacation',
 				type: 'expense',
 				recurrence: 'annual_distributed',
-				category: 'Leisure',
+				category: cat.get('Leisure')!,
 				baseAmount: 1200,
 				monthlyOverrides: {},
 				notes: ''
@@ -107,7 +128,7 @@ export function createSeedBudget(): Budget {
 				name: 'Christmas Gifts',
 				type: 'expense',
 				recurrence: 'single',
-				category: 'Leisure',
+				category: cat.get('Leisure')!,
 				baseAmount: 300,
 				month: 11,
 				monthlyOverrides: {},

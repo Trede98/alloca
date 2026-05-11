@@ -1,5 +1,10 @@
 import { z } from 'zod';
 
+const CategorySchema = z.object({
+	id: z.string(),
+	name: z.string().min(1)
+});
+
 const EntrySchema = z.object({
 	id: z.string(),
 	name: z.string().min(1),
@@ -18,6 +23,7 @@ const BudgetSchema = z.object({
 	year: z.number().int(),
 	currency: z.string().default('EUR'),
 	entries: z.array(EntrySchema),
+	categories: z.array(CategorySchema).default([]),
 	monthlyNotes: z.record(z.string(), z.string()).default({}),
 	createdAt: z.string(),
 	updatedAt: z.string()

@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import type { Budget, Entry, EntryType, MonthSummary, Recurrence, YearSummary } from './types';
+import type { Budget, Category, Entry, EntryType, MonthSummary, Recurrence, YearSummary } from './types';
 
 // ─── Calculations ─────────────────────────────────────────────────────────────
 
@@ -87,12 +87,14 @@ export function buildEntry(input: NewEntryInput): Entry {
 		throw new Error('Only single entries use a month');
 	}
 
+	if (!input.category) throw new Error('Category is required');
+
 	return {
 		id: nanoid(),
 		name: input.name.trim(),
 		type: input.type,
 		recurrence: input.recurrence,
-		category: input.category.trim() || 'Other',
+		category: input.category,
 		baseAmount: input.baseAmount,
 		month: input.month,
 		monthlyOverrides: {},
@@ -153,6 +155,27 @@ export function removeOverride(budget: Budget, entryId: string, month: number): 
 export function renameBudget(budget: Budget, name: string): Budget {
 	const trimmed = name.trim() || 'My Budget';
 	return touch({ ...budget, name: trimmed });
+}
+
+export function addCategory(budget: Budget, name: string): Budget {
+	const trimmed = name.trim() || 'New Category';
+	const cat: Category = { id: nanoid(), name: trimmed };
+	return touch({ ...budget, categories: [...budget.categories, cat] });
+}
+
+export function updateCategory(budget: Budget, id: string, name: string): Budget {
+	const trimmed = name.trim();
+	if (!trimmed) throw new Error('Category name is required');
+	const categories = budget.categories.map((c) => (c.id === id ? { ...c, name: trimmed } : c));
+	return touch({ ...budget, categories });
+}
+
+export function deleteCategory(budget: Budget, id: string): Budget {
+	if (budget.entries.some((e) => e.category === id)) {
+		throw new Error('Category is in use');
+	}
+	const categories = budget.categories.filter((c) => c.id !== id);
+	return touch({ ...budget, categories });
 }
 
 export function setMonthNote(budget: Budget, month: number, note: string): Budget {

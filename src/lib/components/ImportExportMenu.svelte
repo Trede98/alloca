@@ -50,7 +50,8 @@
 			const imported: Budget = {
 				...raw_budget,
 				currency: raw_budget.currency ?? 'EUR',
-				monthlyNotes: raw_budget.monthlyNotes ?? {}
+				monthlyNotes: raw_budget.monthlyNotes ?? {},
+				categories: raw_budget.categories ?? []
 			};
 			pending = imported;
 		} catch {

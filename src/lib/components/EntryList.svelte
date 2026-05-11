@@ -1,11 +1,12 @@
 <script lang="ts">
-	import type { Entry, EntryType } from '$lib/types';
+	import type { Category, Entry, EntryType } from '$lib/types';
 	import { getMonthAmount } from '$lib/budget';
 	import { formatCurrency } from '$lib/format';
 	import EntryRow from './EntryRow.svelte';
 
 	let {
 		entries,
+		categories,
 		month,
 		type,
 		currency,
@@ -18,6 +19,7 @@
 		onAddNew
 	}: {
 		entries: Entry[];
+		categories: Category[];
 		month: number;
 		type: EntryType;
 		currency: string;
@@ -52,11 +54,13 @@
 
 	const total = $derived(filtered.reduce((sum, e) => sum + getMonthAmount(e, month), 0));
 
-	// Group by category
+	const categoryMap = $derived(new Map(categories.map((c) => [c.id, c.name])));
+
+	// Group by resolved category name
 	const grouped = $derived(() => {
 		const map = new Map<string, Entry[]>();
 		for (const e of filtered) {
-			const cat = e.category || 'Other';
+			const cat = categoryMap.get(e.category) ?? e.category ?? 'Uncategorized';
 			if (!map.has(cat)) map.set(cat, []);
 			map.get(cat)!.push(e);
 		}

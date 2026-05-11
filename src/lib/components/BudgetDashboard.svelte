@@ -17,6 +17,7 @@
 	import EntryDialog from './EntryDialog.svelte';
 	import BalanceBadge from './BalanceBadge.svelte';
 	import ImportExportMenu from './ImportExportMenu.svelte';
+	import CategoryManager from './CategoryManager.svelte';
 
 	let {
 		budget,
@@ -26,7 +27,13 @@
 		onSetOverride,
 		onRemoveOverride,
 		onImport,
-		onBudgetChange
+		onBudgetChange,
+		onAddCategory,
+		onUpdateCategory,
+		onDeleteCategory,
+		categoryError,
+		onClearCategoryError,
+		startReset
 	}: {
 		budget: Budget;
 		onAddEntry: (input: NewEntryInput) => void;
@@ -36,6 +43,12 @@
 		onRemoveOverride: (entryId: string, month: number) => void;
 		onImport: (b: Budget) => void;
 		onBudgetChange: (b: Budget) => void;
+		onAddCategory: (name: string) => void;
+		onUpdateCategory: (id: string, name: string) => void;
+		onDeleteCategory: (id: string) => void;
+		categoryError: string;
+		onClearCategoryError: () => void;
+		startReset: () => void;
 	} = $props();
 
 	const yearSummary = $derived(computeYearSummary(budget));
@@ -199,6 +212,23 @@
 		</div>
 
 		<div class="flex shrink-0 items-center gap-2">
+			<CategoryManager
+				categories={budget.categories}
+				{onAddCategory}
+				{onUpdateCategory}
+				{onDeleteCategory}
+				{categoryError}
+				{onClearCategoryError}
+			/>
+			<button
+				type="button"
+				class="rounded px-2.5 py-1.5 text-xs opacity-60 transition-opacity hover:opacity-100"
+				style:color="var(--color-red)"
+				onclick={startReset}
+				title="Clear budget"
+			>
+				Clear
+			</button>
 			<ImportExportMenu {budget} {onImport} />
 			<button
 				type="button"
@@ -304,6 +334,7 @@
 							>
 								<EntryList
 									entries={budget.entries}
+									categories={budget.categories}
 									month={selectedMonth}
 									type={t as EntryType}
 									currency={budget.currency}
@@ -416,6 +447,8 @@
 	open={dialogOpen}
 	editEntry={dialogEditEntry}
 	defaultType={dialogDefaultType}
+	categories={budget.categories}
+	{onAddCategory}
 	onClose={closeDialog}
 	onSave={handleSave}
 />
