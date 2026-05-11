@@ -20,6 +20,14 @@ Single-user, single-budget application.
 
 ---
 
+## Project Configuration
+
+- **Language**: TypeScript
+- **Package Manager**: npm
+- **Add-ons**: none
+
+---
+
 # CORE PRINCIPLE
 
 This is a **zero-based budgeting system**.
@@ -368,11 +376,7 @@ Keep concise.
 
 ## Context Index
 
-- /docs/context/01-bootstrap.md
-- /docs/context/02-domain-model.md
-- /docs/context/03-persistence.md
-- /docs/context/04-ui.md
-- /docs/context/05-import-export.md
+- /docs/context/01-bootstrap.md ✓
 
 Must be updated after each snapshot.
 
