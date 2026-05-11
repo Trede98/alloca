@@ -377,6 +377,7 @@ Keep concise.
 ## Context Index
 
 - /docs/context/01-bootstrap.md ✓
+- /docs/context/02-data-and-persistence.md ✓
 
 Must be updated after each snapshot.
 

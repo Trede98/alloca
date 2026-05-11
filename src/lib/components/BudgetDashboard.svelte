@@ -1,10 +1,25 @@
 <script lang="ts">
-	import type { Budget } from '$lib/types';
+	import type { Budget, Entry } from '$lib/types';
+	import type { NewEntryInput } from '$lib/budget';
 	import { computeYearSummary, getAllMonthSummaries } from '$lib/budget';
 	import SummaryBar from './SummaryBar.svelte';
 	import MonthCard from './MonthCard.svelte';
 
-	let { budget }: { budget: Budget } = $props();
+	let {
+		budget,
+		onAddEntry,
+		onUpdateEntry,
+		onDeleteEntry,
+		onSetOverride,
+		onRemoveOverride
+	}: {
+		budget: Budget;
+		onAddEntry: (input: NewEntryInput) => void;
+		onUpdateEntry: (id: string, patch: Partial<Omit<Entry, 'id' | 'monthlyOverrides'>>) => void;
+		onDeleteEntry: (id: string) => void;
+		onSetOverride: (entryId: string, month: number, amount: number) => void;
+		onRemoveOverride: (entryId: string, month: number) => void;
+	} = $props();
 
 	const yearSummary = $derived(computeYearSummary(budget));
 	const monthSummaries = $derived(getAllMonthSummaries(budget));

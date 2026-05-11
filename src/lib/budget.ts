@@ -1,4 +1,7 @@
-import type { Budget, Entry, MonthSummary, YearSummary } from './types';
+import { nanoid } from 'nanoid';
+import type { Budget, Entry, EntryType, MonthSummary, Recurrence, YearSummary } from './types';
+
+// ─── Calculations ────────────────────────────────────────────────────────────
 
 export function getMonthAmount(entry: Entry, month: number): number {
 	if (month in entry.monthlyOverrides) {
@@ -56,4 +59,100 @@ export function computeYearSummary(budget: Budget): YearSummary {
 
 export function getAllMonthSummaries(budget: Budget): MonthSummary[] {
 	return Array.from({ length: 12 }, (_, m) => computeMonthSummary(budget, m));
+}
+
+export function isBalanced(balance: number): boolean {
+	return Math.abs(balance) < 0.01;
+}
+
+// ─── Entry Defaults ───────────────────────────────────────────────────────────
+
+export interface NewEntryInput {
+	name: string;
+	type: EntryType;
+	recurrence: Recurrence;
+	category: string;
+	baseAmount: number;
+	month?: number;
+	notes?: string;
+}
+
+export function buildEntry(input: NewEntryInput): Entry {
+	if (!input.name.trim()) throw new Error('Entry name is required');
+	if (input.baseAmount < 0) throw new Error('Amount must be non-negative');
+	if (input.recurrence === 'single' && input.month === undefined) {
+		throw new Error('Single entries require a month');
+	}
+	if (input.recurrence !== 'single' && input.month !== undefined) {
+		throw new Error('Only single entries use a month');
+	}
+
+	return {
+		id: nanoid(),
+		name: input.name.trim(),
+		type: input.type,
+		recurrence: input.recurrence,
+		category: input.category.trim() || 'Other',
+		baseAmount: input.baseAmount,
+		month: input.month,
+		monthlyOverrides: {},
+		notes: input.notes?.trim() ?? ''
+	};
+}
+
+// ─── Mutations (return new Budget — never mutate in place) ────────────────────
+
+export function addEntry(budget: Budget, input: NewEntryInput): Budget {
+	const entry = buildEntry(input);
+	return touch({ ...budget, entries: [...budget.entries, entry] });
+}
+
+export function updateEntry(
+	budget: Budget,
+	id: string,
+	patch: Partial<Omit<Entry, 'id' | 'monthlyOverrides'>>
+): Budget {
+	const entries = budget.entries.map((e) => {
+		if (e.id !== id) return e;
+		const updated: Entry = { ...e, ...patch };
+		if (patch.name !== undefined && !patch.name.trim()) throw new Error('Entry name is required');
+		if (patch.baseAmount !== undefined && patch.baseAmount < 0) {
+			throw new Error('Amount must be non-negative');
+		}
+		// If recurrence changed away from single, clear month
+		if (patch.recurrence && patch.recurrence !== 'single') {
+			updated.month = undefined;
+		}
+		return updated;
+	});
+	return touch({ ...budget, entries });
+}
+
+export function deleteEntry(budget: Budget, id: string): Budget {
+	return touch({ ...budget, entries: budget.entries.filter((e) => e.id !== id) });
+}
+
+export function setOverride(budget: Budget, entryId: string, month: number, amount: number): Budget {
+	if (amount < 0) throw new Error('Amount must be non-negative');
+	const entries = budget.entries.map((e) => {
+		if (e.id !== entryId) return e;
+		return { ...e, monthlyOverrides: { ...e.monthlyOverrides, [month]: amount } };
+	});
+	return touch({ ...budget, entries });
+}
+
+export function removeOverride(budget: Budget, entryId: string, month: number): Budget {
+	const entries = budget.entries.map((e) => {
+		if (e.id !== entryId) return e;
+		const overrides = { ...e.monthlyOverrides };
+		delete overrides[month];
+		return { ...e, monthlyOverrides: overrides };
+	});
+	return touch({ ...budget, entries });
+}
+
+// ─── Internal ─────────────────────────────────────────────────────────────────
+
+function touch(budget: Budget): Budget {
+	return { ...budget, updatedAt: new Date().toISOString() };
 }
