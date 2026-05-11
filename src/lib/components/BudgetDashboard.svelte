@@ -6,7 +6,8 @@
 		getAllMonthSummaries,
 		computeMonthSummary,
 		isBalanced,
-		setMonthNote
+		setMonthNote,
+		renameBudget
 	} from '$lib/budget';
 	import { formatCurrency, MONTH_NAMES, MONTH_NAMES_FULL } from '$lib/format';
 	import { getTheme, toggleTheme } from '$lib/theme.svelte';
@@ -138,6 +139,27 @@
 	}
 
 	const theme = $derived(getTheme());
+
+	// Name inline edit
+	let nameEditing = $state(false);
+	let nameInput = $state('');
+	let nameEl = $state<HTMLInputElement | null>(null);
+
+	function startNameEdit() {
+		nameInput = budget.name;
+		nameEditing = true;
+		setTimeout(() => nameEl?.focus(), 0);
+	}
+
+	function commitName() {
+		onBudgetChange(renameBudget(budget, nameInput));
+		nameEditing = false;
+	}
+
+	function onNameKeydown(e: KeyboardEvent) {
+		if (e.key === 'Enter') commitName();
+		if (e.key === 'Escape') nameEditing = false;
+	}
 </script>
 
 <div class="flex h-screen flex-col overflow-hidden" style:background-color="var(--color-bg)">
@@ -147,10 +169,29 @@
 		style:border-color="var(--color-border)"
 		style:background-color="var(--color-surface)"
 	>
-		<span class="min-w-0 shrink-0 font-semibold tracking-tight">
-			{budget.name}
+		<span class="min-w-0 shrink-0 flex items-center gap-1">
+			{#if nameEditing}
+				<input
+					bind:this={nameEl}
+					bind:value={nameInput}
+					class="font-semibold tracking-tight bg-transparent border-b outline-none w-40"
+					style:border-color="var(--color-border)"
+					style:color="var(--color-text)"
+					onblur={commitName}
+					onkeydown={onNameKeydown}
+				/>
+			{:else}
+				<button
+					type="button"
+					class="font-semibold tracking-tight hover:opacity-70 transition-opacity"
+					title="Click to rename"
+					onclick={startNameEdit}
+				>
+					{budget.name}
+				</button>
+			{/if}
 			<span class="font-normal opacity-50">·</span>
-			{budget.year}
+			<span class="font-semibold tracking-tight">{budget.year}</span>
 		</span>
 
 		<div class="hidden flex-1 justify-center sm:flex">

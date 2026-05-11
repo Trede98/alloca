@@ -150,6 +150,11 @@ export function removeOverride(budget: Budget, entryId: string, month: number): 
 	return touch({ ...budget, entries });
 }
 
+export function renameBudget(budget: Budget, name: string): Budget {
+	const trimmed = name.trim() || 'My Budget';
+	return touch({ ...budget, name: trimmed });
+}
+
 export function setMonthNote(budget: Budget, month: number, note: string): Budget {
 	const monthlyNotes = { ...budget.monthlyNotes };
 	if (note.trim()) {
