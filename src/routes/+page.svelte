@@ -57,6 +57,10 @@
 		if (!budget) return;
 		budget = removeOverride(budget, entryId, month);
 	}
+
+	function onImport(imported: Budget) {
+		budget = imported;
+	}
 </script>
 
 {#if loading}
@@ -71,5 +75,6 @@
 		{onDeleteEntry}
 		{onSetOverride}
 		{onRemoveOverride}
+		{onImport}
 	/>
 {/if}
