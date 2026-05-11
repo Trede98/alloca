@@ -9,7 +9,7 @@
 		setMonthNote
 	} from '$lib/budget';
 	import { formatCurrency, MONTH_NAMES, MONTH_NAMES_FULL } from '$lib/format';
-	import { getTheme, toggleTheme } from '$lib/theme';
+	import { getTheme, toggleTheme } from '$lib/theme.svelte';
 	import SummaryBar from './SummaryBar.svelte';
 	import MonthCard from './MonthCard.svelte';
 	import EntryList from './EntryList.svelte';

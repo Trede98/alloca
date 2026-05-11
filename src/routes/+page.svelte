@@ -30,7 +30,7 @@
 	});
 
 	$effect(() => {
-		if (budget) saveBudget(budget);
+		if (budget) saveBudget($state.snapshot(budget) as Budget);
 	});
 
 	function onAddEntry(input: NewEntryInput) {

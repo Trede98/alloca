@@ -62,8 +62,9 @@
 
 	async function confirmImport() {
 		if (!pending) return;
-		await replaceBudget(pending);
-		onImport(pending);
+		const snapshot = $state.snapshot(pending) as Budget;
+		await replaceBudget(snapshot);
+		onImport(snapshot);
 		pending = null;
 	}
 
