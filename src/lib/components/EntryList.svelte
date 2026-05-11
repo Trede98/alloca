@@ -8,6 +8,7 @@
 		entries,
 		month,
 		type,
+		currency,
 		onUpdateEntry,
 		onDeleteEntry,
 		onDuplicateEntry,
@@ -19,6 +20,7 @@
 		entries: Entry[];
 		month: number;
 		type: EntryType;
+		currency: string;
 		onUpdateEntry: (id: string, patch: Partial<Omit<Entry, 'id' | 'monthlyOverrides'>>) => void;
 		onDeleteEntry: (id: string) => void;
 		onDuplicateEntry: (entry: Entry) => void;
@@ -49,46 +51,108 @@
 	);
 
 	const total = $derived(filtered.reduce((sum, e) => sum + getMonthAmount(e, month), 0));
+
+	// Group by category
+	const grouped = $derived(() => {
+		const map = new Map<string, Entry[]>();
+		for (const e of filtered) {
+			const cat = e.category || 'Other';
+			if (!map.has(cat)) map.set(cat, []);
+			map.get(cat)!.push(e);
+		}
+		return [...map.entries()].sort(([a], [b]) => a.localeCompare(b));
+	});
+
+	// Track which categories are collapsed
+	let collapsed = $state<Set<string>>(new Set());
+
+	function toggleCategory(cat: string) {
+		const next = new Set(collapsed);
+		if (next.has(cat)) next.delete(cat);
+		else next.add(cat);
+		collapsed = next;
+	}
 </script>
 
 <div class="flex flex-col">
-	<!-- Header row -->
-	<div class="flex items-center justify-between px-2 py-1">
-		<span class="text-xs font-semibold uppercase tracking-wide" style:color={typeColors[type]}>
+	<!-- Section header -->
+	<div
+		class="flex items-center justify-between border-b px-3 py-2"
+		style:border-color="var(--color-border)"
+	>
+		<span class="text-xs font-semibold uppercase tracking-widest" style:color={typeColors[type]}>
 			{typeLabels[type]}
 		</span>
-		<span class="text-xs tabular-nums" style:color={typeColors[type]}>
-			{formatCurrency(total)}
+		<span class="text-xs tabular-nums font-medium" style:color={typeColors[type]}>
+			{formatCurrency(total, currency)}
 		</span>
 	</div>
 
-	<!-- Entry rows -->
 	{#if filtered.length === 0}
-		<div class="px-2 py-1 text-xs" style:color="var(--color-muted)">No entries</div>
+		<!-- Empty state -->
+		<div class="flex flex-col items-center gap-2 px-4 py-6 text-center">
+			<p class="text-xs" style:color="var(--color-muted)">No {typeLabels[type].toLowerCase()} entries for this month.</p>
+		</div>
 	{:else}
-		{#each filtered as entry (entry.id)}
-			<EntryRow
-				{entry}
-				{month}
-				currentAmount={getMonthAmount(entry, month)}
-				hasOverride={month in entry.monthlyOverrides}
-				{onUpdateEntry}
-				{onDeleteEntry}
-				{onDuplicateEntry}
-				{onSetOverride}
-				{onRemoveOverride}
-				{onEdit}
-			/>
+		<!-- Category groups -->
+		{#each grouped() as [cat, catEntries]}
+			{@const catTotal = catEntries.reduce((s, e) => s + getMonthAmount(e, month), 0)}
+			{@const isCollapsed = collapsed.has(cat)}
+
+			<div class="border-b last:border-b-0" style:border-color="var(--color-border)">
+				<!-- Category header -->
+				<button
+					type="button"
+					class="flex w-full items-center justify-between gap-2 px-3 py-1.5 hover:bg-white/[0.02] transition-colors"
+					onclick={() => toggleCategory(cat)}
+				>
+					<div class="flex items-center gap-2 min-w-0">
+						<span
+							class="text-xs transition-transform duration-150"
+							style:color="var(--color-muted)"
+							style:transform={isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)'}
+						>▾</span>
+						<span class="text-xs font-medium truncate" style:color="var(--color-muted)">{cat}</span>
+						<span class="shrink-0 text-xs tabular-nums" style:color="var(--color-muted)">
+							({catEntries.length})
+						</span>
+					</div>
+					<span class="shrink-0 text-xs tabular-nums" style:color="var(--color-muted)">
+						{formatCurrency(catTotal, currency)}
+					</span>
+				</button>
+
+				{#if !isCollapsed}
+					<div>
+						{#each catEntries as entry (entry.id)}
+							<EntryRow
+								{entry}
+								{month}
+								{currency}
+								currentAmount={getMonthAmount(entry, month)}
+								hasOverride={month in entry.monthlyOverrides}
+								{onUpdateEntry}
+								{onDeleteEntry}
+								{onDuplicateEntry}
+								{onSetOverride}
+								{onRemoveOverride}
+								{onEdit}
+							/>
+						{/each}
+					</div>
+				{/if}
+			</div>
 		{/each}
 	{/if}
 
 	<!-- Add button -->
 	<button
 		type="button"
-		class="mt-0.5 flex items-center gap-1 rounded px-2 py-1 text-xs opacity-60 hover:opacity-100"
+		class="flex items-center gap-1.5 px-3 py-2 text-xs opacity-60 transition-opacity hover:opacity-100"
 		style:color={typeColors[type]}
 		onclick={() => onAddNew(type)}
 	>
-		+ Add {typeLabels[type].toLowerCase()}
+		<span class="text-base leading-none">+</span>
+		Add {typeLabels[type].toLowerCase()}
 	</button>
 </div>

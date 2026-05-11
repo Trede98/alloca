@@ -1,8 +1,11 @@
 @import "tailwindcss";
 
-@theme {
+/* ── Dark theme (default) ────────────────────────────────────────────────── */
+:root,
+[data-theme="dark"] {
 	--color-bg: #0f1117;
 	--color-surface: #1a1d27;
+	--color-surface2: #21253a;
 	--color-border: #2a2d3a;
 	--color-text: #e2e8f0;
 	--color-muted: #64748b;
@@ -10,6 +13,24 @@
 	--color-red: #ef4444;
 	--color-blue: #3b82f6;
 	--color-yellow: #eab308;
+	--color-purple: #a855f7;
+	--shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* ── Light theme ─────────────────────────────────────────────────────────── */
+[data-theme="light"] {
+	--color-bg: #f8fafc;
+	--color-surface: #ffffff;
+	--color-surface2: #f1f5f9;
+	--color-border: #e2e8f0;
+	--color-text: #0f172a;
+	--color-muted: #94a3b8;
+	--color-green: #16a34a;
+	--color-red: #dc2626;
+	--color-blue: #2563eb;
+	--color-yellow: #ca8a04;
+	--color-purple: #9333ea;
+	--shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
 }
 
 * {
@@ -23,4 +44,25 @@ body {
 	font-size: 14px;
 	line-height: 1.5;
 	margin: 0;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+	opacity: 0.4;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+	width: 6px;
+	height: 6px;
+}
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+::-webkit-scrollbar-thumb {
+	background: var(--color-border);
+	border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+	background: var(--color-muted);
 }

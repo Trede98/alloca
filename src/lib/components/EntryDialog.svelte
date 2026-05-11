@@ -74,6 +74,9 @@
 	function onKeydown(e: KeyboardEvent) {
 		if (e.key === 'Escape') onClose();
 	}
+
+	const inputClass = 'rounded-lg border px-2.5 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500/40 transition-colors';
+	const inputStyle = `background-color: var(--color-bg); border-color: var(--color-border); color: var(--color-text);`;
 </script>
 
 {#if open}
@@ -83,51 +86,47 @@
 		aria-modal="true"
 		tabindex="-1"
 		class="fixed inset-0 z-50 flex items-center justify-center p-4"
-		style:background-color="rgba(0,0,0,0.6)"
+		style:background-color="rgba(0,0,0,0.55)"
 		onclick={onBackdropClick}
 		onkeydown={onKeydown}
 	>
 		<div
-			class="flex w-full max-w-md flex-col gap-4 rounded-lg border p-5 shadow-xl"
+			class="flex w-full max-w-md flex-col gap-4 rounded-xl border p-5 shadow-xl"
 			style:background-color="var(--color-surface)"
 			style:border-color="var(--color-border)"
+			style:box-shadow="var(--shadow)"
 		>
 			<div class="flex items-center justify-between">
 				<h2 class="font-semibold">{editEntry ? 'Edit Entry' : 'New Entry'}</h2>
 				<button
 					type="button"
-					class="text-lg leading-none opacity-60 hover:opacity-100"
+					class="rounded-lg p-1 text-sm opacity-50 transition-opacity hover:opacity-100"
 					style:color="var(--color-muted)"
 					onclick={onClose}
+					aria-label="Close"
 				>
 					✕
 				</button>
 			</div>
 
 			<div class="flex flex-col gap-3">
+				<!-- Name -->
 				<label class="flex flex-col gap-1">
-					<span class="text-xs" style:color="var(--color-muted)">Name</span>
+					<span class="text-xs font-medium" style:color="var(--color-muted)">Name</span>
 					<input
 						bind:value={name}
 						type="text"
 						placeholder="e.g. Salary"
-						class="rounded border px-2 py-1.5 text-sm outline-none focus:ring-1"
-						style:background-color="var(--color-bg)"
-						style:border-color="var(--color-border)"
-						style:color="var(--color-text)"
+						class={inputClass}
+						style={inputStyle}
 					/>
 				</label>
 
+				<!-- Type + Recurrence -->
 				<div class="grid grid-cols-2 gap-3">
 					<label class="flex flex-col gap-1">
-						<span class="text-xs" style:color="var(--color-muted)">Type</span>
-						<select
-							bind:value={type}
-							class="rounded border px-2 py-1.5 text-sm outline-none"
-							style:background-color="var(--color-bg)"
-							style:border-color="var(--color-border)"
-							style:color="var(--color-text)"
-						>
+						<span class="text-xs font-medium" style:color="var(--color-muted)">Type</span>
+						<select bind:value={type} class={inputClass} style={inputStyle}>
 							<option value="income">Income</option>
 							<option value="expense">Expense</option>
 							<option value="savings">Savings</option>
@@ -135,14 +134,8 @@
 					</label>
 
 					<label class="flex flex-col gap-1">
-						<span class="text-xs" style:color="var(--color-muted)">Recurrence</span>
-						<select
-							bind:value={recurrence}
-							class="rounded border px-2 py-1.5 text-sm outline-none"
-							style:background-color="var(--color-bg)"
-							style:border-color="var(--color-border)"
-							style:color="var(--color-text)"
-						>
+						<span class="text-xs font-medium" style:color="var(--color-muted)">Recurrence</span>
+						<select bind:value={recurrence} class={inputClass} style={inputStyle}>
 							<option value="monthly">Monthly</option>
 							<option value="annual_distributed">Annual ÷ 12</option>
 							<option value="single">One-time</option>
@@ -150,16 +143,11 @@
 					</label>
 				</div>
 
+				<!-- Month picker (single only) -->
 				{#if recurrence === 'single'}
 					<label class="flex flex-col gap-1">
-						<span class="text-xs" style:color="var(--color-muted)">Month</span>
-						<select
-							bind:value={month}
-							class="rounded border px-2 py-1.5 text-sm outline-none"
-							style:background-color="var(--color-bg)"
-							style:border-color="var(--color-border)"
-							style:color="var(--color-text)"
-						>
+						<span class="text-xs font-medium" style:color="var(--color-muted)">Month</span>
+						<select bind:value={month} class={inputClass} style={inputStyle}>
 							{#each MONTH_NAMES as m, i}
 								<option value={i}>{m}</option>
 							{/each}
@@ -167,9 +155,10 @@
 					</label>
 				{/if}
 
+				<!-- Amount + Category -->
 				<div class="grid grid-cols-2 gap-3">
 					<label class="flex flex-col gap-1">
-						<span class="text-xs" style:color="var(--color-muted)">
+						<span class="text-xs font-medium" style:color="var(--color-muted)">
 							{recurrence === 'annual_distributed' ? 'Annual amount' : 'Amount'}
 						</span>
 						<input
@@ -177,24 +166,20 @@
 							type="number"
 							min="0"
 							step="0.01"
-							class="rounded border px-2 py-1.5 text-sm outline-none focus:ring-1"
-							style:background-color="var(--color-bg)"
-							style:border-color="var(--color-border)"
-							style:color="var(--color-text)"
+							class={inputClass}
+							style={inputStyle}
 						/>
 					</label>
 
 					<label class="flex flex-col gap-1">
-						<span class="text-xs" style:color="var(--color-muted)">Category</span>
+						<span class="text-xs font-medium" style:color="var(--color-muted)">Category</span>
 						<input
 							bind:value={category}
 							type="text"
 							placeholder="Other"
 							list="category-suggestions"
-							class="rounded border px-2 py-1.5 text-sm outline-none focus:ring-1"
-							style:background-color="var(--color-bg)"
-							style:border-color="var(--color-border)"
-							style:color="var(--color-text)"
+							class={inputClass}
+							style={inputStyle}
 						/>
 						<datalist id="category-suggestions">
 							<option value="Housing"></option>
@@ -209,28 +194,29 @@
 					</label>
 				</div>
 
+				<!-- Notes -->
 				<label class="flex flex-col gap-1">
-					<span class="text-xs" style:color="var(--color-muted)">Notes (optional)</span>
+					<span class="text-xs font-medium" style:color="var(--color-muted)">Notes <span class="opacity-60">(optional)</span></span>
 					<input
 						bind:value={notes}
 						type="text"
-						placeholder=""
-						class="rounded border px-2 py-1.5 text-sm outline-none focus:ring-1"
-						style:background-color="var(--color-bg)"
-						style:border-color="var(--color-border)"
-						style:color="var(--color-text)"
+						placeholder="Any extra context…"
+						class={inputClass}
+						style={inputStyle}
 					/>
 				</label>
 
 				{#if error}
-					<p class="text-xs" style:color="var(--color-red)">{error}</p>
+					<p class="rounded-lg px-3 py-2 text-xs" style:color="var(--color-red)" style:background-color="color-mix(in srgb, var(--color-red) 10%, transparent)">
+						{error}
+					</p>
 				{/if}
 			</div>
 
 			<div class="flex justify-end gap-2">
 				<button
 					type="button"
-					class="rounded px-3 py-1.5 text-sm"
+					class="rounded-lg px-3 py-1.5 text-sm transition-opacity hover:opacity-80"
 					style:color="var(--color-muted)"
 					onclick={onClose}
 				>
@@ -238,12 +224,12 @@
 				</button>
 				<button
 					type="button"
-					class="rounded px-3 py-1.5 text-sm font-medium"
+					class="rounded-lg px-4 py-1.5 text-sm font-medium transition-opacity hover:opacity-90"
 					style:background-color="var(--color-blue)"
 					style:color="white"
 					onclick={submit}
 				>
-					{editEntry ? 'Save' : 'Add'}
+					{editEntry ? 'Save changes' : 'Add entry'}
 				</button>
 			</div>
 		</div>

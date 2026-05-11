@@ -379,6 +379,7 @@ Keep concise.
 - /docs/context/01-bootstrap.md ✓
 - /docs/context/02-data-and-persistence.md ✓
 - /docs/context/03-ui.md ✓
+- /docs/context/04-import-export-polish.md ✓
 
 Must be updated after each snapshot.
 

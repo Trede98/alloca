@@ -3,31 +3,37 @@
 	import { formatCurrency } from '$lib/format';
 	import { isBalanced } from '$lib/budget';
 
-	let { summary }: { summary: YearSummary } = $props();
+	let { summary, currency }: { summary: YearSummary; currency: string } = $props();
 
 	const balanced = $derived(isBalanced(summary.yearlyBalance));
 </script>
 
-<div class="flex items-center gap-5 text-sm">
+<div class="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm">
 	<div class="flex items-center gap-1.5">
-		<span style:color="var(--color-muted)" class="text-xs">Income</span>
-		<span class="tabular-nums font-medium" style:color="var(--color-green)">{formatCurrency(summary.incomeTotal)}</span>
+		<span class="text-xs" style:color="var(--color-muted)">Income</span>
+		<span class="tabular-nums font-medium" style:color="var(--color-green)">
+			{formatCurrency(summary.incomeTotal, currency)}
+		</span>
 	</div>
 	<div class="flex items-center gap-1.5">
-		<span style:color="var(--color-muted)" class="text-xs">Expenses</span>
-		<span class="tabular-nums font-medium" style:color="var(--color-red)">{formatCurrency(summary.expenseTotal)}</span>
+		<span class="text-xs" style:color="var(--color-muted)">Expenses</span>
+		<span class="tabular-nums font-medium" style:color="var(--color-red)">
+			{formatCurrency(summary.expenseTotal, currency)}
+		</span>
 	</div>
 	<div class="flex items-center gap-1.5">
-		<span style:color="var(--color-muted)" class="text-xs">Savings</span>
-		<span class="tabular-nums font-medium" style:color="var(--color-blue)">{formatCurrency(summary.savingsTotal)}</span>
+		<span class="text-xs" style:color="var(--color-muted)">Savings</span>
+		<span class="tabular-nums font-medium" style:color="var(--color-blue)">
+			{formatCurrency(summary.savingsTotal, currency)}
+		</span>
 	</div>
 	<div class="flex items-center gap-1.5">
-		<span style:color="var(--color-muted)" class="text-xs">Balance</span>
+		<span class="text-xs" style:color="var(--color-muted)">Balance</span>
 		<span
 			class="tabular-nums font-semibold"
 			style:color={balanced ? 'var(--color-green)' : 'var(--color-red)'}
 		>
-			{formatCurrency(summary.yearlyBalance)}
+			{formatCurrency(summary.yearlyBalance, currency)}
 		</span>
 	</div>
 </div>

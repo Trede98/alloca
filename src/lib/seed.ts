@@ -7,6 +7,8 @@ export function createSeedBudget(): Budget {
 		id: nanoid(),
 		name: 'My Budget',
 		year: new Date().getFullYear(),
+		currency: 'EUR',
+		monthlyNotes: {},
 		createdAt: now,
 		updatedAt: now,
 		entries: [

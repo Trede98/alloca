@@ -1,11 +1,11 @@
 <script lang="ts">
 	import type { Entry } from '$lib/types';
 	import { formatCurrency } from '$lib/format';
-	import CategoryTag from './CategoryTag.svelte';
 
 	let {
 		entry,
 		month,
+		currency,
 		currentAmount,
 		hasOverride,
 		onUpdateEntry,
@@ -17,6 +17,7 @@
 	}: {
 		entry: Entry;
 		month: number;
+		currency: string;
 		currentAmount: number;
 		hasOverride: boolean;
 		onUpdateEntry: (id: string, patch: Partial<Omit<Entry, 'id' | 'monthlyOverrides'>>) => void;
@@ -34,7 +35,6 @@
 	function startAmountEdit() {
 		amountInput = currentAmount.toFixed(2);
 		editingAmount = true;
-		// Focus after render
 		setTimeout(() => inputEl?.select(), 0);
 	}
 
@@ -59,36 +59,42 @@
 	const recurrenceLabel: Record<string, string> = {
 		monthly: 'mo',
 		annual_distributed: 'yr÷',
-		single: '1x'
+		single: '1×'
 	};
 </script>
 
 <div
-	class="group grid items-center gap-2 px-2 py-1 text-sm hover:bg-white/[0.03] rounded"
+	class="group grid items-center gap-2 px-3 py-1.5 text-sm transition-colors hover:bg-white/[0.03]"
 	style="grid-template-columns: 1fr auto auto auto;"
 >
 	<!-- Name + meta -->
 	<div class="flex min-w-0 items-center gap-1.5">
 		<button
 			type="button"
-			class="truncate text-left hover:underline"
+			class="min-w-0 truncate text-left hover:underline"
 			style:color="var(--color-text)"
 			onclick={() => onEdit(entry)}
+			title={entry.notes || entry.name}
 		>
 			{entry.name}
 		</button>
-		<span class="shrink-0 text-xs" style:color="var(--color-muted)">{recurrenceLabel[entry.recurrence]}</span>
-		<CategoryTag category={entry.category} />
+		<span class="shrink-0 rounded px-1 py-0.5 text-xs" style:color="var(--color-muted)" style:background-color="var(--color-border)">
+			{recurrenceLabel[entry.recurrence]}
+		</span>
 		{#if hasOverride}
 			<button
 				type="button"
-				class="shrink-0 text-xs"
+				class="shrink-0 rounded px-1 py-0.5 text-xs"
 				style:color="var(--color-yellow)"
-				title="Override active — click to reset"
+				style:background-color="color-mix(in srgb, var(--color-yellow) 15%, transparent)"
+				title="Override active — click to reset to base"
 				onclick={() => onRemoveOverride(entry.id, month)}
 			>
-				↺
+				↺ override
 			</button>
+		{/if}
+		{#if entry.notes}
+			<span class="shrink-0 text-xs" style:color="var(--color-muted)" title={entry.notes}>💬</span>
 		{/if}
 	</div>
 
@@ -101,9 +107,9 @@
 				type="number"
 				min="0"
 				step="0.01"
-				class="w-24 rounded border px-1 py-0.5 text-right text-sm outline-none"
+				class="w-24 rounded border px-1.5 py-0.5 text-right text-sm outline-none focus:ring-1"
 				style:background-color="var(--color-bg)"
-				style:border-color="var(--color-border)"
+				style:border-color="var(--color-blue)"
 				style:color="var(--color-text)"
 				onblur={commitAmount}
 				onkeydown={onAmountKeydown}
@@ -111,12 +117,12 @@
 		{:else}
 			<button
 				type="button"
-				class="rounded px-1 py-0.5 tabular-nums hover:underline"
+				class="rounded px-1.5 py-0.5 tabular-nums transition-colors hover:underline"
 				style:color={hasOverride ? 'var(--color-yellow)' : 'var(--color-text)'}
 				onclick={startAmountEdit}
-				title="Click to edit amount"
+				title="Click to edit this month's amount"
 			>
-				{formatCurrency(currentAmount)}
+				{formatCurrency(currentAmount, currency)}
 			</button>
 		{/if}
 	</div>
@@ -124,9 +130,9 @@
 	<!-- Duplicate -->
 	<button
 		type="button"
-		class="hidden rounded p-1 text-xs opacity-60 hover:opacity-100 group-hover:block"
+		class="invisible rounded p-1 text-xs opacity-60 transition-opacity hover:opacity-100 group-hover:visible"
 		style:color="var(--color-muted)"
-		title="Duplicate"
+		title="Duplicate entry"
 		onclick={() => onDuplicateEntry(entry)}
 	>
 		⧉
@@ -135,9 +141,9 @@
 	<!-- Delete -->
 	<button
 		type="button"
-		class="hidden rounded p-1 text-xs opacity-60 hover:opacity-100 group-hover:block"
+		class="invisible rounded p-1 text-xs opacity-60 transition-opacity hover:opacity-100 group-hover:visible"
 		style:color="var(--color-red)"
-		title="Delete"
+		title="Delete entry"
 		onclick={() => onDeleteEntry(entry.id)}
 	>
 		✕

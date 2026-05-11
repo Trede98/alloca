@@ -17,7 +17,9 @@ export interface Budget {
 	id: string;
 	name: string;
 	year: number;
+	currency: string; // ISO 4217, e.g. 'EUR', 'USD'
 	entries: Entry[];
+	monthlyNotes: Record<number, string>; // 0-11 → note text
 	createdAt: string;
 	updatedAt: string;
 }

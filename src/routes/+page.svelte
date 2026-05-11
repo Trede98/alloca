@@ -22,15 +22,15 @@
 			existing = createSeedBudget();
 			await saveBudget(existing);
 		}
+		// Migrate legacy budgets missing new fields
+		if (!existing.currency) existing = { ...existing, currency: 'EUR' };
+		if (!existing.monthlyNotes) existing = { ...existing, monthlyNotes: {} };
 		budget = existing;
 		loading = false;
 	});
 
-	// Autosave: persist whenever budget changes (skips initial null state)
 	$effect(() => {
-		if (budget) {
-			saveBudget(budget);
-		}
+		if (budget) saveBudget(budget);
 	});
 
 	function onAddEntry(input: NewEntryInput) {
@@ -61,11 +61,27 @@
 	function onImport(imported: Budget) {
 		budget = imported;
 	}
+
+	function onBudgetChange(updated: Budget) {
+		budget = updated;
+	}
 </script>
 
 {#if loading}
-	<div class="flex h-screen items-center justify-center" style:color="var(--color-muted)">
-		Loading…
+	<div
+		class="flex h-screen flex-col items-center justify-center gap-4"
+		style:background-color="var(--color-bg)"
+	>
+		<div class="flex gap-1.5">
+			{#each [0, 1, 2] as i}
+				<div
+					class="h-2 w-2 animate-bounce rounded-full"
+					style:background-color="var(--color-muted)"
+					style:animation-delay="{i * 120}ms"
+				></div>
+			{/each}
+		</div>
+		<span class="text-sm" style:color="var(--color-muted)">Loading budget…</span>
 	</div>
 {:else if budget}
 	<BudgetDashboard
@@ -76,5 +92,6 @@
 		{onSetOverride}
 		{onRemoveOverride}
 		{onImport}
+		{onBudgetChange}
 	/>
 {/if}

@@ -16,7 +16,9 @@ const BudgetSchema = z.object({
 	id: z.string(),
 	name: z.string().min(1),
 	year: z.number().int(),
+	currency: z.string().default('EUR'),
 	entries: z.array(EntrySchema),
+	monthlyNotes: z.record(z.string(), z.string()).default({}),
 	createdAt: z.string(),
 	updatedAt: z.string()
 });

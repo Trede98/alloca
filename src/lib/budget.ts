@@ -1,7 +1,7 @@
 import { nanoid } from 'nanoid';
 import type { Budget, Entry, EntryType, MonthSummary, Recurrence, YearSummary } from './types';
 
-// ─── Calculations ────────────────────────────────────────────────────────────
+// ─── Calculations ─────────────────────────────────────────────────────────────
 
 export function getMonthAmount(entry: Entry, month: number): number {
 	if (month in entry.monthlyOverrides) {
@@ -119,7 +119,6 @@ export function updateEntry(
 		if (patch.baseAmount !== undefined && patch.baseAmount < 0) {
 			throw new Error('Amount must be non-negative');
 		}
-		// If recurrence changed away from single, clear month
 		if (patch.recurrence && patch.recurrence !== 'single') {
 			updated.month = undefined;
 		}
@@ -149,6 +148,16 @@ export function removeOverride(budget: Budget, entryId: string, month: number): 
 		return { ...e, monthlyOverrides: overrides };
 	});
 	return touch({ ...budget, entries });
+}
+
+export function setMonthNote(budget: Budget, month: number, note: string): Budget {
+	const monthlyNotes = { ...budget.monthlyNotes };
+	if (note.trim()) {
+		monthlyNotes[month] = note.trim();
+	} else {
+		delete monthlyNotes[month];
+	}
+	return touch({ ...budget, monthlyNotes });
 }
 
 // ─── Internal ─────────────────────────────────────────────────────────────────
