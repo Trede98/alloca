@@ -1,7 +1,9 @@
 <script lang="ts">
 	import type { Category, Entry, EntryType, Recurrence } from '$lib/types';
 	import type { NewEntryInput } from '$lib/budget';
-	import { MONTH_NAMES } from '$lib/format';
+	import { getMonthShort } from '$lib/format';
+	import * as m from '$lib/paraglide/messages';
+	import { getLocale } from '$lib/paraglide/runtime';
 
 	let {
 		open,
@@ -34,6 +36,8 @@
 
 	// Track a pending category name to auto-select after creation
 	let pendingCategoryName = $state('');
+
+	const locale = $derived(getLocale());
 
 	$effect(() => {
 		if (!open) {
@@ -131,9 +135,9 @@
 	function submit() {
 		error = '';
 		const amount = parseFloat(baseAmount);
-		if (!name.trim()) { error = 'Name is required'; return; }
-		if (isNaN(amount) || amount < 0) { error = 'Amount must be a non-negative number'; return; }
-		if (!categoryId) { error = 'Please select or create a category'; return; }
+		if (!name.trim()) { error = m.entry_dialog_error_name(); return; }
+		if (isNaN(amount) || amount < 0) { error = m.entry_dialog_error_amount(); return; }
+		if (!categoryId) { error = m.entry_dialog_error_category(); return; }
 
 		const input: NewEntryInput = {
 			name: name.trim(),
@@ -179,7 +183,7 @@
 			style:box-shadow="var(--shadow-modal)"
 		>
 			<div class="flex items-center justify-between">
-				<h2 class="font-semibold">{editEntry ? 'Edit Entry' : 'New Entry'}</h2>
+				<h2 class="font-semibold">{editEntry ? m.entry_dialog_edit_title() : m.entry_dialog_new_title()}</h2>
 				<button
 					type="button"
 					class="p-1 text-sm opacity-40 transition-opacity hover:opacity-80"
@@ -195,11 +199,11 @@
 			<div class="flex flex-col gap-3">
 				<!-- Name -->
 				<label class="flex flex-col gap-1">
-					<span class="text-xs font-medium" style:color="var(--color-muted)">Name</span>
+					<span class="text-xs font-medium" style:color="var(--color-muted)">{m.entry_dialog_name()}</span>
 					<input
 						bind:value={name}
 						type="text"
-						placeholder="e.g. Salary"
+						placeholder={m.entry_dialog_name_placeholder()}
 						class={inputClass}
 						style={inputStyle}
 					/>
@@ -208,20 +212,20 @@
 				<!-- Type + Recurrence -->
 				<div class="grid grid-cols-2 gap-3">
 					<label class="flex flex-col gap-1">
-						<span class="text-xs font-medium" style:color="var(--color-muted)">Type</span>
+						<span class="text-xs font-medium" style:color="var(--color-muted)">{m.entry_dialog_type()}</span>
 						<select bind:value={type} class={inputClass} style={inputStyle}>
-							<option value="income">Income</option>
-							<option value="expense">Expense</option>
-							<option value="savings">Savings</option>
+							<option value="income">{m.type_income()}</option>
+							<option value="expense">{m.type_expense()}</option>
+							<option value="savings">{m.type_savings()}</option>
 						</select>
 					</label>
 
 					<label class="flex flex-col gap-1">
-						<span class="text-xs font-medium" style:color="var(--color-muted)">Recurrence</span>
+						<span class="text-xs font-medium" style:color="var(--color-muted)">{m.entry_dialog_recurrence()}</span>
 						<select bind:value={recurrence} class={inputClass} style={inputStyle}>
-							<option value="monthly">Monthly</option>
-							<option value="annual_distributed">Annual ÷ 12</option>
-							<option value="single">One-time</option>
+							<option value="monthly">{m.recurrence_monthly()}</option>
+							<option value="annual_distributed">{m.recurrence_annual()}</option>
+							<option value="single">{m.recurrence_single()}</option>
 						</select>
 					</label>
 				</div>
@@ -229,10 +233,10 @@
 				<!-- Month picker (single only) -->
 				{#if recurrence === 'single'}
 					<label class="flex flex-col gap-1">
-						<span class="text-xs font-medium" style:color="var(--color-muted)">Month</span>
+						<span class="text-xs font-medium" style:color="var(--color-muted)">{m.entry_dialog_month()}</span>
 						<select bind:value={month} class={inputClass} style={inputStyle}>
-							{#each MONTH_NAMES as m, i}
-								<option value={i}>{m}</option>
+							{#each Array.from({ length: 12 }, (_, i) => i) as i}
+								<option value={i}>{getMonthShort(i, locale)}</option>
 							{/each}
 						</select>
 					</label>
@@ -242,7 +246,7 @@
 				<div class="grid grid-cols-2 gap-3">
 					<label class="flex flex-col gap-1">
 						<span class="text-xs font-medium" style:color="var(--color-muted)">
-							{recurrence === 'annual_distributed' ? 'Annual amount' : 'Amount'}
+							{recurrence === 'annual_distributed' ? m.entry_dialog_annual_amount() : m.entry_dialog_amount()}
 						</span>
 						<input
 							bind:value={baseAmount}
@@ -256,11 +260,11 @@
 
 					<!-- Category combobox -->
 					<div class="relative flex flex-col gap-1">
-						<span class="text-xs font-medium" style:color="var(--color-muted)">Category</span>
+						<span class="text-xs font-medium" style:color="var(--color-muted)">{m.entry_dialog_category()}</span>
 						<input
 							bind:value={categorySearch}
 							type="text"
-							placeholder={categories.length === 0 ? 'Type to create…' : 'Search or create…'}
+							placeholder={categories.length === 0 ? m.entry_dialog_type_to_create() : m.entry_dialog_search_or_create()}
 							class={inputClass}
 							style={inputStyle}
 							oninput={onComboInput}
@@ -302,12 +306,12 @@
 										style:border-color="var(--color-border)"
 										onclick={createCategory}
 									>
-										Create «{categorySearch.trim()}»
+										{m.entry_dialog_create_category({ name: categorySearch.trim() })}
 									</button>
 								{/if}
 								{#if filteredCategories.length === 0 && !showCreateOption}
 									<div class="px-3 py-1.5 text-sm" style:color="var(--color-muted)">
-										No categories found
+										{m.entry_dialog_no_categories_found()}
 									</div>
 								{/if}
 							</div>
@@ -317,11 +321,11 @@
 
 				<!-- Notes -->
 				<label class="flex flex-col gap-1">
-					<span class="text-xs font-medium" style:color="var(--color-muted)">Notes <span class="opacity-60">(optional)</span></span>
+					<span class="text-xs font-medium" style:color="var(--color-muted)">{m.entry_dialog_notes()} <span class="opacity-60">{m.entry_dialog_optional()}</span></span>
 					<input
 						bind:value={notes}
 						type="text"
-						placeholder="Any extra context…"
+						placeholder={m.entry_dialog_notes_placeholder()}
 						class={inputClass}
 						style={inputStyle}
 					/>
@@ -347,7 +351,7 @@
 					style:color="var(--color-muted)"
 					onclick={onClose}
 				>
-					Cancel
+					{m.cancel()}
 				</button>
 				<button
 					type="button"
@@ -357,7 +361,7 @@
 					style:color="var(--color-accent-fg)"
 					onclick={submit}
 				>
-					{editEntry ? 'Save changes' : 'Add entry'}
+					{editEntry ? m.entry_dialog_save_changes() : m.entry_dialog_add_entry()}
 				</button>
 			</div>
 		</div>

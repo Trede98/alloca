@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type { Entry } from '$lib/types';
 	import { formatCurrency } from '$lib/format';
+	import * as m from '$lib/paraglide/messages';
+	import { getLocale } from '$lib/paraglide/runtime';
 
 	let {
 		entry,
@@ -31,6 +33,7 @@
 	let editingAmount = $state(false);
 	let amountInput = $state('');
 	let inputEl = $state<HTMLInputElement | null>(null);
+	const locale = $derived(getLocale());
 
 	function startAmountEdit() {
 		amountInput = currentAmount.toFixed(2);
@@ -56,11 +59,11 @@
 		if (e.key === 'Escape') editingAmount = false;
 	}
 
-	const recurrenceLabel: Record<string, string> = {
-		monthly: 'mo',
-		annual_distributed: 'yr÷',
-		single: '1×'
-	};
+	const recurrenceBadge = $derived({
+		monthly: m.recurrence_badge_monthly(),
+		annual_distributed: m.recurrence_badge_annual(),
+		single: m.recurrence_badge_single()
+	}[entry.recurrence]);
 </script>
 
 <div
@@ -84,7 +87,7 @@
 			style:color="var(--color-muted)"
 			style:background-color="var(--color-border)"
 		>
-			{recurrenceLabel[entry.recurrence]}
+			{recurrenceBadge}
 		</span>
 		{#if hasOverride}
 			<button
@@ -93,10 +96,10 @@
 				style:border-radius="var(--radius-sm)"
 				style:color="var(--color-yellow)"
 				style:background-color="color-mix(in srgb, var(--color-yellow) 15%, transparent)"
-				title="Override active — click to reset to base"
+				title={m.entry_row_override_tooltip()}
 				onclick={() => onRemoveOverride(entry.id, month)}
 			>
-				↺ override
+				{m.entry_row_override()}
 			</button>
 		{/if}
 		{#if entry.notes}
@@ -128,9 +131,9 @@
 				style:border-radius="var(--radius-sm)"
 				style:color={hasOverride ? 'var(--color-yellow)' : 'var(--color-text)'}
 				onclick={startAmountEdit}
-				title="Click to edit this month's amount"
+				title={m.entry_row_amount_tooltip()}
 			>
-				{formatCurrency(currentAmount, currency)}
+				{formatCurrency(currentAmount, currency, locale)}
 			</button>
 		{/if}
 	</div>
@@ -141,7 +144,7 @@
 		class="invisible p-1 text-xs opacity-60 transition-opacity hover:opacity-100 group-hover:visible"
 		style:border-radius="var(--radius-sm)"
 		style:color="var(--color-text)"
-		title="Duplicate entry"
+		title={m.entry_row_duplicate()}
 		onclick={() => onDuplicateEntry(entry)}
 	>
 		⧉
@@ -153,7 +156,7 @@
 		class="invisible p-1 text-xs opacity-60 transition-opacity hover:opacity-100 group-hover:visible"
 		style:border-radius="var(--radius-sm)"
 		style:color="var(--color-red)"
-		title="Delete entry"
+		title={m.entry_row_delete()}
 		onclick={() => onDeleteEntry(entry.id)}
 	>
 		✕

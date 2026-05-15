@@ -1,8 +1,10 @@
 <script lang="ts">
 	import type { MonthSummary } from '$lib/types';
-	import { formatCurrency, formatCompact, MONTH_NAMES } from '$lib/format';
+	import { formatCurrency, formatCompact, getMonthShort } from '$lib/format';
 	import { isBalanced } from '$lib/budget';
 	import BalanceBadge from './BalanceBadge.svelte';
+	import * as m from '$lib/paraglide/messages';
+	import { getLocale } from '$lib/paraglide/runtime';
 
 	let {
 		summary,
@@ -17,6 +19,7 @@
 	} = $props();
 
 	const balanced = $derived(isBalanced(summary.balance));
+	const locale = $derived(getLocale());
 </script>
 
 <button
@@ -35,21 +38,21 @@
 	onclick={onclick}
 >
 	<div class="flex items-center justify-between">
-		<span class="text-sm font-medium">{MONTH_NAMES[summary.month]}</span>
+		<span class="text-sm font-medium">{getMonthShort(summary.month, locale)}</span>
 		<BalanceBadge balance={summary.balance} compact={true} />
 	</div>
 	<div class="grid grid-cols-3 gap-1 text-xs">
 		<div class="min-w-0 overflow-hidden">
-			<div class="text-[10px]" style:color="var(--color-subtle)">In</div>
-			<div class="tabular-nums leading-tight text-xs" style:color="var(--color-green)">{formatCompact(summary.incomeTotal, currency)}</div>
+			<div class="text-[10px]" style:color="var(--color-subtle)">{m.month_card_in()}</div>
+			<div class="tabular-nums leading-tight text-xs" style:color="var(--color-green)">{formatCompact(summary.incomeTotal, currency, locale)}</div>
 		</div>
 		<div class="min-w-0 overflow-hidden">
-			<div class="text-[10px]" style:color="var(--color-subtle)">Out</div>
-			<div class="tabular-nums leading-tight text-xs" style:color="var(--color-red)">{formatCompact(summary.expenseTotal, currency)}</div>
+			<div class="text-[10px]" style:color="var(--color-subtle)">{m.month_card_out()}</div>
+			<div class="tabular-nums leading-tight text-xs" style:color="var(--color-red)">{formatCompact(summary.expenseTotal, currency, locale)}</div>
 		</div>
 		<div class="min-w-0 overflow-hidden">
-			<div class="text-[10px]" style:color="var(--color-subtle)">Save</div>
-			<div class="tabular-nums leading-tight text-xs" style:color="var(--color-blue)">{formatCompact(summary.savingsTotal, currency)}</div>
+			<div class="text-[10px]" style:color="var(--color-subtle)">{m.month_card_save()}</div>
+			<div class="tabular-nums leading-tight text-xs" style:color="var(--color-blue)">{formatCompact(summary.savingsTotal, currency, locale)}</div>
 		</div>
 	</div>
 </button>

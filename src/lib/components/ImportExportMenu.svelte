@@ -2,6 +2,7 @@
 	import type { Budget } from '$lib/types';
 	import { ExportDataSchema } from '$lib/schemas';
 	import { replaceBudget } from '$lib/db';
+	import * as m from '$lib/paraglide/messages';
 
 	let {
 		budget,
@@ -44,7 +45,9 @@
 			const result = ExportDataSchema.safeParse(raw);
 			if (!result.success) {
 				const first = result.error.issues[0];
-				error = first ? `Invalid file: ${first.path.join('.')} — ${first.message}` : 'Invalid file format';
+				error = first
+					? m.import_export_error_invalid({ path: first.path.join('.'), message: first.message })
+					: 'Invalid file format';
 				return;
 			}
 			// Normalise fields that may be missing in older exports
@@ -57,7 +60,7 @@
 			};
 			pending = imported;
 		} catch {
-			error = 'Could not read file — make sure it is valid JSON';
+			error = m.import_export_error_json();
 		} finally {
 			if (fileInput) fileInput.value = '';
 		}
@@ -92,7 +95,7 @@
 		style:border-color="var(--color-border)"
 		onclick={() => { error = ''; fileInput?.click(); }}
 	>
-		Import
+		{m.import()}
 	</button>
 
 	<button
@@ -103,7 +106,7 @@
 		style:border-color="var(--color-border)"
 		onclick={exportBudget}
 	>
-		Export
+		{m.export()}
 	</button>
 </div>
 {/if}
@@ -135,9 +138,9 @@
 			style:box-shadow="var(--shadow-modal)"
 		>
 			<div>
-				<h2 class="font-semibold">Replace budget?</h2>
+				<h2 class="font-semibold">{m.import_export_replace_title()}</h2>
 				<p class="mt-1 text-sm" style:color="var(--color-muted)">
-					This will replace your current budget with <strong style:color="var(--color-text)">{pending.name} ({pending.year})</strong>. This action cannot be undone.
+					{m.import_export_replace_body({ name: pending.name, year: String(pending.year) })}
 				</p>
 			</div>
 			<div class="flex justify-end gap-2">
@@ -148,7 +151,7 @@
 					style:color="var(--color-muted)"
 					onclick={cancelImport}
 				>
-					Cancel
+					{m.cancel()}
 				</button>
 				<button
 					type="button"
@@ -158,7 +161,7 @@
 					style:color="white"
 					onclick={confirmImport}
 				>
-					Replace budget
+					{m.import_export_replace_confirm()}
 				</button>
 			</div>
 		</div>

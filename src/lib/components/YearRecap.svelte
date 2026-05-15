@@ -3,6 +3,8 @@
 	import { isBalanced } from '$lib/budget';
 	import { formatCurrency } from '$lib/format';
 	import { ChevronDown } from 'lucide-svelte';
+	import * as m from '$lib/paraglide/messages';
+	import { getLocale } from '$lib/paraglide/runtime';
 
 	let {
 		recap,
@@ -22,11 +24,19 @@
 		savings: 'var(--color-blue)'
 	};
 
-	const typeLabels: Record<EntryType, string> = {
-		income: 'Income',
-		expense: 'Expenses',
-		savings: 'Savings'
-	};
+	const locale = $derived(getLocale());
+
+	const typeLabels = $derived<Record<EntryType, string>>({
+		income: m.type_income(),
+		expense: m.type_expenses(),
+		savings: m.type_savings()
+	});
+
+	const recurrenceBadges = $derived({
+		monthly: m.recurrence_badge_monthly(),
+		annual_distributed: m.recurrence_badge_annual(),
+		single: m.recurrence_badge_single()
+	});
 
 	let collapsed = $state(new Set<string>());
 
@@ -57,22 +67,22 @@
 		>
 			←
 		</button>
-		<span class="font-semibold">Year Overview</span>
+		<span class="font-semibold">{m.year_overview()}</span>
 		<span class="text-sm opacity-50">{year}</span>
 	</div>
 
 	<div class="hidden items-center gap-3 text-sm sm:flex">
-		<span style:color="var(--color-green)">{formatCurrency(recap.income.total, currency)}</span>
+		<span style:color="var(--color-green)">{formatCurrency(recap.income.total, currency, locale)}</span>
 		<span class="opacity-40">−</span>
-		<span style:color="var(--color-red)">{formatCurrency(recap.expenses.total, currency)}</span>
+		<span style:color="var(--color-red)">{formatCurrency(recap.expenses.total, currency, locale)}</span>
 		<span class="opacity-40">−</span>
-		<span style:color="var(--color-blue)">{formatCurrency(recap.savings.total, currency)}</span>
+		<span style:color="var(--color-blue)">{formatCurrency(recap.savings.total, currency, locale)}</span>
 		<span class="opacity-40">=</span>
 		<span
 			class="font-semibold"
 			style:color={isBalanced(recap.yearlyBalance) ? 'var(--color-green)' : 'var(--color-red)'}
 		>
-			{formatCurrency(isBalanced(recap.yearlyBalance) ? 0 : recap.yearlyBalance, currency)}
+			{formatCurrency(isBalanced(recap.yearlyBalance) ? 0 : recap.yearlyBalance, currency, locale)}
 		</span>
 	</div>
 
@@ -112,7 +122,7 @@
 							{typeLabels[section.type]}
 						</span>
 						<span class="text-sm font-semibold tabular-nums" style:color={typeColors[section.type]}>
-							{formatCurrency(section.total, currency)}
+							{formatCurrency(section.total, currency, locale)}
 						</span>
 					</div>
 
@@ -141,7 +151,7 @@
 									<span class="text-sm" style:color="var(--color-text)">{cat.categoryName}</span>
 								</div>
 								<span class="text-sm font-medium tabular-nums" style:color="var(--color-text)">
-									{formatCurrency(cat.yearTotal, currency)}
+									{formatCurrency(cat.yearTotal, currency, locale)}
 								</span>
 							</button>
 
@@ -161,11 +171,11 @@
 													style:color="var(--color-muted)"
 													style:background-color="var(--color-border)"
 												>
-													{entry.recurrence === 'monthly' ? 'mo' : entry.recurrence === 'annual_distributed' ? 'yr÷' : '1×'}
+													{recurrenceBadges[entry.recurrence]}
 												</span>
 											</div>
 											<span class="tabular-nums" style:color="var(--color-text)">
-												{formatCurrency(entry.yearTotal, currency)}
+												{formatCurrency(entry.yearTotal, currency, locale)}
 											</span>
 										</div>
 									{/each}

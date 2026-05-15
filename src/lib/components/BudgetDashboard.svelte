@@ -10,10 +10,10 @@
 		setMonthNote,
 		renameBudget
 	} from '$lib/budget';
-	import { formatCurrency, MONTH_NAMES, MONTH_NAMES_FULL } from '$lib/format';
+	import { formatCurrency, getMonthFull } from '$lib/format';
 	import { getTheme, toggleTheme } from '$lib/theme.svelte';
 	import { Switch } from 'bits-ui';
-	import { Settings2, Tag, Upload, Download, Trash2, Sun, Moon } from 'lucide-svelte';
+	import { Settings2, Tag, Upload, Download, Trash2, Sun, Moon, Globe, ChevronRight, ChevronLeft } from 'lucide-svelte';
 	import SummaryBar from './SummaryBar.svelte';
 	import MonthCard from './MonthCard.svelte';
 	import YearRecap from './YearRecap.svelte';
@@ -22,6 +22,16 @@
 	import BalanceBadge from './BalanceBadge.svelte';
 	import ImportExportMenu from './ImportExportMenu.svelte';
 	import CategoryManager from './CategoryManager.svelte';
+	import * as m from '$lib/paraglide/messages';
+	import { getLocale, setLocale } from '$lib/paraglide/runtime';
+
+	const LANGUAGES = [
+		{ code: 'en', flag: '🇬🇧', label: 'English' },
+		{ code: 'it', flag: '🇮🇹', label: 'Italiano' },
+		{ code: 'fr', flag: '🇫🇷', label: 'Français' },
+		{ code: 'es', flag: '🇪🇸', label: 'Español' },
+		{ code: 'de', flag: '🇩🇪', label: 'Deutsch' }
+	] as const;
 
 	let {
 		budget,
@@ -93,9 +103,9 @@
 		showDetail = true;
 	}
 
-	function selectMonth(m: number) {
+	function selectMonth(monthNum: number) {
 		showYearRecap = false;
-		selectedMonth = selectedMonth === m ? null : m;
+		selectedMonth = selectedMonth === monthNum ? null : monthNum;
 		if (selectedMonth !== null) showDetail = true;
 	}
 
@@ -166,9 +176,22 @@
 	}
 
 	const theme = $derived(getTheme());
+	const locale = $derived(getLocale());
+	const currentLang = $derived(LANGUAGES.find((l) => l.code === locale) ?? LANGUAGES[0]);
 
 	// Mobile actions popover
 	let mobileMenuOpen = $state(false);
+	let menuView = $state<'main' | 'language'>('main');
+
+	function openPopover() {
+		menuView = 'main';
+		mobileMenuOpen = true;
+	}
+
+	function closePopover() {
+		mobileMenuOpen = false;
+		menuView = 'main';
+	}
 
 	// Categories modal (opened from mobile popover)
 	let categoriesModalOpen = $state(false);
@@ -237,7 +260,7 @@
 				<button
 					type="button"
 					class="min-w-0 truncate font-semibold tracking-tight transition-opacity hover:opacity-80"
-					title="Click to rename"
+					title={m.budget_click_to_rename()}
 					onclick={startNameEdit}
 				>
 					{budget.name}
@@ -259,8 +282,8 @@
 					type="button"
 					class="flex items-center justify-center p-1.5 opacity-60 transition-opacity hover:opacity-90"
 					style:border-radius="var(--radius-sm)"
-					title="Settings"
-					onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
+					title={m.settings()}
+					onclick={openPopover}
 				>
 					<Settings2 size={16} />
 				</button>
@@ -275,91 +298,157 @@
 						style:background-color="var(--color-surface)"
 						style:border-color="var(--color-border)"
 						style:box-shadow="var(--shadow-dropdown)"
-						onkeydown={(e) => e.key === 'Escape' && (mobileMenuOpen = false)}
+						onkeydown={(e) => e.key === 'Escape' && closePopover()}
 					>
-						<!-- Categories -->
-						<button
-							type="button"
-							role="menuitem"
-							class="flex w-full items-center gap-3 px-3 py-2.5 text-sm transition-colors"
-							style:color="var(--color-text)"
-							onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
-							onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
-							onclick={() => { categoriesModalOpen = true; mobileMenuOpen = false; }}
-						>
-							<Tag size={14} style="opacity:0.6" />
-							Categories
-						</button>
+						{#if menuView === 'main'}
+							<!-- Main menu -->
 
-						<!-- Import -->
-						<button
-							type="button"
-							role="menuitem"
-							class="flex w-full items-center gap-3 px-3 py-2.5 text-sm transition-colors"
-							style:color="var(--color-text)"
-							onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
-							onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
-							onclick={() => { importFileInput?.click(); mobileMenuOpen = false; }}
-						>
-							<Upload size={14} style="opacity:0.6" />
-							Import
-						</button>
-
-						<!-- Export -->
-						<button
-							type="button"
-							role="menuitem"
-							class="flex w-full items-center gap-3 px-3 py-2.5 text-sm transition-colors"
-							style:color="var(--color-text)"
-							onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
-							onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
-							onclick={() => { popoverExport(); mobileMenuOpen = false; }}
-						>
-							<Download size={14} style="opacity:0.6" />
-							Export
-						</button>
-
-						<div class="my-1 border-t" style:border-color="var(--color-border)"></div>
-
-						<!-- Theme toggle row (not a button — label + Switch) -->
-						<div class="flex items-center justify-between gap-3 px-3 py-2.5">
-							<div class="flex items-center gap-3 text-sm" style:color="var(--color-text)">
-								{#if theme === 'dark'}
-									<Moon size={14} style="opacity:0.6" />
-									Dark mode
-								{:else}
-									<Sun size={14} style="opacity:0.6" />
-									Light mode
-								{/if}
-							</div>
-							<Switch.Root
-								checked={theme === 'dark'}
-								onCheckedChange={() => toggleTheme()}
-								class="relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2"
-								style="background-color: {theme === 'dark' ? 'var(--color-accent)' : 'var(--color-border)'}"
+							<!-- Categories -->
+							<button
+								type="button"
+								role="menuitem"
+								class="flex w-full items-center gap-3 px-3 py-2.5 text-sm transition-colors"
+								style:color="var(--color-text)"
+								onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
+								onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
+								onclick={() => { categoriesModalOpen = true; closePopover(); }}
 							>
-								<Switch.Thumb
-									class="pointer-events-none block h-4 w-4 rounded-full shadow-sm transition-transform"
-									style="background-color: var(--color-text); transform: {theme === 'dark' ? 'translateX(16px)' : 'translateX(0px)'}"
-								/>
-							</Switch.Root>
-						</div>
+								<Tag size={14} style="opacity:0.6" />
+								{m.categories()}
+							</button>
 
-						<div class="my-1 border-t" style:border-color="var(--color-border)"></div>
+							<!-- Import -->
+							<button
+								type="button"
+								role="menuitem"
+								class="flex w-full items-center gap-3 px-3 py-2.5 text-sm transition-colors"
+								style:color="var(--color-text)"
+								onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
+								onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
+								onclick={() => { importFileInput?.click(); closePopover(); }}
+							>
+								<Upload size={14} style="opacity:0.6" />
+								{m.import()}
+							</button>
 
-						<!-- Clear budget -->
-						<button
-							type="button"
-							role="menuitem"
-							class="flex w-full items-center gap-3 px-3 py-2.5 text-sm transition-colors"
-							style:color="var(--color-red)"
-							onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'color-mix(in srgb, var(--color-red) 6%, transparent)'}
-							onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
-							onclick={() => { startReset(); mobileMenuOpen = false; }}
-						>
-							<Trash2 size={14} />
-							Clear budget
-						</button>
+							<!-- Export -->
+							<button
+								type="button"
+								role="menuitem"
+								class="flex w-full items-center gap-3 px-3 py-2.5 text-sm transition-colors"
+								style:color="var(--color-text)"
+								onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
+								onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
+								onclick={() => { popoverExport(); closePopover(); }}
+							>
+								<Download size={14} style="opacity:0.6" />
+								{m.export()}
+							</button>
+
+							<div class="my-1 border-t" style:border-color="var(--color-border)"></div>
+
+							<!-- Language submenu trigger -->
+							<button
+								type="button"
+								role="menuitem"
+								class="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-sm transition-colors"
+								style:color="var(--color-text)"
+								onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
+								onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
+								onclick={() => (menuView = 'language')}
+							>
+								<div class="flex items-center gap-3">
+									<Globe size={14} style="opacity:0.6" />
+									{m.language()}
+								</div>
+								<div class="flex items-center gap-1.5">
+									<span class="text-base leading-none">{currentLang.flag}</span>
+									<ChevronRight size={12} style="opacity:0.4" />
+								</div>
+							</button>
+
+							<div class="my-1 border-t" style:border-color="var(--color-border)"></div>
+
+							<!-- Theme toggle row (not a button — label + Switch) -->
+							<div class="flex items-center justify-between gap-3 px-3 py-2.5">
+								<div class="flex items-center gap-3 text-sm" style:color="var(--color-text)">
+									{#if theme === 'dark'}
+										<Moon size={14} style="opacity:0.6" />
+										{m.dark_mode()}
+									{:else}
+										<Sun size={14} style="opacity:0.6" />
+										{m.light_mode()}
+									{/if}
+								</div>
+								<Switch.Root
+									checked={theme === 'dark'}
+									onCheckedChange={() => toggleTheme()}
+									class="relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2"
+									style="background-color: {theme === 'dark' ? 'var(--color-accent)' : 'var(--color-border)'}"
+								>
+									<Switch.Thumb
+										class="pointer-events-none block h-4 w-4 rounded-full shadow-sm transition-transform"
+										style="background-color: var(--color-text); transform: {theme === 'dark' ? 'translateX(16px)' : 'translateX(0px)'}"
+									/>
+								</Switch.Root>
+							</div>
+
+							<div class="my-1 border-t" style:border-color="var(--color-border)"></div>
+
+							<!-- Clear budget -->
+							<button
+								type="button"
+								role="menuitem"
+								class="flex w-full items-center gap-3 px-3 py-2.5 text-sm transition-colors"
+								style:color="var(--color-red)"
+								onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'color-mix(in srgb, var(--color-red) 6%, transparent)'}
+								onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
+								onclick={() => { startReset(); closePopover(); }}
+							>
+								<Trash2 size={14} />
+								{m.clear_budget()}
+							</button>
+
+						{:else}
+							<!-- Language submenu view -->
+
+							<!-- Back button -->
+							<button
+								type="button"
+								role="menuitem"
+								class="flex w-full items-center gap-2 px-3 py-2.5 text-sm font-medium transition-colors"
+								style:color="var(--color-text)"
+								onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
+								onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
+								onclick={() => (menuView = 'main')}
+							>
+								<ChevronLeft size={14} style="opacity:0.6" />
+								{m.language()}
+							</button>
+
+							<div class="my-1 border-t" style:border-color="var(--color-border)"></div>
+
+							<!-- Language options -->
+							{#each LANGUAGES as lang}
+								<button
+									type="button"
+									role="menuitem"
+									class="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-sm transition-colors"
+									style:color="var(--color-text)"
+									onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
+									onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
+									onclick={() => { setLocale(lang.code); menuView = 'main'; }}
+								>
+									<div class="flex items-center gap-3">
+										<span class="text-base leading-none">{lang.flag}</span>
+										<span>{lang.label}</span>
+									</div>
+									{#if locale === lang.code}
+										<span style:color="var(--color-accent)">✓</span>
+									{/if}
+								</button>
+							{/each}
+						{/if}
 					</div>
 
 					<!-- Click-outside overlay -->
@@ -367,7 +456,7 @@
 					<div
 						role="presentation"
 						class="fixed inset-0 z-40"
-						onclick={() => (mobileMenuOpen = false)}
+						onclick={closePopover}
 						onkeydown={() => {}}
 					></div>
 				{/if}
@@ -405,12 +494,12 @@
 				style:box-shadow="var(--shadow-card)"
 				onclick={selectYearOverview}
 			>
-				<span class="text-sm font-medium" style:color="var(--color-text)">Year Overview</span>
+				<span class="text-sm font-medium" style:color="var(--color-text)">{m.year_overview()}</span>
 				<span class="text-xs" style:color="var(--color-muted)">{budget.year}</span>
 			</button>
 
 			<div class="mt-1 text-xs font-medium" style:color="var(--color-muted)">
-				Months
+				{m.months_section()}
 			</div>
 			{#each monthSummaries as summary}
 				<MonthCard
@@ -460,22 +549,22 @@
 						>
 							←
 						</button>
-						<span class="font-semibold">{MONTH_NAMES_FULL[selectedMonth]}</span>
+						<span class="font-semibold">{getMonthFull(selectedMonth, locale)}</span>
 						<BalanceBadge balance={monthSummary.balance} />
 					</div>
 
 					<div class="hidden items-center gap-3 text-sm sm:flex">
-						<span style:color="var(--color-green)">{formatCurrency(monthSummary.incomeTotal, budget.currency)}</span>
+						<span style:color="var(--color-green)">{formatCurrency(monthSummary.incomeTotal, budget.currency, locale)}</span>
 						<span class="opacity-40">−</span>
-						<span style:color="var(--color-red)">{formatCurrency(monthSummary.expenseTotal, budget.currency)}</span>
+						<span style:color="var(--color-red)">{formatCurrency(monthSummary.expenseTotal, budget.currency, locale)}</span>
 						<span class="opacity-40">−</span>
-						<span style:color="var(--color-blue)">{formatCurrency(monthSummary.savingsTotal, budget.currency)}</span>
+						<span style:color="var(--color-blue)">{formatCurrency(monthSummary.savingsTotal, budget.currency, locale)}</span>
 						<span class="opacity-40">=</span>
 						<span
 							class="font-semibold"
 							style:color={isBalanced(monthSummary.balance) ? 'var(--color-green)' : 'var(--color-red)'}
 						>
-							{formatCurrency(monthSummary.balance, budget.currency)}
+							{formatCurrency(monthSummary.balance, budget.currency, locale)}
 						</span>
 					</div>
 
@@ -503,7 +592,7 @@
 								style:background-color="color-mix(in srgb, var(--color-red) 6%, var(--color-surface))"
 								style:color="var(--color-red)"
 							>
-								<strong>Unbalanced:</strong> {formatCurrency(monthSummary.balance, budget.currency)} — adjust income, expenses, or savings to reach {formatCurrency(0, budget.currency)}.
+								<strong>{m.balance_unbalanced()}</strong> {formatCurrency(monthSummary.balance, budget.currency, locale)} {m.balance_unbalanced_hint()} {formatCurrency(0, budget.currency, locale)}.
 							</div>
 						{:else}
 							<div
@@ -513,10 +602,10 @@
 								style:background-color="color-mix(in srgb, var(--color-green) 5%, var(--color-surface))"
 								style:color="var(--color-green)"
 							>
-								Month balanced ✓
+								{m.balance_balanced()}
 							</div>
 						{/if}
-						
+
 						{#each ['income', 'expense', 'savings'] as t}
 							<div
 								class="border overflow-hidden"
@@ -554,7 +643,7 @@
 								class="flex items-center justify-between border-b px-3 py-2"
 								style:border-color="var(--color-border)"
 							>
-								<span class="text-xs font-medium" style:color="var(--color-muted)">Note</span>
+								<span class="text-xs font-medium" style:color="var(--color-muted)">{m.note_section()}</span>
 								{#if noteEditing}
 									<div class="flex gap-2">
 										<button
@@ -562,13 +651,13 @@
 											class="text-xs opacity-60 transition-opacity hover:opacity-80"
 											style:color="var(--color-muted)"
 											onclick={() => { noteText = budget.monthlyNotes[selectedMonth!] ?? ''; noteEditing = false; }}
-										>Cancel</button>
+										>{m.cancel()}</button>
 										<button
 											type="button"
 											class="text-xs font-medium transition-opacity hover:opacity-80"
 											style:color="var(--color-accent)"
 											onclick={commitNote}
-										>Save</button>
+										>{m.save()}</button>
 									</div>
 								{:else}
 									<button
@@ -576,7 +665,7 @@
 										class="text-xs opacity-60 transition-opacity hover:opacity-80"
 										style:color="var(--color-accent)"
 										onclick={startNoteEdit}
-									>Edit</button>
+									>{m.edit()}</button>
 								{/if}
 							</div>
 
@@ -585,7 +674,7 @@
 									bind:this={noteEl}
 									bind:value={noteText}
 									rows="3"
-									placeholder="Add a note for this month…"
+									placeholder={m.note_placeholder()}
 									class="w-full resize-none px-3 py-2 text-sm outline-none"
 									style:background-color="var(--color-surface)"
 									style:color="var(--color-text)"
@@ -600,7 +689,7 @@
 									onclick={startNoteEdit}
 									onkeydown={(e) => e.key === 'Enter' && startNoteEdit()}
 								>
-									{noteText || 'No note — click Edit to add one.'}
+									{noteText || m.note_empty()}
 								</div>
 							{/if}
 						</div>
@@ -614,7 +703,7 @@
 					class="h-8 w-8 rounded border-2 opacity-15"
 					style:border-color="var(--color-muted)"
 				></div>
-				<p class="text-sm" style:color="var(--color-muted)">Select a month to view and edit entries</p>
+				<p class="text-sm" style:color="var(--color-muted)">{m.select_month_hint()}</p>
 			</div>
 		{/if}
 	</div>

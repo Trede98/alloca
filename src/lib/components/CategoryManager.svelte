@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Category } from '$lib/types';
+	import * as m from '$lib/paraglide/messages';
 
 	let {
 		categories,
@@ -81,13 +82,13 @@
 
 {#snippet panelContent()}
 	<div class="text-xs font-medium" style:color="var(--color-muted)">
-		Categories
+		{m.category_manager_title()}
 	</div>
 
 	<!-- Category list -->
 	<div class="flex flex-col gap-1">
 		{#if categories.length === 0}
-			<p class="text-xs" style:color="var(--color-muted)">No categories yet.</p>
+			<p class="text-xs" style:color="var(--color-muted)">{m.category_manager_empty()}</p>
 		{/if}
 		{#each categories as cat (cat.id)}
 			<div class="flex items-center gap-1">
@@ -107,7 +108,7 @@
 						style:border-radius="var(--radius-sm)"
 						style:color="var(--color-text)"
 						onclick={() => startEdit(cat)}
-						title="Click to rename"
+						title={m.category_manager_click_to_rename()}
 					>
 						{cat.name}
 					</button>
@@ -118,8 +119,8 @@
 					style:border-radius="var(--radius-sm)"
 					style:color="var(--color-red)"
 					onclick={() => onDeleteCategory(cat.id)}
-					title="Delete category"
-					aria-label="Delete {cat.name}"
+					title={m.category_manager_delete()}
+					aria-label={m.category_manager_delete_aria({ name: cat.name })}
 				>
 					✕
 				</button>
@@ -153,7 +154,7 @@
 		<input
 			bind:value={newCategoryName}
 			type="text"
-			placeholder="New category…"
+			placeholder={m.category_manager_placeholder()}
 			class="{inputClass} flex-1 min-w-0"
 			style={inputStyle}
 			onkeydown={onNewKeydown}
@@ -166,7 +167,7 @@
 			style:color="var(--color-accent-fg)"
 			onclick={addNew}
 		>
-			Add
+			{m.add()}
 		</button>
 	</div>
 {/snippet}
@@ -189,7 +190,7 @@
 				style:box-shadow="var(--shadow-modal)"
 			>
 				<div class="flex items-center justify-between">
-					<span class="text-sm font-semibold">Categories</span>
+					<span class="text-sm font-semibold">{m.categories()}</span>
 					<button
 						type="button"
 						class="p-1 text-xs opacity-40 hover:opacity-80 transition-opacity"
@@ -214,7 +215,7 @@
 			onclick={toggle}
 			title="Manage categories"
 		>
-			Categories
+			{m.categories()}
 		</button>
 
 		{#if open}

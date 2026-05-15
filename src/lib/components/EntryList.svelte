@@ -4,6 +4,8 @@
 	import { formatCurrency } from '$lib/format';
 	import EntryRow from './EntryRow.svelte';
 	import { ChevronDown } from 'lucide-svelte';
+	import * as m from '$lib/paraglide/messages';
+	import { getLocale } from '$lib/paraglide/runtime';
 
 	let {
 		entries,
@@ -39,11 +41,13 @@
 		savings: 'var(--color-blue)'
 	};
 
-	const typeLabels: Record<EntryType, string> = {
-		income: 'Income',
-		expense: 'Expenses',
-		savings: 'Savings'
-	};
+	const locale = $derived(getLocale());
+
+	const typeLabel = $derived({
+		income: m.type_income(),
+		expense: m.type_expenses(),
+		savings: m.type_savings()
+	}[type]);
 
 	const filtered = $derived(
 		entries.filter((e) => {
@@ -86,17 +90,17 @@
 		style:border-color="var(--color-border)"
 	>
 		<span class="text-xs font-semibold uppercase tracking-wide" style:color={typeColors[type]}>
-			{typeLabels[type]}
+			{typeLabel}
 		</span>
 		<span class="text-sm font-semibold tabular-nums" style:color={typeColors[type]}>
-			{formatCurrency(total, currency)}
+			{formatCurrency(total, currency, locale)}
 		</span>
 	</div>
 
 	{#if filtered.length === 0}
 		<!-- Empty state -->
 		<div class="flex flex-col items-center gap-2 px-4 py-6 text-center">
-			<p class="text-xs" style:color="var(--color-muted)">No {typeLabels[type].toLowerCase()} entries for this month.</p>
+			<p class="text-xs" style:color="var(--color-muted)">{m.entry_list_empty({ type: typeLabel.toLowerCase() })}</p>
 		</div>
 	{:else}
 		<!-- Category groups -->
@@ -127,7 +131,7 @@
 						</span>
 					</div>
 					<span class="shrink-0 text-sm font-medium tabular-nums" style:color="var(--color-text)">
-						{formatCurrency(catTotal, currency)}
+						{formatCurrency(catTotal, currency, locale)}
 					</span>
 				</button>
 
@@ -162,6 +166,6 @@
 		onclick={() => onAddNew(type)}
 	>
 		<span class="text-base leading-none">+</span>
-		Add {typeLabels[type].toLowerCase()}
+		{m.entry_list_add({ type: typeLabel.toLowerCase() }).slice(2)}
 	</button>
 </div>

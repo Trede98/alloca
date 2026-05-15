@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { formatCurrency } from '$lib/format';
+	import * as m from '$lib/paraglide/messages';
+	import { getLocale } from '$lib/paraglide/runtime';
 
 	let {
 		balance,
@@ -8,6 +10,7 @@
 	}: { balance: number; currency?: string; compact?: boolean } = $props();
 
 	const balanced = $derived(Math.abs(balance) < 0.01);
+	const locale = $derived(getLocale());
 </script>
 
 {#if balanced && compact}
@@ -17,7 +20,7 @@
 		style:background-color="color-mix(in srgb, var(--color-green) 15%, transparent)"
 		style:color="var(--color-green)"
 	>
-		balanced
+		{m.balance_badge_compact()}
 	</span>
 {:else}
 	<span
@@ -28,6 +31,6 @@
 			: 'color-mix(in srgb, var(--color-red) 15%, transparent)'}
 		style:color={balanced ? 'var(--color-green)' : 'var(--color-red)'}
 	>
-		{balanced ? '✓ Balanced' : formatCurrency(balance, currency)}
+		{balanced ? m.balance_badge_full() : formatCurrency(balance, currency, locale)}
 	</span>
 {/if}

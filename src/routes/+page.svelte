@@ -15,6 +15,7 @@
 	import BudgetDashboard from '$lib/components/BudgetDashboard.svelte';
 	import type { Budget, Entry } from '$lib/types';
 	import type { NewEntryInput } from '$lib/budget';
+	import * as m from '$lib/paraglide/messages';
 
 	let budget = $state<Budget | null>(null);
 	let loading = $state(true);
@@ -110,7 +111,7 @@
 	}
 
 	async function executeClear() {
-		const newBudget = createEmptyBudget(clearName.trim() || 'My Budget');
+		const newBudget = createEmptyBudget(clearName.trim() || m.clear_budget_placeholder());
 		await replaceBudget(newBudget);
 		budget = newBudget;
 		clearOpen = false;
@@ -134,7 +135,7 @@
 				></div>
 			{/each}
 		</div>
-		<span class="text-sm" style:color="var(--color-muted)">Loading budget…</span>
+		<span class="text-sm" style:color="var(--color-muted)">{m.loading()}</span>
 	</div>
 {:else if budget}
 	<BudgetDashboard
@@ -174,15 +175,15 @@
 			style:box-shadow="var(--shadow-modal)"
 		>
 			<div>
-				<h2 class="font-semibold">Clear Budget</h2>
+				<h2 class="font-semibold">{m.clear_budget_title()}</h2>
 				<p class="mt-1 text-sm" style:color="var(--color-muted)">
-					This will remove all entries and categories. Enter a name for your new budget to continue.
+					{m.clear_budget_description()}
 				</p>
 			</div>
 			<input
 				bind:value={clearName}
 				type="text"
-				placeholder="My Budget"
+				placeholder={m.clear_budget_placeholder()}
 				class="border px-2.5 py-2 text-sm outline-none focus:ring-1 focus:ring-[--color-accent]/40 transition-colors"
 				style:border-radius="var(--radius-sm)"
 				style:background-color="var(--color-bg)"
@@ -198,7 +199,7 @@
 					style:color="var(--color-muted)"
 					onclick={cancelClear}
 				>
-					Cancel
+					{m.cancel()}
 				</button>
 				<button
 					type="button"
@@ -208,7 +209,7 @@
 					style:color="white"
 					onclick={executeClear}
 				>
-					Clear &amp; Create
+					{m.clear_budget_confirm()}
 				</button>
 			</div>
 		</div>
