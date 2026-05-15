@@ -45,6 +45,33 @@ export interface YearSummary {
 	yearlyBalance: number;
 }
 
+export interface YearRecapEntry {
+	id: string;
+	name: string;
+	recurrence: Recurrence;
+	yearTotal: number;
+}
+
+export interface YearRecapCategory {
+	categoryId: string;
+	categoryName: string;
+	yearTotal: number;
+	entries: YearRecapEntry[];
+}
+
+export interface YearRecapSection {
+	type: EntryType;
+	total: number;
+	categories: YearRecapCategory[];
+}
+
+export interface YearRecap {
+	income: YearRecapSection;
+	expenses: YearRecapSection;
+	savings: YearRecapSection;
+	yearlyBalance: number;
+}
+
 export interface ExportData {
 	version: number;
 	exportedAt: string;

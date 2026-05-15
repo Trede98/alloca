@@ -3,6 +3,7 @@
 	import { getMonthAmount } from '$lib/budget';
 	import { formatCurrency } from '$lib/format';
 	import EntryRow from './EntryRow.svelte';
+	import { ChevronDown } from 'lucide-svelte';
 
 	let {
 		entries,
@@ -84,10 +85,10 @@
 		class="flex items-center justify-between border-b px-3 py-2"
 		style:border-color="var(--color-border)"
 	>
-		<span class="text-xs font-semibold" style:color={typeColors[type]}>
+		<span class="text-xs font-semibold uppercase tracking-wide" style:color={typeColors[type]}>
 			{typeLabels[type]}
 		</span>
-		<span class="text-xs font-medium" style:color={typeColors[type]}>
+		<span class="text-sm font-semibold tabular-nums" style:color={typeColors[type]}>
 			{formatCurrency(total, currency)}
 		</span>
 	</div>
@@ -107,21 +108,25 @@
 				<!-- Category header -->
 				<button
 					type="button"
-					class="flex w-full items-center justify-between gap-2 px-3 py-1.5 pr-4 hover:bg-[--surface-hover] transition-colors"
+					class="flex w-full items-center justify-between px-3 py-2 text-left transition-colors"
+					onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
+					onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
 					onclick={() => toggleCategory(cat)}
 				>
 					<div class="flex items-center gap-2 min-w-0">
 						<span
-							class="text-xs transition-transform duration-150"
-							style:color="var(--color-muted)"
+							class="transition-transform duration-150"
+							style:display="inline-flex"
 							style:transform={isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)'}
-						>▾</span>
-						<span class="text-xs font-medium truncate" style:color="var(--color-muted)">{cat}</span>
+						>
+							<ChevronDown size={13} style="opacity:0.5; color:var(--color-muted)" />
+						</span>
+						<span class="text-sm truncate" style:color="var(--color-text)">{cat}</span>
 						<span class="shrink-0 text-xs" style:color="var(--color-muted)">
 							({catEntries.length})
 						</span>
 					</div>
-					<span class="shrink-0 text-xs" style:color="var(--color-muted)">
+					<span class="shrink-0 text-sm font-medium tabular-nums" style:color="var(--color-text)">
 						{formatCurrency(catTotal, currency)}
 					</span>
 				</button>

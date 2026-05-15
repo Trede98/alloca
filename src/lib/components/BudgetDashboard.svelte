@@ -5,6 +5,7 @@
 		computeYearSummary,
 		getAllMonthSummaries,
 		computeMonthSummary,
+		computeYearRecap,
 		isBalanced,
 		setMonthNote,
 		renameBudget
@@ -15,6 +16,7 @@
 	import { Settings2, Tag, Upload, Download, Trash2, Sun, Moon } from 'lucide-svelte';
 	import SummaryBar from './SummaryBar.svelte';
 	import MonthCard from './MonthCard.svelte';
+	import YearRecap from './YearRecap.svelte';
 	import EntryList from './EntryList.svelte';
 	import EntryDialog from './EntryDialog.svelte';
 	import BalanceBadge from './BalanceBadge.svelte';
@@ -82,7 +84,17 @@
 	// Mobile panel toggle
 	let showDetail = $state(false);
 
+	let showYearRecap = $state(false);
+	const yearRecap = $derived(showYearRecap ? computeYearRecap(budget) : null);
+
+	function selectYearOverview() {
+		selectedMonth = null;
+		showYearRecap = true;
+		showDetail = true;
+	}
+
 	function selectMonth(m: number) {
+		showYearRecap = false;
 		selectedMonth = selectedMonth === m ? null : m;
 		if (selectedMonth !== null) showDetail = true;
 	}
@@ -378,11 +390,27 @@
 		<!-- Month grid sidebar -->
 		<div
 			class="shrink-0 flex-col gap-2 overflow-y-auto border-r p-3 sm:flex w-full sm:w-[280px]"
-			class:hidden={showDetail && selectedMonth !== null}
-			class:flex={!(showDetail && selectedMonth !== null)}
+			class:hidden={showDetail && (selectedMonth !== null || showYearRecap)}
+			class:flex={!(showDetail && (selectedMonth !== null || showYearRecap))}
 			style:border-color="var(--color-border)"
 		>
-			<div class="mb-1 text-xs font-medium" style:color="var(--color-muted)">
+			<!-- Year Overview button -->
+			<button
+				type="button"
+				class="flex w-full items-center justify-between border p-2.5 text-left transition-all duration-150"
+				style:border-radius="var(--radius)"
+				style:background-color={showYearRecap
+					? 'color-mix(in srgb, var(--color-accent) 12%, var(--color-surface))'
+					: 'var(--color-surface)'}
+				style:border-color={showYearRecap ? 'var(--color-accent)' : 'var(--color-border)'}
+				style:box-shadow="var(--shadow-card)"
+				onclick={selectYearOverview}
+			>
+				<span class="text-sm font-medium" style:color="var(--color-text)">Year Overview</span>
+				<span class="text-xs" style:color="var(--color-muted)">{budget.year}</span>
+			</button>
+
+			<div class="mt-1 text-xs font-medium" style:color="var(--color-muted)">
 				Months
 			</div>
 			{#each monthSummaries as summary}
@@ -395,8 +423,22 @@
 			{/each}
 		</div>
 
+		<!-- Year recap panel -->
+		{#if showYearRecap && yearRecap !== null}
+			<div
+				class="flex-1 flex-col overflow-hidden sm:flex"
+				class:hidden={!showDetail}
+				class:flex={showDetail}
+			>
+				<YearRecap
+					recap={yearRecap}
+					currency={budget.currency}
+					year={budget.year}
+					onClose={() => { showYearRecap = false; showDetail = false; }}
+				/>
+			</div>
 		<!-- Month detail panel -->
-		{#if selectedMonth !== null && monthSummary !== null}
+		{:else if selectedMonth !== null && monthSummary !== null}
 			<div
 				class="flex-1 flex-col overflow-hidden sm:flex"
 				class:hidden={!showDetail}
@@ -415,7 +457,7 @@
 							class="p-1 text-sm opacity-60 transition-opacity hover:opacity-90 sm:hidden"
 							style:border-radius="var(--radius-sm)"
 							style:color="var(--color-muted)"
-							onclick={() => { showDetail = false; selectedMonth = null; }}
+							onclick={() => { showDetail = false; selectedMonth = null; showYearRecap = false; }}
 						>
 							←
 						</button>

@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import type { Budget, Category, Entry, EntryType, MonthSummary, Recurrence, YearSummary } from './types';
+import type { Budget, Category, Entry, EntryType, MonthSummary, Recurrence, YearRecap, YearRecapCategory, YearRecapEntry, YearSummary } from './types';
 
 // ─── Calculations ─────────────────────────────────────────────────────────────
 
@@ -59,6 +59,46 @@ export function computeYearSummary(budget: Budget): YearSummary {
 
 export function getAllMonthSummaries(budget: Budget): MonthSummary[] {
 	return Array.from({ length: 12 }, (_, m) => computeMonthSummary(budget, m));
+}
+
+export function computeYearRecap(budget: Budget): YearRecap {
+	const categoryMap = new Map(budget.categories.map((c) => [c.id, c.name]));
+
+	const buckets: Record<'income' | 'expense' | 'savings', Map<string, YearRecapCategory>> = {
+		income: new Map(),
+		expense: new Map(),
+		savings: new Map()
+	};
+
+	for (const entry of budget.entries) {
+		const section = buckets[entry.type];
+		const catName = categoryMap.get(entry.category) ?? 'Uncategorized';
+		if (!section.has(catName)) {
+			section.set(catName, { categoryId: entry.category, categoryName: catName, yearTotal: 0, entries: [] });
+		}
+		const bucket = section.get(catName)!;
+		const entryYearTotal = Array.from({ length: 12 }, (_, m) => getMonthAmount(entry, m)).reduce((s, a) => s + a, 0);
+		bucket.entries.push({ id: entry.id, name: entry.name, recurrence: entry.recurrence, yearTotal: entryYearTotal });
+		bucket.yearTotal += entryYearTotal;
+	}
+
+	for (const map of Object.values(buckets)) {
+		for (const cat of map.values()) {
+			cat.entries.sort((a, b) => a.name.localeCompare(b.name));
+		}
+	}
+
+	function toSection(type: EntryType, map: Map<string, YearRecapCategory>) {
+		const categories = [...map.values()].sort((a, b) => a.categoryName.localeCompare(b.categoryName));
+		const total = categories.reduce((s, c) => s + c.yearTotal, 0);
+		return { type, total, categories };
+	}
+
+	const income = toSection('income', buckets.income);
+	const expenses = toSection('expense', buckets.expense);
+	const savings = toSection('savings', buckets.savings);
+
+	return { income, expenses, savings, yearlyBalance: income.total - expenses.total - savings.total };
 }
 
 export function isBalanced(balance: number): boolean {
