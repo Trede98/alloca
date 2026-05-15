@@ -36,7 +36,7 @@
 	onMount(async () => {
 		let existing = await loadBudget();
 		if (!existing) {
-			existing = createSeedBudget();
+			existing = createEmptyBudget();
 			await saveBudget(existing);
 		}
 		// Migrate legacy budgets missing fields
