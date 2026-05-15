@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { MonthSummary } from '$lib/types';
-	import { formatCurrency, MONTH_NAMES } from '$lib/format';
+	import { formatCurrency, formatCompact, MONTH_NAMES } from '$lib/format';
 	import { isBalanced } from '$lib/budget';
 	import BalanceBadge from './BalanceBadge.svelte';
 
@@ -21,32 +21,35 @@
 
 <button
 	type="button"
-	class="flex w-full flex-col gap-1.5 rounded-lg border p-2.5 text-left transition-all duration-150"
-	style:background-color={selected ? 'color-mix(in srgb, var(--color-blue) 12%, var(--color-surface))' : 'var(--color-surface)'}
+	class="flex w-full flex-col gap-1.5 border p-2.5 text-left transition-all duration-150"
+	style:border-radius="var(--radius)"
+	style:background-color={selected
+		? 'color-mix(in srgb, var(--color-accent) 12%, var(--color-surface))'
+		: 'var(--color-surface)'}
 	style:border-color={selected
-		? 'var(--color-blue)'
+		? 'var(--color-accent)'
 		: balanced
 			? 'var(--color-border)'
 			: 'color-mix(in srgb, var(--color-red) 40%, var(--color-border))'}
-	style:box-shadow={selected ? '0 0 0 1px var(--color-blue)' : 'none'}
+	style:box-shadow="var(--shadow-card)"
 	onclick={onclick}
 >
 	<div class="flex items-center justify-between">
 		<span class="text-sm font-medium">{MONTH_NAMES[summary.month]}</span>
-		<BalanceBadge balance={summary.balance} />
+		<BalanceBadge balance={summary.balance} compact={true} />
 	</div>
 	<div class="grid grid-cols-3 gap-1 text-xs">
-		<div>
-			<div class="text-xs" style:color="var(--color-muted)">In</div>
-			<div class="tabular-nums" style:color="var(--color-green)">{formatCurrency(summary.incomeTotal, currency)}</div>
+		<div class="min-w-0 overflow-hidden">
+			<div class="text-[10px]" style:color="var(--color-muted)">In</div>
+			<div class="tabular-nums leading-tight text-xs" style:color="var(--color-green)">{formatCompact(summary.incomeTotal, currency)}</div>
 		</div>
-		<div>
-			<div class="text-xs" style:color="var(--color-muted)">Out</div>
-			<div class="tabular-nums" style:color="var(--color-red)">{formatCurrency(summary.expenseTotal, currency)}</div>
+		<div class="min-w-0 overflow-hidden">
+			<div class="text-[10px]" style:color="var(--color-muted)">Out</div>
+			<div class="tabular-nums leading-tight text-xs" style:color="var(--color-red)">{formatCompact(summary.expenseTotal, currency)}</div>
 		</div>
-		<div>
-			<div class="text-xs" style:color="var(--color-muted)">Save</div>
-			<div class="tabular-nums" style:color="var(--color-blue)">{formatCurrency(summary.savingsTotal, currency)}</div>
+		<div class="min-w-0 overflow-hidden">
+			<div class="text-[10px]" style:color="var(--color-muted)">Save</div>
+			<div class="tabular-nums leading-tight text-xs" style:color="var(--color-blue)">{formatCompact(summary.savingsTotal, currency)}</div>
 		</div>
 	</div>
 </button>

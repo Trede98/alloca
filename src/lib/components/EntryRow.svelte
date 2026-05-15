@@ -64,7 +64,7 @@
 </script>
 
 <div
-	class="group grid items-center gap-2 px-3 py-1.5 text-sm transition-colors hover:bg-white/[0.03]"
+	class="entry-row group grid items-center gap-2 px-3 py-1.5 text-sm transition-colors hover:bg-[--surface-hover]"
 	style="grid-template-columns: 1fr auto auto auto;"
 >
 	<!-- Name + meta -->
@@ -78,13 +78,19 @@
 		>
 			{entry.name}
 		</button>
-		<span class="shrink-0 rounded px-1 py-0.5 text-xs" style:color="var(--color-muted)" style:background-color="var(--color-border)">
+		<span
+			class="shrink-0 px-1 py-0.5 text-xs"
+			style:border-radius="var(--radius-sm)"
+			style:color="var(--color-muted)"
+			style:background-color="var(--color-border)"
+		>
 			{recurrenceLabel[entry.recurrence]}
 		</span>
 		{#if hasOverride}
 			<button
 				type="button"
-				class="shrink-0 rounded px-1 py-0.5 text-xs"
+				class="shrink-0 px-1 py-0.5 text-xs"
+				style:border-radius="var(--radius-sm)"
 				style:color="var(--color-yellow)"
 				style:background-color="color-mix(in srgb, var(--color-yellow) 15%, transparent)"
 				title="Override active — click to reset to base"
@@ -99,7 +105,7 @@
 	</div>
 
 	<!-- Amount (inline editable) -->
-	<div class="text-right tabular-nums">
+	<div class="text-right">
 		{#if editingAmount}
 			<input
 				bind:this={inputEl}
@@ -107,9 +113,10 @@
 				type="number"
 				min="0"
 				step="0.01"
-				class="w-24 rounded border px-1.5 py-0.5 text-right text-sm outline-none focus:ring-1"
+				class="w-24 border px-1.5 py-0.5 text-right text-sm outline-none focus:ring-1 focus:ring-[--color-accent]/40"
+				style:border-radius="var(--radius-sm)"
 				style:background-color="var(--color-bg)"
-				style:border-color="var(--color-blue)"
+				style:border-color="var(--color-accent)"
 				style:color="var(--color-text)"
 				onblur={commitAmount}
 				onkeydown={onAmountKeydown}
@@ -117,7 +124,8 @@
 		{:else}
 			<button
 				type="button"
-				class="rounded px-1.5 py-0.5 tabular-nums transition-colors hover:underline"
+				class="px-1.5 py-0.5 transition-colors hover:underline"
+				style:border-radius="var(--radius-sm)"
 				style:color={hasOverride ? 'var(--color-yellow)' : 'var(--color-text)'}
 				onclick={startAmountEdit}
 				title="Click to edit this month's amount"
@@ -130,7 +138,8 @@
 	<!-- Duplicate -->
 	<button
 		type="button"
-		class="invisible rounded p-1 text-xs opacity-60 transition-opacity hover:opacity-100 group-hover:visible"
+		class="invisible p-1 text-xs opacity-60 transition-opacity hover:opacity-100 group-hover:visible"
+		style:border-radius="var(--radius-sm)"
 		style:color="var(--color-muted)"
 		title="Duplicate entry"
 		onclick={() => onDuplicateEntry(entry)}
@@ -141,7 +150,8 @@
 	<!-- Delete -->
 	<button
 		type="button"
-		class="invisible rounded p-1 text-xs opacity-60 transition-opacity hover:opacity-100 group-hover:visible"
+		class="invisible p-1 text-xs opacity-60 transition-opacity hover:opacity-100 group-hover:visible"
+		style:border-radius="var(--radius-sm)"
 		style:color="var(--color-red)"
 		title="Delete entry"
 		onclick={() => onDeleteEntry(entry.id)}

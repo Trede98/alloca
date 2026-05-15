@@ -3,34 +3,58 @@
 /* ── Dark theme (default) ────────────────────────────────────────────────── */
 :root,
 [data-theme="dark"] {
-	--color-bg: #0f1117;
-	--color-surface: #1a1d27;
-	--color-surface2: #21253a;
-	--color-border: #2a2d3a;
-	--color-text: #e2e8f0;
-	--color-muted: #64748b;
-	--color-green: #22c55e;
-	--color-red: #ef4444;
+	--color-bg: #0a0a0f;
+	--color-surface: #111118;
+	--color-surface2: #18181f;
+	--color-border: #27272f;
+	--color-text: #e4e4e7;
+	--color-muted: #52525b;
+	--color-green: #16a34a;
+	--color-red: #dc2626;
 	--color-blue: #3b82f6;
-	--color-yellow: #eab308;
-	--color-purple: #a855f7;
-	--shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+	--color-yellow: #d97706;
+	--color-purple: #7c3aed;
+	--color-accent: #64748b;
+	--color-accent-fg: #f1f5f9;
+
+	--radius: 8px;
+	--radius-sm: 4px;
+
+	--shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+	--shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+	--shadow-dropdown: 0 4px 16px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.3);
+	--shadow-modal: 0 8px 32px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(0, 0, 0, 0.4);
+
+	--surface-hover: rgba(255, 255, 255, 0.04);
+	--overlay-bg: rgba(0, 0, 0, 0.58);
 }
 
 /* ── Light theme ─────────────────────────────────────────────────────────── */
 [data-theme="light"] {
-	--color-bg: #f8fafc;
+	--color-bg: #fafafa;
 	--color-surface: #ffffff;
-	--color-surface2: #f1f5f9;
-	--color-border: #e2e8f0;
-	--color-text: #0f172a;
-	--color-muted: #94a3b8;
-	--color-green: #16a34a;
-	--color-red: #dc2626;
+	--color-surface2: #f4f4f5;
+	--color-border: #e4e4e7;
+	--color-text: #09090b;
+	--color-muted: #71717a;
+	--color-green: #15803d;
+	--color-red: #b91c1c;
 	--color-blue: #2563eb;
-	--color-yellow: #ca8a04;
-	--color-purple: #9333ea;
-	--shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+	--color-yellow: #b45309;
+	--color-purple: #6d28d9;
+	--color-accent: #475569;
+	--color-accent-fg: #f8fafc;
+
+	--radius: 8px;
+	--radius-sm: 4px;
+
+	--shadow: none;
+	--shadow-card: none;
+	--shadow-dropdown: 0 2px 8px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.06);
+	--shadow-modal: 0 4px 24px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.06);
+
+	--surface-hover: rgba(0, 0, 0, 0.03);
+	--overlay-bg: rgba(0, 0, 0, 0.58);
 }
 
 * {
@@ -42,6 +66,7 @@ body {
 	color: var(--color-text);
 	font-family: system-ui, -apple-system, sans-serif;
 	font-size: 14px;
+	font-variant-numeric: tabular-nums;
 	line-height: 1.5;
 	margin: 0;
 }
@@ -65,4 +90,9 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 ::-webkit-scrollbar-thumb:hover {
 	background: var(--color-muted);
+}
+
+/* Entry row separators */
+.entry-row + .entry-row {
+	border-top: 1px solid var(--color-border);
 }

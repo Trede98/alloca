@@ -156,8 +156,8 @@
 		if (e.key === 'Escape') onClose();
 	}
 
-	const inputClass = 'rounded-lg border px-2.5 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500/40 transition-colors';
-	const inputStyle = `background-color: var(--color-bg); border-color: var(--color-border); color: var(--color-text);`;
+	const inputClass = 'border px-2.5 py-2 text-sm outline-none focus:ring-1 focus:ring-[--color-accent]/40 transition-colors';
+	const inputStyle = `background-color: var(--color-bg); border-color: var(--color-border); color: var(--color-text); border-radius: var(--radius-sm);`;
 </script>
 
 {#if open}
@@ -167,21 +167,23 @@
 		aria-modal="true"
 		tabindex="-1"
 		class="fixed inset-0 z-50 flex items-center justify-center p-4"
-		style:background-color="rgba(0,0,0,0.55)"
+		style:background-color="var(--overlay-bg)"
 		onclick={onBackdropClick}
 		onkeydown={onKeydown}
 	>
 		<div
-			class="flex w-full max-w-md flex-col gap-4 rounded-xl border p-5 shadow-xl"
+			class="flex w-full max-w-md flex-col gap-4 border p-5"
+			style:border-radius="var(--radius)"
 			style:background-color="var(--color-surface)"
 			style:border-color="var(--color-border)"
-			style:box-shadow="var(--shadow)"
+			style:box-shadow="var(--shadow-modal)"
 		>
 			<div class="flex items-center justify-between">
 				<h2 class="font-semibold">{editEntry ? 'Edit Entry' : 'New Entry'}</h2>
 				<button
 					type="button"
-					class="rounded-lg p-1 text-sm opacity-50 transition-opacity hover:opacity-100"
+					class="p-1 text-sm opacity-40 transition-opacity hover:opacity-80"
+					style:border-radius="var(--radius-sm)"
 					style:color="var(--color-muted)"
 					onclick={onClose}
 					aria-label="Close"
@@ -275,16 +277,18 @@
 								onkeydown={(e) => e.key === 'Escape' && closeComboBackdrop()}
 							></div>
 							<div
-								class="absolute left-0 top-full z-20 mt-1 w-full max-h-44 overflow-y-auto rounded-lg border shadow-lg"
+								class="absolute left-0 top-full z-20 mt-1 w-full max-h-44 overflow-y-auto border"
+								style:border-radius="var(--radius-sm)"
 								style:background-color="var(--color-surface)"
 								style:border-color="var(--color-border)"
+								style:box-shadow="var(--shadow-dropdown)"
 							>
 								{#each filteredCategories as cat (cat.id)}
 									<button
 										type="button"
 										class="w-full px-3 py-1.5 text-left text-sm transition-colors hover:opacity-80"
 										style:color="var(--color-text)"
-										style:background-color={cat.id === categoryId ? 'color-mix(in srgb, var(--color-blue) 15%, transparent)' : 'transparent'}
+										style:background-color={cat.id === categoryId ? 'color-mix(in srgb, var(--color-accent) 15%, transparent)' : 'transparent'}
 										onclick={() => selectCategory(cat)}
 									>
 										{cat.name}
@@ -294,7 +298,7 @@
 									<button
 										type="button"
 										class="w-full border-t px-3 py-1.5 text-left text-sm transition-colors hover:opacity-80"
-										style:color="var(--color-blue)"
+										style:color="var(--color-accent)"
 										style:border-color="var(--color-border)"
 										onclick={createCategory}
 									>
@@ -324,7 +328,12 @@
 				</label>
 
 				{#if error}
-					<p class="rounded-lg px-3 py-2 text-xs" style:color="var(--color-red)" style:background-color="color-mix(in srgb, var(--color-red) 10%, transparent)">
+					<p
+						class="px-3 py-2 text-xs"
+						style:border-radius="var(--radius-sm)"
+						style:color="var(--color-red)"
+						style:background-color="color-mix(in srgb, var(--color-red) 10%, transparent)"
+					>
 						{error}
 					</p>
 				{/if}
@@ -333,7 +342,8 @@
 			<div class="flex justify-end gap-2">
 				<button
 					type="button"
-					class="rounded-lg px-3 py-1.5 text-sm transition-opacity hover:opacity-80"
+					class="px-3 py-1.5 text-sm transition-opacity hover:opacity-80"
+					style:border-radius="var(--radius-sm)"
 					style:color="var(--color-muted)"
 					onclick={onClose}
 				>
@@ -341,9 +351,10 @@
 				</button>
 				<button
 					type="button"
-					class="rounded-lg px-4 py-1.5 text-sm font-medium transition-opacity hover:opacity-90"
-					style:background-color="var(--color-blue)"
-					style:color="white"
+					class="px-4 py-1.5 text-sm font-medium transition-opacity hover:opacity-90"
+					style:border-radius="var(--radius-sm)"
+					style:background-color="var(--color-accent)"
+					style:color="var(--color-accent-fg)"
 					onclick={submit}
 				>
 					{editEntry ? 'Save changes' : 'Add entry'}

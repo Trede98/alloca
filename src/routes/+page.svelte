@@ -116,8 +116,8 @@
 		clearOpen = false;
 	}
 
-	const overlayStyle = `position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:1rem;background:rgba(0,0,0,0.55)`;
-	const panelClass = 'flex w-full max-w-sm flex-col gap-4 rounded-xl border p-5 shadow-xl';
+	const overlayStyle = `position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:1rem;background:var(--overlay-bg)`;
+	const panelClass = 'flex w-full max-w-sm flex-col gap-4 border p-5';
 </script>
 
 {#if loading}
@@ -168,8 +168,10 @@
 	>
 		<div
 			class={panelClass}
+			style:border-radius="var(--radius)"
 			style:background-color="var(--color-surface)"
 			style:border-color="var(--color-border)"
+			style:box-shadow="var(--shadow-modal)"
 		>
 			<div>
 				<h2 class="font-semibold">Clear Budget</h2>
@@ -181,7 +183,8 @@
 				bind:value={clearName}
 				type="text"
 				placeholder="My Budget"
-				class="rounded-lg border px-2.5 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500/40"
+				class="border px-2.5 py-2 text-sm outline-none focus:ring-1 focus:ring-[--color-accent]/40 transition-colors"
+				style:border-radius="var(--radius-sm)"
 				style:background-color="var(--color-bg)"
 				style:border-color="var(--color-border)"
 				style:color="var(--color-text)"
@@ -190,7 +193,8 @@
 			<div class="flex justify-end gap-2">
 				<button
 					type="button"
-					class="rounded-lg px-3 py-1.5 text-sm transition-opacity hover:opacity-80"
+					class="px-3 py-1.5 text-sm transition-opacity hover:opacity-80"
+					style:border-radius="var(--radius-sm)"
 					style:color="var(--color-muted)"
 					onclick={cancelClear}
 				>
@@ -198,7 +202,8 @@
 				</button>
 				<button
 					type="button"
-					class="rounded-lg px-4 py-1.5 text-sm font-medium transition-opacity hover:opacity-90"
+					class="px-4 py-1.5 text-sm font-medium transition-opacity hover:opacity-90"
+					style:border-radius="var(--radius-sm)"
 					style:background-color="var(--color-red)"
 					style:color="white"
 					onclick={executeClear}

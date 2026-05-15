@@ -5,13 +5,15 @@
 
 	let {
 		budget,
-		onImport
+		onImport,
+		headless = false,
+		fileInput = $bindable<HTMLInputElement | null>(null)
 	}: {
 		budget: Budget;
 		onImport: (b: Budget) => void;
+		headless?: boolean;
+		fileInput?: HTMLInputElement | null;
 	} = $props();
-
-	let fileInput = $state<HTMLInputElement | null>(null);
 	let error = $state('');
 	let pending = $state<Budget | null>(null); // awaiting confirmation
 
@@ -74,6 +76,7 @@
 	}
 </script>
 
+{#if !headless}
 <div class="flex items-center gap-2">
 	{#if error}
 		<span class="max-w-48 truncate text-xs" style:color="var(--color-red)" title={error}>
@@ -83,7 +86,8 @@
 
 	<button
 		type="button"
-		class="rounded border px-2.5 py-1 text-xs opacity-70 transition-opacity hover:opacity-100"
+		class="border px-2.5 py-1 text-xs opacity-60 transition-opacity hover:opacity-90"
+		style:border-radius="var(--radius-sm)"
 		style:color="var(--color-muted)"
 		style:border-color="var(--color-border)"
 		onclick={() => { error = ''; fileInput?.click(); }}
@@ -93,22 +97,24 @@
 
 	<button
 		type="button"
-		class="rounded border px-2.5 py-1 text-xs opacity-70 transition-opacity hover:opacity-100"
+		class="border px-2.5 py-1 text-xs opacity-60 transition-opacity hover:opacity-90"
+		style:border-radius="var(--radius-sm)"
 		style:color="var(--color-muted)"
 		style:border-color="var(--color-border)"
 		onclick={exportBudget}
 	>
 		Export
 	</button>
-
-	<input
-		bind:this={fileInput}
-		type="file"
-		accept=".json"
-		class="hidden"
-		onchange={handleFile}
-	/>
 </div>
+{/if}
+
+<input
+	bind:this={fileInput}
+	type="file"
+	accept=".json"
+	class="hidden"
+	onchange={handleFile}
+/>
 
 <!-- Import confirmation modal -->
 {#if pending}
@@ -118,13 +124,15 @@
 		aria-modal="true"
 		tabindex="-1"
 		class="fixed inset-0 z-50 flex items-center justify-center p-4"
-		style:background-color="rgba(0,0,0,0.6)"
+		style:background-color="var(--overlay-bg)"
 		onkeydown={(e) => e.key === 'Escape' && cancelImport()}
 	>
 		<div
-			class="flex w-full max-w-sm flex-col gap-4 rounded-xl border p-5 shadow-xl"
+			class="flex w-full max-w-sm flex-col gap-4 border p-5"
+			style:border-radius="var(--radius)"
 			style:background-color="var(--color-surface)"
 			style:border-color="var(--color-border)"
+			style:box-shadow="var(--shadow-modal)"
 		>
 			<div>
 				<h2 class="font-semibold">Replace budget?</h2>
@@ -135,7 +143,8 @@
 			<div class="flex justify-end gap-2">
 				<button
 					type="button"
-					class="rounded px-3 py-1.5 text-sm"
+					class="px-3 py-1.5 text-sm opacity-70 transition-opacity hover:opacity-90"
+					style:border-radius="var(--radius-sm)"
 					style:color="var(--color-muted)"
 					onclick={cancelImport}
 				>
@@ -143,7 +152,8 @@
 				</button>
 				<button
 					type="button"
-					class="rounded px-3 py-1.5 text-sm font-medium"
+					class="px-3 py-1.5 text-sm font-medium transition-opacity hover:opacity-90"
+					style:border-radius="var(--radius-sm)"
 					style:background-color="var(--color-red)"
 					style:color="white"
 					onclick={confirmImport}

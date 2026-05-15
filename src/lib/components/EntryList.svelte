@@ -84,10 +84,10 @@
 		class="flex items-center justify-between border-b px-3 py-2"
 		style:border-color="var(--color-border)"
 	>
-		<span class="text-xs font-semibold uppercase tracking-widest" style:color={typeColors[type]}>
+		<span class="text-xs font-semibold" style:color={typeColors[type]}>
 			{typeLabels[type]}
 		</span>
-		<span class="text-xs tabular-nums font-medium" style:color={typeColors[type]}>
+		<span class="text-xs font-medium" style:color={typeColors[type]}>
 			{formatCurrency(total, currency)}
 		</span>
 	</div>
@@ -107,7 +107,7 @@
 				<!-- Category header -->
 				<button
 					type="button"
-					class="flex w-full items-center justify-between gap-2 px-3 py-1.5 hover:bg-white/[0.02] transition-colors"
+					class="flex w-full items-center justify-between gap-2 px-3 py-1.5 pr-4 hover:bg-[--surface-hover] transition-colors"
 					onclick={() => toggleCategory(cat)}
 				>
 					<div class="flex items-center gap-2 min-w-0">
@@ -117,11 +117,11 @@
 							style:transform={isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)'}
 						>▾</span>
 						<span class="text-xs font-medium truncate" style:color="var(--color-muted)">{cat}</span>
-						<span class="shrink-0 text-xs tabular-nums" style:color="var(--color-muted)">
+						<span class="shrink-0 text-xs" style:color="var(--color-muted)">
 							({catEntries.length})
 						</span>
 					</div>
-					<span class="shrink-0 text-xs tabular-nums" style:color="var(--color-muted)">
+					<span class="shrink-0 text-xs" style:color="var(--color-muted)">
 						{formatCurrency(catTotal, currency)}
 					</span>
 				</button>
