@@ -29,6 +29,7 @@
 		"clsx": "^2.1.1",
 		"date-fns": "^4.1.0",
 		"dexie": "^4.4.2",
+		"driver.js": "^1.4.0",
 		"lucide-svelte": "^1.0.1",
 		"nanoid": "^5.1.11",
 		"tailwind-merge": "^3.6.0",

@@ -98,3 +98,79 @@ input[type="number"]::-webkit-outer-spin-button {
 .entry-row + .entry-row {
 	border-top: 1px solid var(--color-border);
 }
+
+/* driver.js tour popover — theme integration */
+.alloca-tour-popover.driver-popover {
+	background-color: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius);
+	box-shadow: var(--shadow-modal);
+	color: var(--color-text);
+	font-family: system-ui, -apple-system, sans-serif;
+	font-size: 14px;
+	max-width: 320px;
+	padding: 14px 16px;
+}
+
+.alloca-tour-popover .driver-popover-title {
+	color: var(--color-text);
+	font-size: 14px;
+	font-weight: 600;
+	margin-bottom: 4px;
+}
+
+.alloca-tour-popover .driver-popover-description {
+	color: var(--color-muted);
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+.alloca-tour-popover .driver-popover-progress-text {
+	color: var(--color-subtle);
+	font-size: 12px;
+}
+
+.alloca-tour-popover .driver-popover-prev-btn,
+.alloca-tour-popover .driver-popover-next-btn,
+.alloca-tour-popover .driver-popover-close-btn {
+	background: transparent;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	color: var(--color-text);
+	cursor: pointer;
+	font-size: 12px;
+	padding: 4px 10px;
+	text-shadow: none;
+	transition: opacity 0.15s;
+}
+
+.alloca-tour-popover .driver-popover-next-btn {
+	background-color: var(--color-accent);
+	border-color: var(--color-accent);
+	color: var(--color-accent-fg);
+}
+
+.alloca-tour-popover .driver-popover-prev-btn:hover,
+.alloca-tour-popover .driver-popover-close-btn:hover {
+	opacity: 0.8;
+}
+
+.alloca-tour-popover .driver-popover-footer .driver-popover-next-btn:hover,
+.alloca-tour-popover .driver-popover-footer .driver-popover-next-btn:focus {
+	background-color: var(--color-accent);
+	color: var(--color-accent-fg);
+	opacity: 0.85;
+}
+
+.alloca-tour-popover .driver-popover-arrow-side-left.driver-popover-arrow {
+	border-right-color: var(--color-surface);
+}
+.alloca-tour-popover .driver-popover-arrow-side-right.driver-popover-arrow {
+	border-left-color: var(--color-surface);
+}
+.alloca-tour-popover .driver-popover-arrow-side-top.driver-popover-arrow {
+	border-bottom-color: var(--color-surface);
+}
+.alloca-tour-popover .driver-popover-arrow-side-bottom.driver-popover-arrow {
+	border-top-color: var(--color-surface);
+}

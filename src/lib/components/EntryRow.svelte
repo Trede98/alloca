@@ -18,7 +18,8 @@
 		onRemoveOverride,
 		onSkipMonth,
 		onUnskipMonth,
-		onEdit
+		onEdit,
+		tourAttr
 	}: {
 		entry: Entry;
 		month: number;
@@ -34,6 +35,7 @@
 		onSkipMonth: (entryId: string, month: number) => void;
 		onUnskipMonth: (entryId: string, month: number) => void;
 		onEdit: (entry: Entry) => void;
+		tourAttr?: string;
 	} = $props();
 
 	let editingAmount = $state(false);
@@ -80,6 +82,7 @@
 <div
 	class="entry-row group grid items-center gap-2 px-3 py-1.5 text-sm transition-colors hover:bg-[--surface-hover]"
 	style="grid-template-columns: 1fr auto auto auto auto;"
+	data-tour={tourAttr}
 >
 	<!-- Name + meta -->
 	<div class="flex min-w-0 items-center gap-1.5">

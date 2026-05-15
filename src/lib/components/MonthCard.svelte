@@ -10,12 +10,14 @@
 		summary,
 		selected = false,
 		currency,
-		onclick
+		onclick,
+		tourAttr
 	}: {
 		summary: MonthSummary;
 		selected?: boolean;
 		currency: string;
 		onclick?: () => void;
+		tourAttr?: string;
 	} = $props();
 
 	const balanced = $derived(isBalanced(summary.balance));
@@ -25,6 +27,7 @@
 <button
 	type="button"
 	class="flex w-full flex-col gap-1.5 border p-2.5 text-left transition-all duration-150"
+	data-tour={tourAttr}
 	style:border-radius="var(--radius)"
 	style:background-color={selected
 		? 'color-mix(in srgb, var(--color-accent) 12%, var(--color-surface))'

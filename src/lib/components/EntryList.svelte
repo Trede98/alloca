@@ -21,7 +21,8 @@
 		onSkipMonth,
 		onUnskipMonth,
 		onEdit,
-		onAddNew
+		onAddNew,
+		tourAttrs
 	}: {
 		entries: Entry[];
 		categories: Category[];
@@ -37,6 +38,7 @@
 		onUnskipMonth: (entryId: string, month: number) => void;
 		onEdit: (entry: Entry) => void;
 		onAddNew: (type: EntryType) => void;
+		tourAttrs?: { addBtn?: string; firstRow?: string };
 	} = $props();
 
 	const typeColors: Record<EntryType, string> = {
@@ -108,7 +110,7 @@
 		</div>
 	{:else}
 		<!-- Category groups -->
-		{#each grouped() as [cat, catEntries]}
+		{#each grouped() as [cat, catEntries], gi}
 			{@const catTotal = catEntries.reduce((s, e) => s + getMonthAmount(e, month), 0)}
 			{@const isCollapsed = collapsed.has(cat)}
 
@@ -141,7 +143,7 @@
 
 				{#if !isCollapsed}
 					<div>
-						{#each catEntries as entry (entry.id)}
+						{#each catEntries as entry, ei (entry.id)}
 							<EntryRow
 								{entry}
 								{month}
@@ -157,6 +159,7 @@
 								{onSkipMonth}
 								{onUnskipMonth}
 								{onEdit}
+								tourAttr={gi === 0 && ei === 0 ? tourAttrs?.firstRow : undefined}
 							/>
 						{/each}
 					</div>
@@ -170,6 +173,7 @@
 		type="button"
 		class="flex items-center gap-1.5 px-3 py-2 text-xs opacity-60 transition-opacity hover:opacity-100"
 		style:color={typeColors[type]}
+		data-tour={tourAttrs?.addBtn}
 		onclick={() => onAddNew(type)}
 	>
 		<span class="text-base leading-none">+</span>

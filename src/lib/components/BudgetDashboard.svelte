@@ -13,7 +13,7 @@
 	import { formatCurrency, getMonthFull } from '$lib/format';
 	import { getTheme, toggleTheme } from '$lib/theme.svelte';
 	import { Switch } from 'bits-ui';
-	import { Settings2, Tag, Upload, Download, Trash2, Sun, Moon, Globe, ChevronRight, ChevronLeft } from 'lucide-svelte';
+	import { Settings2, Tag, Upload, Download, Trash2, Sun, Moon, Globe, ChevronRight, ChevronLeft, HelpCircle } from 'lucide-svelte';
 	import SummaryBar from './SummaryBar.svelte';
 	import MonthCard from './MonthCard.svelte';
 	import YearRecap from './YearRecap.svelte';
@@ -24,6 +24,8 @@
 	import CategoryManager from './CategoryManager.svelte';
 	import * as m from '$lib/paraglide/messages';
 	import { getLocale, setLocale } from '$lib/paraglide/runtime';
+	import { onMount, tick } from 'svelte';
+	import { startTour } from '$lib/tour';
 
 	const LANGUAGES = [
 		{ code: 'en', flag: '🇬🇧', label: 'English' },
@@ -49,7 +51,10 @@
 		onDeleteCategory,
 		categoryError,
 		onClearCategoryError,
-		startReset
+		startReset,
+		shouldStartTour = false,
+		onTourStart,
+		onTourEnd
 	}: {
 		budget: Budget;
 		onAddEntry: (input: NewEntryInput) => void;
@@ -67,6 +72,9 @@
 		categoryError: string;
 		onClearCategoryError: () => void;
 		startReset: () => void;
+		shouldStartTour?: boolean;
+		onTourStart: () => void;
+		onTourEnd: () => void;
 	} = $props();
 
 	const yearSummary = $derived(computeYearSummary(budget));
@@ -179,6 +187,37 @@
 		if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) commitNote();
 	}
 
+	function forceSelectMonth(monthNum: number) {
+		showYearRecap = false;
+		selectedMonth = monthNum;
+		showDetail = true;
+	}
+
+	function resetForTour() {
+		selectedMonth = null;
+		showDetail = false;
+		showYearRecap = false;
+	}
+
+	onMount(async () => {
+		if (shouldStartTour) {
+			await tick();
+			resetForTour();
+			await tick();
+			onTourStart();
+			startTour(() => forceSelectMonth(0), onTourEnd);
+		}
+	});
+
+	function replayTour() {
+		closePopover();
+		setTimeout(() => {
+			resetForTour();
+			onTourStart();
+			setTimeout(() => startTour(() => forceSelectMonth(0), onTourEnd), 50);
+		}, 150);
+	}
+
 	const theme = $derived(getTheme());
 	const locale = $derived(getLocale());
 	const currentLang = $derived(LANGUAGES.find((l) => l.code === locale) ?? LANGUAGES[0]);
@@ -275,7 +314,7 @@
 		</span>
 
 		<!-- Centre: summary inline at lg+ (display:none below lg, no phantom space) -->
-		<div class="hidden flex-1 justify-center lg:flex">
+		<div class="hidden flex-1 justify-center lg:flex" data-tour="summary-bar-desktop">
 			<SummaryBar summary={yearSummary} currency={budget.currency} />
 		</div>
 
@@ -287,6 +326,7 @@
 					class="flex items-center justify-center p-1.5 opacity-60 transition-opacity hover:opacity-90"
 					style:border-radius="var(--radius-sm)"
 					title={m.settings()}
+					data-tour="settings-btn"
 					onclick={openPopover}
 				>
 					<Settings2 size={16} />
@@ -306,6 +346,22 @@
 					>
 						{#if menuView === 'main'}
 							<!-- Main menu -->
+
+							<!-- Tour replay -->
+							<button
+								type="button"
+								role="menuitem"
+								class="flex w-full items-center gap-3 px-3 py-2.5 text-sm transition-colors"
+								style:color="var(--color-text)"
+								onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
+								onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
+								onclick={replayTour}
+							>
+								<HelpCircle size={14} style="opacity:0.6" />
+								{m.tour_replay()}
+							</button>
+
+							<div class="my-1 border-t" style:border-color="var(--color-border)"></div>
 
 							<!-- Categories -->
 							<button
@@ -471,6 +527,7 @@
 	<!-- Summary strip: shown below lg, hidden at lg+ -->
 	<div
 		class="flex shrink-0 items-center justify-center border-b px-4 py-1.5 lg:hidden"
+		data-tour="summary-bar-mobile"
 		style:border-color="var(--color-border)"
 		style:background-color="var(--color-surface)"
 	>
@@ -484,11 +541,13 @@
 			class="shrink-0 flex-col gap-2 overflow-y-auto border-r p-3 sm:flex w-full sm:w-[280px]"
 			class:hidden={showDetail && (selectedMonth !== null || showYearRecap)}
 			class:flex={!(showDetail && (selectedMonth !== null || showYearRecap))}
+			data-tour="month-sidebar"
 			style:border-color="var(--color-border)"
 		>
 			<!-- Year Overview button -->
 			<button
 				type="button"
+				data-tour="year-overview-btn"
 				class="flex w-full items-center justify-between border p-2.5 text-left transition-all duration-150"
 				style:border-radius="var(--radius)"
 				style:background-color={showYearRecap
@@ -505,12 +564,13 @@
 			<div class="mt-1 text-xs font-medium" style:color="var(--color-muted)">
 				{m.months_section()}
 			</div>
-			{#each monthSummaries as summary}
+			{#each monthSummaries as summary, i}
 				<MonthCard
 					{summary}
 					selected={selectedMonth === summary.month}
 					currency={budget.currency}
 					onclick={() => selectMonth(summary.month)}
+					tourAttr={i === 0 ? 'first-month-card' : undefined}
 				/>
 			{/each}
 		</div>
@@ -539,6 +599,7 @@
 				<!-- Month header -->
 				<div
 					class="flex shrink-0 items-center justify-between gap-3 border-b px-4 py-2"
+					data-tour="month-detail-header"
 					style:border-color="var(--color-border)"
 					style:background-color="var(--color-surface)"
 				>
@@ -584,7 +645,7 @@
 				</div>
 
 				<!-- Entry lists + notes -->
-				<div class="flex-1 overflow-y-auto p-4">
+				<div class="flex-1 overflow-y-auto p-4" data-tour="entry-lists">
 					<div class="mx-auto max-w-3xl flex flex-col gap-4">
 
 						<!-- Balance status -->
@@ -633,6 +694,7 @@
 									{onUnskipMonth}
 									onEdit={openEditDialog}
 									onAddNew={openAddDialog}
+									tourAttrs={t === 'income' ? { addBtn: 'add-entry-btn', firstRow: 'first-entry-row' } : undefined}
 								/>
 							</div>
 						{/each}

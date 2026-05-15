@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { loadBudget, saveBudget, replaceBudget } from '$lib/db';
+	import { hasTourBeenSeen } from '$lib/tour';
 	import { createEmptyBudget, createSeedBudget } from '$lib/seed';
 	import {
 		addEntry,
@@ -21,6 +22,9 @@
 
 	let budget = $state<Budget | null>(null);
 	let loading = $state(true);
+	let shouldStartTour = $state(false);
+	let isTourActive = $state(false);
+	let stashedBudget = $state<Budget | null>(null);
 
 	// Clear flow (single modal)
 	let clearOpen = $state(false);
@@ -46,11 +50,26 @@
 		};
 		budget = existing;
 		loading = false;
+		shouldStartTour = !hasTourBeenSeen();
 	});
 
 	$effect(() => {
-		if (budget) saveBudget($state.snapshot(budget) as Budget);
+		if (!isTourActive && budget) saveBudget($state.snapshot(budget) as Budget);
 	});
+
+	function onTourStart() {
+		stashedBudget = $state.snapshot(budget) as Budget;
+		isTourActive = true;
+		budget = createSeedBudget();
+	}
+
+	function onTourEnd() {
+		if (stashedBudget) {
+			budget = stashedBudget;
+			stashedBudget = null;
+		}
+		isTourActive = false;
+	}
 
 	function onAddEntry(input: NewEntryInput) {
 		if (!budget) return;
@@ -172,6 +191,9 @@
 		{categoryError}
 		{onClearCategoryError}
 		{startReset}
+		{shouldStartTour}
+		{onTourStart}
+		{onTourEnd}
 	/>
 {/if}
 
