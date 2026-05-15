@@ -17,6 +17,7 @@
 		onDuplicateEntry,
 		onSetOverride,
 		onRemoveOverride,
+		onUpdateBaseAmount,
 		onSkipMonth,
 		onUnskipMonth,
 		onEdit,
@@ -33,6 +34,7 @@
 		onDuplicateEntry: (entry: Entry) => void;
 		onSetOverride: (entryId: string, month: number, amount: number) => void;
 		onRemoveOverride: (entryId: string, month: number) => void;
+		onUpdateBaseAmount: (id: string, amount: number) => void;
 		onSkipMonth: (entryId: string, month: number) => void;
 		onUnskipMonth: (entryId: string, month: number) => void;
 		onEdit: (entry: Entry) => void;
@@ -59,11 +61,16 @@
 	function commitAmount() {
 		const val = parseFloat(amountInput);
 		if (!isNaN(val) && val >= 0) {
-			const base = entry.recurrence === 'annual_distributed' ? entry.baseAmount / 12 : entry.baseAmount;
-			if (Math.abs(val - base) < 0.01) {
-				onRemoveOverride(entry.id, month);
+			if (entry.recurrence === 'annual_distributed') {
+				// no-op
+			} else if (entry.recurrence === 'single') {
+				onUpdateBaseAmount(entry.id, val);
 			} else {
-				onSetOverride(entry.id, month, val);
+				if (Math.abs(val - entry.baseAmount) < 0.01) {
+					onRemoveOverride(entry.id, month);
+				} else {
+					onSetOverride(entry.id, month, val);
+				}
 			}
 		}
 		editingAmount = false;

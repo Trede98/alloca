@@ -92,6 +92,11 @@
 		budget = deleteEntry(budget, id);
 	}
 
+	function onUpdateBaseAmount(id: string, amount: number) {
+		if (!budget) return;
+		budget = updateEntry(budget, id, { baseAmount: amount });
+	}
+
 	function onSetOverride(entryId: string, month: number, amount: number) {
 		if (!budget) return;
 		budget = setOverride(budget, entryId, month, amount);
@@ -202,6 +207,7 @@
 		{onDeleteEntry}
 		{onSetOverride}
 		{onRemoveOverride}
+		{onUpdateBaseAmount}
 		{onSkipMonth}
 		{onUnskipMonth}
 		{onImport}

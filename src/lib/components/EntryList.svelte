@@ -18,6 +18,7 @@
 		onDuplicateEntry,
 		onSetOverride,
 		onRemoveOverride,
+		onUpdateBaseAmount,
 		onSkipMonth,
 		onUnskipMonth,
 		onEdit,
@@ -34,6 +35,7 @@
 		onDuplicateEntry: (entry: Entry) => void;
 		onSetOverride: (entryId: string, month: number, amount: number) => void;
 		onRemoveOverride: (entryId: string, month: number) => void;
+		onUpdateBaseAmount: (id: string, amount: number) => void;
 		onSkipMonth: (entryId: string, month: number) => void;
 		onUnskipMonth: (entryId: string, month: number) => void;
 		onEdit: (entry: Entry) => void;
@@ -156,6 +158,7 @@
 								{onDuplicateEntry}
 								{onSetOverride}
 								{onRemoveOverride}
+								{onUpdateBaseAmount}
 								{onSkipMonth}
 								{onUnskipMonth}
 								{onEdit}
