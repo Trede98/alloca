@@ -537,7 +537,7 @@
 	<div class="flex flex-1 overflow-hidden">
 		<!-- Month grid sidebar -->
 		<div
-			class="shrink-0 flex-col gap-2 overflow-y-auto border-r p-3 sm:flex w-full sm:w-[280px]"
+			class="shrink-0 flex-col gap-2 overflow-y-auto border-r p-3 sm:flex w-full sm:w-[280px] sm:no-scrollbar"
 			class:hidden={showDetail && (selectedMonth !== null || showYearRecap)}
 			class:flex={!(showDetail && (selectedMonth !== null || showYearRecap))}
 			data-tour="month-sidebar"

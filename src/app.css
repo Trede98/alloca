@@ -5,6 +5,15 @@
 	--color-danger-hover: color-mix(in srgb, var(--color-red) 6%, transparent);
 }
 
+@utility no-scrollbar {
+	scrollbar-width: none; /* Firefox */
+	-ms-overflow-style: none; /* IE/Edge legacy */
+
+	&::-webkit-scrollbar {
+		display: none; /* Chrome/Safari */
+	}
+}
+
 /* ── Dark theme (default) ────────────────────────────────────────────────── */
 :root,
 [data-theme="dark"] {
