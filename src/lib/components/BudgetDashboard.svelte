@@ -259,7 +259,6 @@
 					type="button"
 					class="flex items-center justify-center p-1.5 opacity-60 transition-opacity hover:opacity-90"
 					style:border-radius="var(--radius-sm)"
-					style:color="var(--color-muted)"
 					title="Settings"
 					onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
 				>

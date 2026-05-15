@@ -193,7 +193,7 @@
 					<button
 						type="button"
 						class="p-1 text-xs opacity-40 hover:opacity-80 transition-opacity"
-						style:color="var(--color-muted)"
+						style:color="var(--color-text)"
 						onclick={close}
 						aria-label="Close"
 					>✕</button>

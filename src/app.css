@@ -8,7 +8,8 @@
 	--color-surface2: #18181f;
 	--color-border: #27272f;
 	--color-text: #e4e4e7;
-	--color-muted: #52525b;
+	--color-muted: #71717a;
+	--color-subtle: #52525b;
 	--color-green: #16a34a;
 	--color-red: #dc2626;
 	--color-blue: #3b82f6;
@@ -37,6 +38,7 @@
 	--color-border: #e4e4e7;
 	--color-text: #09090b;
 	--color-muted: #71717a;
+	--color-subtle: #a1a1aa;
 	--color-green: #15803d;
 	--color-red: #b91c1c;
 	--color-blue: #2563eb;

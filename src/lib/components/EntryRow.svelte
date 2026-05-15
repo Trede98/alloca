@@ -140,7 +140,7 @@
 		type="button"
 		class="invisible p-1 text-xs opacity-60 transition-opacity hover:opacity-100 group-hover:visible"
 		style:border-radius="var(--radius-sm)"
-		style:color="var(--color-muted)"
+		style:color="var(--color-text)"
 		title="Duplicate entry"
 		onclick={() => onDuplicateEntry(entry)}
 	>

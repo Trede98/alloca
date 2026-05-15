@@ -40,15 +40,15 @@
 	</div>
 	<div class="grid grid-cols-3 gap-1 text-xs">
 		<div class="min-w-0 overflow-hidden">
-			<div class="text-[10px]" style:color="var(--color-muted)">In</div>
+			<div class="text-[10px]" style:color="var(--color-subtle)">In</div>
 			<div class="tabular-nums leading-tight text-xs" style:color="var(--color-green)">{formatCompact(summary.incomeTotal, currency)}</div>
 		</div>
 		<div class="min-w-0 overflow-hidden">
-			<div class="text-[10px]" style:color="var(--color-muted)">Out</div>
+			<div class="text-[10px]" style:color="var(--color-subtle)">Out</div>
 			<div class="tabular-nums leading-tight text-xs" style:color="var(--color-red)">{formatCompact(summary.expenseTotal, currency)}</div>
 		</div>
 		<div class="min-w-0 overflow-hidden">
-			<div class="text-[10px]" style:color="var(--color-muted)">Save</div>
+			<div class="text-[10px]" style:color="var(--color-subtle)">Save</div>
 			<div class="tabular-nums leading-tight text-xs" style:color="var(--color-blue)">{formatCompact(summary.savingsTotal, currency)}</div>
 		</div>
 	</div>

@@ -119,10 +119,10 @@
 							style:display="inline-flex"
 							style:transform={isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)'}
 						>
-							<ChevronDown size={13} style="opacity:0.5; color:var(--color-muted)" />
+							<ChevronDown size={13} style="opacity:0.5; color:var(--color-subtle)" />
 						</span>
 						<span class="text-sm truncate" style:color="var(--color-text)">{cat}</span>
-						<span class="shrink-0 text-xs" style:color="var(--color-muted)">
+						<span class="shrink-0 text-xs" style:color="var(--color-subtle)">
 							({catEntries.length})
 						</span>
 					</div>

@@ -184,7 +184,7 @@
 					type="button"
 					class="p-1 text-sm opacity-40 transition-opacity hover:opacity-80"
 					style:border-radius="var(--radius-sm)"
-					style:color="var(--color-muted)"
+					style:color="var(--color-text)"
 					onclick={onClose}
 					aria-label="Close"
 				>

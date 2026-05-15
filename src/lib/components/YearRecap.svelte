@@ -52,7 +52,7 @@
 			type="button"
 			class="p-1 text-sm opacity-60 transition-opacity hover:opacity-90 sm:hidden"
 			style:border-radius="var(--radius-sm)"
-			style:color="var(--color-muted)"
+			style:color="var(--color-text)"
 			onclick={onClose}
 		>
 			←
@@ -80,7 +80,7 @@
 		type="button"
 		class="hidden shrink-0 p-1 text-sm opacity-40 transition-opacity hover:opacity-80 sm:block"
 		style:border-radius="var(--radius-sm)"
-		style:color="var(--color-muted)"
+		style:color="var(--color-text)"
 		onclick={onClose}
 	>
 		✕
@@ -136,7 +136,7 @@
 										style:display="inline-flex"
 										style:transform={isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)'}
 									>
-										<ChevronDown size={13} style="opacity:0.5; color:var(--color-muted)" />
+										<ChevronDown size={13} style="opacity:0.5; color:var(--color-subtle)" />
 									</span>
 									<span class="text-sm" style:color="var(--color-text)">{cat.categoryName}</span>
 								</div>
