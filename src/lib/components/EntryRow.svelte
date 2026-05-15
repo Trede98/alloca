@@ -42,8 +42,9 @@
 	let amountInput = $state('');
 	let inputEl = $state<HTMLInputElement | null>(null);
 	const locale = $derived(getLocale());
+	const isAnnualDistributed = $derived(entry.recurrence === 'annual_distributed');
 	const isLastActiveMonth = $derived(
-		entry.recurrence === 'annual_distributed' &&
+		isAnnualDistributed &&
 		!hasSkip &&
 		(entry.monthlySkips ?? []).length === 11
 	);
@@ -103,7 +104,7 @@
 		>
 			{recurrenceBadge}
 		</span>
-		{#if hasOverride}
+		{#if hasOverride && !isAnnualDistributed}
 			<button
 				type="button"
 				class="shrink-0 px-1 py-0.5 text-xs"
@@ -135,6 +136,10 @@
 			>
 				{m.entry_row_skipped()}
 			</button>
+		{:else if isAnnualDistributed}
+			<span class="px-1.5 py-0.5" style:color="var(--color-text)">
+				{formatCurrency(currentAmount, currency, locale)}
+			</span>
 		{:else if editingAmount}
 			<input
 				bind:this={inputEl}

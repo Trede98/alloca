@@ -5,7 +5,7 @@ import type { Budget, Category, Entry, EntryType, MonthSummary, Recurrence, Year
 
 export function getMonthAmount(entry: Entry, month: number): number {
 	if ((entry.monthlySkips ?? []).includes(month)) return 0;
-	if (month in entry.monthlyOverrides) {
+	if (entry.recurrence !== 'annual_distributed' && month in entry.monthlyOverrides) {
 		return entry.monthlyOverrides[month];
 	}
 	if (entry.recurrence === 'single') {
