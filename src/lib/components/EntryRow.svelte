@@ -10,11 +10,14 @@
 		currency,
 		currentAmount,
 		hasOverride,
+		hasSkip,
 		onUpdateEntry,
 		onDeleteEntry,
 		onDuplicateEntry,
 		onSetOverride,
 		onRemoveOverride,
+		onSkipMonth,
+		onUnskipMonth,
 		onEdit
 	}: {
 		entry: Entry;
@@ -22,11 +25,14 @@
 		currency: string;
 		currentAmount: number;
 		hasOverride: boolean;
+		hasSkip: boolean;
 		onUpdateEntry: (id: string, patch: Partial<Omit<Entry, 'id' | 'monthlyOverrides'>>) => void;
 		onDeleteEntry: (id: string) => void;
 		onDuplicateEntry: (entry: Entry) => void;
 		onSetOverride: (entryId: string, month: number, amount: number) => void;
 		onRemoveOverride: (entryId: string, month: number) => void;
+		onSkipMonth: (entryId: string, month: number) => void;
+		onUnskipMonth: (entryId: string, month: number) => void;
 		onEdit: (entry: Entry) => void;
 	} = $props();
 
@@ -34,6 +40,11 @@
 	let amountInput = $state('');
 	let inputEl = $state<HTMLInputElement | null>(null);
 	const locale = $derived(getLocale());
+	const isLastActiveMonth = $derived(
+		entry.recurrence === 'annual_distributed' &&
+		!hasSkip &&
+		(entry.monthlySkips ?? []).length === 11
+	);
 
 	function startAmountEdit() {
 		amountInput = currentAmount.toFixed(2);
@@ -68,7 +79,7 @@
 
 <div
 	class="entry-row group grid items-center gap-2 px-3 py-1.5 text-sm transition-colors hover:bg-[--surface-hover]"
-	style="grid-template-columns: 1fr auto auto auto;"
+	style="grid-template-columns: 1fr auto auto auto auto;"
 >
 	<!-- Name + meta -->
 	<div class="flex min-w-0 items-center gap-1.5">
@@ -109,7 +120,19 @@
 
 	<!-- Amount (inline editable) -->
 	<div class="text-right">
-		{#if editingAmount}
+		{#if hasSkip}
+			<button
+				type="button"
+				class="px-1.5 py-0.5 text-xs"
+				style:border-radius="var(--radius-sm)"
+				style:color="var(--color-muted)"
+				style:background-color="var(--color-border)"
+				title={m.entry_row_skipped_tooltip()}
+				onclick={() => onUnskipMonth(entry.id, month)}
+			>
+				{m.entry_row_skipped()}
+			</button>
+		{:else if editingAmount}
 			<input
 				bind:this={inputEl}
 				bind:value={amountInput}
@@ -137,6 +160,24 @@
 			</button>
 		{/if}
 	</div>
+
+	<!-- Skip toggle (only for recurring entries) -->
+	{#if entry.recurrence !== 'single'}
+		<button
+			type="button"
+			class="invisible p-1 text-xs opacity-60 transition-opacity hover:opacity-100 group-hover:visible"
+			class:cursor-not-allowed={isLastActiveMonth}
+			style:border-radius="var(--radius-sm)"
+			style:color={hasSkip ? 'var(--color-accent)' : 'var(--color-muted)'}
+			title={isLastActiveMonth ? m.entry_row_skip_last_month_tooltip() : hasSkip ? m.entry_row_unskip_tooltip() : m.entry_row_skip_tooltip()}
+			disabled={isLastActiveMonth}
+			onclick={() => hasSkip ? onUnskipMonth(entry.id, month) : onSkipMonth(entry.id, month)}
+		>
+			{hasSkip ? '↩' : '⊘'}
+		</button>
+	{:else}
+		<span class="p-1"></span>
+	{/if}
 
 	<!-- Duplicate -->
 	<button

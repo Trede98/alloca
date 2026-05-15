@@ -18,6 +18,8 @@
 		onDuplicateEntry,
 		onSetOverride,
 		onRemoveOverride,
+		onSkipMonth,
+		onUnskipMonth,
 		onEdit,
 		onAddNew
 	}: {
@@ -31,6 +33,8 @@
 		onDuplicateEntry: (entry: Entry) => void;
 		onSetOverride: (entryId: string, month: number, amount: number) => void;
 		onRemoveOverride: (entryId: string, month: number) => void;
+		onSkipMonth: (entryId: string, month: number) => void;
+		onUnskipMonth: (entryId: string, month: number) => void;
 		onEdit: (entry: Entry) => void;
 		onAddNew: (type: EntryType) => void;
 	} = $props();
@@ -144,11 +148,14 @@
 								{currency}
 								currentAmount={getMonthAmount(entry, month)}
 								hasOverride={month in entry.monthlyOverrides}
+								hasSkip={(entry.monthlySkips ?? []).includes(month)}
 								{onUpdateEntry}
 								{onDeleteEntry}
 								{onDuplicateEntry}
 								{onSetOverride}
 								{onRemoveOverride}
+								{onSkipMonth}
+								{onUnskipMonth}
 								{onEdit}
 							/>
 						{/each}

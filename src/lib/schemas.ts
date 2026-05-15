@@ -14,6 +14,7 @@ const EntrySchema = z.object({
 	baseAmount: z.number(),
 	month: z.number().min(0).max(11).optional(),
 	monthlyOverrides: z.record(z.string(), z.number()),
+	monthlySkips: z.array(z.number()).default([]),
 	notes: z.string().optional()
 });
 

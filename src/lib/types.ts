@@ -15,6 +15,7 @@ export interface Entry {
 	baseAmount: number;
 	month?: number; // 0-11, only for 'single'
 	monthlyOverrides: Record<number, number>;
+	monthlySkips: number[]; // month indices (0-11) where this entry is skipped entirely
 	notes?: string;
 }
 

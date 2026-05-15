@@ -41,6 +41,7 @@ export function createSeedBudget(name: string = 'My Budget'): Budget {
 				category: cat.get('Work')!,
 				baseAmount: 3000,
 				monthlyOverrides: {},
+				monthlySkips: [],
 				notes: ''
 			},
 			{
@@ -51,6 +52,7 @@ export function createSeedBudget(name: string = 'My Budget'): Budget {
 				category: cat.get('Housing')!,
 				baseAmount: 900,
 				monthlyOverrides: {},
+				monthlySkips: [],
 				notes: ''
 			},
 			{
@@ -61,6 +63,7 @@ export function createSeedBudget(name: string = 'My Budget'): Budget {
 				category: cat.get('Food')!,
 				baseAmount: 400,
 				monthlyOverrides: {},
+				monthlySkips: [],
 				notes: ''
 			},
 			{
@@ -71,6 +74,7 @@ export function createSeedBudget(name: string = 'My Budget'): Budget {
 				category: cat.get('Transport')!,
 				baseAmount: 150,
 				monthlyOverrides: {},
+				monthlySkips: [],
 				notes: ''
 			},
 			{
@@ -81,6 +85,7 @@ export function createSeedBudget(name: string = 'My Budget'): Budget {
 				category: cat.get('Savings')!,
 				baseAmount: 300,
 				monthlyOverrides: {},
+				monthlySkips: [],
 				notes: ''
 			},
 			{
@@ -91,6 +96,7 @@ export function createSeedBudget(name: string = 'My Budget'): Budget {
 				category: cat.get('Leisure')!,
 				baseAmount: 200,
 				monthlyOverrides: {},
+				monthlySkips: [],
 				notes: ''
 			},
 			{
@@ -101,6 +107,7 @@ export function createSeedBudget(name: string = 'My Budget'): Budget {
 				category: cat.get('Housing')!,
 				baseAmount: 100,
 				monthlyOverrides: {},
+				monthlySkips: [],
 				notes: ''
 			},
 			{
@@ -111,6 +118,7 @@ export function createSeedBudget(name: string = 'My Budget'): Budget {
 				category: cat.get('Health')!,
 				baseAmount: 50,
 				monthlyOverrides: {},
+				monthlySkips: [],
 				notes: ''
 			},
 			{
@@ -121,6 +129,7 @@ export function createSeedBudget(name: string = 'My Budget'): Budget {
 				category: cat.get('Leisure')!,
 				baseAmount: 1200,
 				monthlyOverrides: {},
+				monthlySkips: [],
 				notes: ''
 			},
 			{
@@ -132,6 +141,7 @@ export function createSeedBudget(name: string = 'My Budget'): Budget {
 				baseAmount: 300,
 				month: 11,
 				monthlyOverrides: {},
+				monthlySkips: [],
 				notes: ''
 			}
 		]

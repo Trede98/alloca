@@ -40,6 +40,8 @@
 		onDeleteEntry,
 		onSetOverride,
 		onRemoveOverride,
+		onSkipMonth,
+		onUnskipMonth,
 		onImport,
 		onBudgetChange,
 		onAddCategory,
@@ -55,6 +57,8 @@
 		onDeleteEntry: (id: string) => void;
 		onSetOverride: (entryId: string, month: number, amount: number) => void;
 		onRemoveOverride: (entryId: string, month: number) => void;
+		onSkipMonth: (entryId: string, month: number) => void;
+		onUnskipMonth: (entryId: string, month: number) => void;
 		onImport: (b: Budget) => void;
 		onBudgetChange: (b: Budget) => void;
 		onAddCategory: (name: string) => void;
@@ -625,6 +629,8 @@
 									onDuplicateEntry={handleDuplicate}
 									{onSetOverride}
 									{onRemoveOverride}
+									{onSkipMonth}
+									{onUnskipMonth}
 									onEdit={openEditDialog}
 									onAddNew={openAddDialog}
 								/>

@@ -4,6 +4,7 @@ import type { Budget, Category, Entry, EntryType, MonthSummary, Recurrence, Year
 // ─── Calculations ─────────────────────────────────────────────────────────────
 
 export function getMonthAmount(entry: Entry, month: number): number {
+	if ((entry.monthlySkips ?? []).includes(month)) return 0;
 	if (month in entry.monthlyOverrides) {
 		return entry.monthlyOverrides[month];
 	}
@@ -11,7 +12,8 @@ export function getMonthAmount(entry: Entry, month: number): number {
 		return entry.month === month ? entry.baseAmount : 0;
 	}
 	if (entry.recurrence === 'annual_distributed') {
-		return entry.baseAmount / 12;
+		const activeMonths = 12 - (entry.monthlySkips ?? []).length;
+		return entry.baseAmount / activeMonths;
 	}
 	return entry.baseAmount;
 }
@@ -138,6 +140,7 @@ export function buildEntry(input: NewEntryInput): Entry {
 		baseAmount: input.baseAmount,
 		month: input.month,
 		monthlyOverrides: {},
+		monthlySkips: [],
 		notes: input.notes?.trim() ?? ''
 	};
 }
@@ -188,6 +191,23 @@ export function removeOverride(budget: Budget, entryId: string, month: number): 
 		const overrides = { ...e.monthlyOverrides };
 		delete overrides[month];
 		return { ...e, monthlyOverrides: overrides };
+	});
+	return touch({ ...budget, entries });
+}
+
+export function skipMonth(budget: Budget, entryId: string, month: number): Budget {
+	const entries = budget.entries.map((e) => {
+		if (e.id !== entryId) return e;
+		const skips = (e.monthlySkips ?? []).includes(month) ? e.monthlySkips : [...(e.monthlySkips ?? []), month];
+		return { ...e, monthlySkips: skips };
+	});
+	return touch({ ...budget, entries });
+}
+
+export function unskipMonth(budget: Budget, entryId: string, month: number): Budget {
+	const entries = budget.entries.map((e) => {
+		if (e.id !== entryId) return e;
+		return { ...e, monthlySkips: (e.monthlySkips ?? []).filter((m) => m !== month) };
 	});
 	return touch({ ...budget, entries });
 }

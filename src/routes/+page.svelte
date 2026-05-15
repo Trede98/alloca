@@ -8,6 +8,8 @@
 		deleteEntry,
 		setOverride,
 		removeOverride,
+		skipMonth,
+		unskipMonth,
 		addCategory,
 		updateCategory,
 		deleteCategory
@@ -37,6 +39,11 @@
 		if (!existing.currency) existing = { ...existing, currency: 'EUR' };
 		if (!existing.monthlyNotes) existing = { ...existing, monthlyNotes: {} };
 		if (!existing.categories) existing = { ...existing, categories: [] };
+		// Migrate entries missing monthlySkips (added after initial release)
+		existing = {
+			...existing,
+			entries: existing.entries.map((e) => ({ ...e, monthlySkips: e.monthlySkips ?? [] }))
+		};
 		budget = existing;
 		loading = false;
 	});
@@ -68,6 +75,16 @@
 	function onRemoveOverride(entryId: string, month: number) {
 		if (!budget) return;
 		budget = removeOverride(budget, entryId, month);
+	}
+
+	function onSkipMonth(entryId: string, month: number) {
+		if (!budget) return;
+		budget = skipMonth(budget, entryId, month);
+	}
+
+	function onUnskipMonth(entryId: string, month: number) {
+		if (!budget) return;
+		budget = unskipMonth(budget, entryId, month);
 	}
 
 	function onImport(imported: Budget) {
@@ -145,6 +162,8 @@
 		{onDeleteEntry}
 		{onSetOverride}
 		{onRemoveOverride}
+		{onSkipMonth}
+		{onUnskipMonth}
 		{onImport}
 		{onBudgetChange}
 		{onAddCategory}
