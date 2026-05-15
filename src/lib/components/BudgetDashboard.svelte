@@ -445,12 +445,20 @@
 									checked={theme === 'dark'}
 									onCheckedChange={() => toggleTheme()}
 									class="relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2"
-									style="background-color: {theme === 'dark' ? 'var(--color-accent)' : 'var(--color-border)'}"
+									style="background-color: var(--color-theme-toggle-track)"
 								>
 									<Switch.Thumb
-										class="pointer-events-none block h-4 w-4 rounded-full shadow-sm transition-transform"
-										style="background-color: var(--color-text); transform: {theme === 'dark' ? 'translateX(16px)' : 'translateX(0px)'}"
-									/>
+										class="pointer-events-none flex h-4 w-4 items-center justify-center rounded-full shadow-sm transition-transform"
+										style="background-color: var(--color-theme-toggle-thumb); transform: {theme === 'dark' ? 'translateX(16px)' : 'translateX(0px)'}"
+									>
+										{#if theme === 'dark'}
+											<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" style="color: var(--color-theme-toggle-icon)">
+												<path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/>
+											</svg>
+										{:else}
+											<Sun size={10} style="color: var(--color-theme-toggle-icon)" />
+										{/if}
+									</Switch.Thumb>
 								</Switch.Root>
 							</div>
 

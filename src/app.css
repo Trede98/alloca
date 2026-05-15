@@ -31,6 +31,9 @@
 	--color-purple: #7c3aed;
 	--color-accent: #64748b;
 	--color-accent-fg: #f1f5f9;
+	--color-theme-toggle-track: #1e3a5f;
+	--color-theme-toggle-thumb: #f4f4f5;
+	--color-theme-toggle-icon: #fbbf24;
 
 	--radius: 8px;
 	--radius-sm: 4px;
@@ -60,6 +63,9 @@
 	--color-purple: #6d28d9;
 	--color-accent: #475569;
 	--color-accent-fg: #f8fafc;
+	--color-theme-toggle-track: #7dd3fc;
+	--color-theme-toggle-thumb: #fff7ed;
+	--color-theme-toggle-icon: #f97316;
 
 	--radius: 8px;
 	--radius-sm: 4px;
