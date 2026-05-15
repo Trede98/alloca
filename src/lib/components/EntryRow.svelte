@@ -86,7 +86,7 @@
 	{#snippet child({ props })}
 	<div
 		{...props}
-		class="entry-row group grid items-center gap-2 px-3 py-1.5 text-sm transition-colors hover:bg-surface-hover"
+		class="group grid items-center gap-2 px-3 py-1.5 text-sm transition-colors hover:bg-surface-hover"
 		style="grid-template-columns: 1fr auto auto;"
 		data-tour={tourAttr}
 	>
