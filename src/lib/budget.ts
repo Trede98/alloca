@@ -219,6 +219,10 @@ export function renameBudget(budget: Budget, name: string): Budget {
 
 export function addCategory(budget: Budget, name: string): Budget {
 	const trimmed = name.trim() || 'New Category';
+	const duplicate = budget.categories.some(
+		(c) => c.name.trim().toLowerCase() === trimmed.toLowerCase()
+	);
+	if (duplicate) throw new Error('category_error_duplicate');
 	const cat: Category = { id: nanoid(), name: trimmed };
 	return touch({ ...budget, categories: [...budget.categories, cat] });
 }
@@ -226,13 +230,17 @@ export function addCategory(budget: Budget, name: string): Budget {
 export function updateCategory(budget: Budget, id: string, name: string): Budget {
 	const trimmed = name.trim();
 	if (!trimmed) throw new Error('Category name is required');
+	const duplicate = budget.categories.some(
+		(c) => c.id !== id && c.name.trim().toLowerCase() === trimmed.toLowerCase()
+	);
+	if (duplicate) throw new Error('category_error_duplicate');
 	const categories = budget.categories.map((c) => (c.id === id ? { ...c, name: trimmed } : c));
 	return touch({ ...budget, categories });
 }
 
 export function deleteCategory(budget: Budget, id: string): Budget {
 	if (budget.entries.some((e) => e.category === id)) {
-		throw new Error('Category is in use');
+		throw new Error('category_error_in_use');
 	}
 	const categories = budget.categories.filter((c) => c.id !== id);
 	return touch({ ...budget, categories });

@@ -64,6 +64,8 @@
 	"category_manager_click_to_rename": "Cliquer pour renommer",
 	"category_manager_delete": "Supprimer la catégorie",
 	"category_manager_delete_aria": "Supprimer {name}",
+	"category_error_duplicate": "Une catégorie avec ce nom existe déjà",
+	"category_error_in_use": "La catégorie est utilisée et ne peut pas être supprimée",
 	"entry_list_empty": "Aucune entrée de type {type} pour ce mois.",
 	"entry_list_add": "+ Ajouter {type}",
 	"entry_row_override": "↺ modifié",

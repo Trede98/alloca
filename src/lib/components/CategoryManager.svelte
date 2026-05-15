@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Category } from '$lib/types';
 	import * as m from '$lib/paraglide/messages';
+	import { Trash2 } from 'lucide-svelte';
 
 	let {
 		categories,
@@ -76,22 +77,22 @@
 	}
 
 	const inputClass =
-		'border px-2 py-1 text-sm outline-none focus:ring-1 focus:ring-[--color-accent]/40 transition-colors';
+		'border px-2.5 py-2 text-sm outline-none focus:ring-1 focus:ring-[--color-accent]/40 transition-colors';
 	const inputStyle = `background-color: var(--color-bg); border-color: var(--color-border); color: var(--color-text); border-radius: var(--radius-sm);`;
 </script>
 
 {#snippet panelContent()}
-	<div class="text-xs font-medium" style:color="var(--color-muted)">
-		{m.category_manager_title()}
-	</div>
-
 	<!-- Category list -->
+	<div class="overflow-y-auto max-h-[260px]">
 	<div class="flex flex-col gap-1">
 		{#if categories.length === 0}
 			<p class="text-xs" style:color="var(--color-muted)">{m.category_manager_empty()}</p>
 		{/if}
 		{#each categories as cat (cat.id)}
-			<div class="flex items-center gap-1">
+			<div
+				class="flex items-center gap-1.5 py-1 border-b last:border-b-0"
+				style:border-color="var(--color-border)"
+			>
 				{#if editingId === cat.id}
 					<input
 						bind:this={editInputEl}
@@ -104,7 +105,7 @@
 				{:else}
 					<button
 						type="button"
-						class="flex-1 min-w-0 truncate px-2 py-1 text-left text-sm hover:opacity-70 transition-opacity"
+						class="flex-1 min-w-0 truncate px-2 py-1 text-left text-sm hover:bg-[--surface-hover] transition-colors"
 						style:border-radius="var(--radius-sm)"
 						style:color="var(--color-text)"
 						onclick={() => startEdit(cat)}
@@ -115,17 +116,18 @@
 				{/if}
 				<button
 					type="button"
-					class="shrink-0 p-1 text-xs opacity-40 transition-opacity hover:opacity-100"
+					class="shrink-0 p-1 opacity-40 transition-opacity hover:opacity-100"
 					style:border-radius="var(--radius-sm)"
 					style:color="var(--color-red)"
 					onclick={() => onDeleteCategory(cat.id)}
 					title={m.category_manager_delete()}
 					aria-label={m.category_manager_delete_aria({ name: cat.name })}
 				>
-					✕
+					<Trash2 size={14} />
 				</button>
 			</div>
 		{/each}
+	</div>
 	</div>
 
 	<!-- Error -->
@@ -183,7 +185,7 @@
 			onkeydown={(e) => e.key === 'Escape' && close()}
 		>
 			<div
-				class="w-full max-w-sm flex flex-col gap-2 border p-3"
+				class="w-full max-w-sm flex flex-col gap-4 border p-5"
 				style:border-radius="var(--radius)"
 				style:background-color="var(--color-surface)"
 				style:border-color="var(--color-border)"

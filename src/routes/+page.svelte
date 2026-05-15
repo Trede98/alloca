@@ -120,14 +120,29 @@
 		budget = updated;
 	}
 
+	function resolveCategoryError(e: unknown): string {
+		if (!(e instanceof Error)) return 'Unknown error';
+		if (e.message === 'category_error_duplicate') return m.category_error_duplicate();
+		if (e.message === 'category_error_in_use') return m.category_error_in_use();
+		return e.message;
+	}
+
 	function onAddCategory(name: string) {
 		if (!budget) return;
-		budget = addCategory(budget, name);
+		try {
+			budget = addCategory(budget, name);
+		} catch (e) {
+			categoryError = resolveCategoryError(e);
+		}
 	}
 
 	function onUpdateCategory(id: string, name: string) {
 		if (!budget) return;
-		budget = updateCategory(budget, id, name);
+		try {
+			budget = updateCategory(budget, id, name);
+		} catch (e) {
+			categoryError = resolveCategoryError(e);
+		}
 	}
 
 	function onDeleteCategory(id: string) {
@@ -135,7 +150,7 @@
 		try {
 			budget = deleteCategory(budget, id);
 		} catch (e) {
-			categoryError = e instanceof Error ? e.message : 'Cannot delete category';
+			categoryError = resolveCategoryError(e);
 		}
 	}
 
