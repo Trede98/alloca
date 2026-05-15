@@ -71,6 +71,8 @@
 	"entry_row_amount_tooltip": "Click to edit this month's amount",
 	"entry_row_duplicate": "Duplicate entry",
 	"entry_row_delete": "Delete entry",
+	"entry_row_action_skip": "Skip",
+	"entry_row_action_unskip": "Unskip",
 	"entry_row_skipped": "skipped",
 	"entry_row_skipped_tooltip": "Skipped this month — click to restore",
 	"entry_row_skip_tooltip": "Skip this entry for this month",
@@ -111,7 +113,7 @@
 	"tour_step_add_entry_title": "Add an Entry",
 	"tour_step_add_entry_desc": "Click + to add a new entry. Choose the type (income, expense, or savings), the recurrence (monthly, one-time, or yearly ÷ 12), enter an amount, and assign a category.",
 	"tour_step_entry_actions_title": "Quick Actions",
-	"tour_step_entry_actions_desc": "Hover over any entry to reveal quick actions: ⊘ skip it for this month only, ⧉ duplicate it, or ✕ delete it. Click the name to edit all details. Click the amount to override it for this month — for yearly ÷ 12 entries, the monthly amount is fixed and cannot be changed individually.",
+	"tour_step_entry_actions_desc": "Click ⋯ on any entry to open the actions menu: skip for this month, duplicate, or delete. Click the name to edit all details. Click the amount to override it for this month — for yearly ÷ 12 entries, the monthly amount is fixed and cannot be changed individually.",
 	"tour_step_settings_title": "Settings & Tools",
 	"tour_step_settings_desc": "Access categories, import/export your budget as JSON, switch theme or language, and replay this tour anytime."
 }

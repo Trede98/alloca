@@ -3,6 +3,7 @@
 	import { formatCurrency } from '$lib/format';
 	import * as m from '$lib/paraglide/messages';
 	import { getLocale } from '$lib/paraglide/runtime';
+	import { DropdownMenu, ContextMenu } from 'bits-ui';
 
 	let {
 		entry,
@@ -80,11 +81,15 @@
 	}[entry.recurrence]);
 </script>
 
-<div
-	class="entry-row group grid items-center gap-2 px-3 py-1.5 text-sm transition-colors hover:bg-[--surface-hover]"
-	style="grid-template-columns: 1fr auto auto auto auto;"
-	data-tour={tourAttr}
->
+<ContextMenu.Root>
+<ContextMenu.Trigger>
+	{#snippet child({ props })}
+	<div
+		{...props}
+		class="entry-row group grid items-center gap-2 px-3 py-1.5 text-sm transition-colors hover:bg-surface-hover"
+		style="grid-template-columns: 1fr auto auto;"
+		data-tour={tourAttr}
+	>
 	<!-- Name + meta -->
 	<div class="flex min-w-0 items-center gap-1.5">
 		<button
@@ -169,45 +174,95 @@
 		{/if}
 	</div>
 
-	<!-- Skip toggle (only for recurring entries) -->
+	<!-- More actions dropdown -->
+	<DropdownMenu.Root>
+		<DropdownMenu.Trigger>
+			{#snippet child({ props })}
+				<button
+					type="button"
+					{...props}
+					class="p-1 text-xs opacity-40 transition-opacity hover:opacity-100"
+					style:border-radius="var(--radius-sm)"
+					style:color="var(--color-text)"
+					title="More actions"
+				>
+					⋯
+				</button>
+			{/snippet}
+		</DropdownMenu.Trigger>
+		<DropdownMenu.Portal>
+			<DropdownMenu.Content
+				sideOffset={4}
+				align="end"
+				class="z-50 min-w-[160px] overflow-hidden py-1"
+				style="background-color: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius); box-shadow: var(--shadow-dropdown);"
+			>
+				{#if entry.recurrence !== 'single'}
+					<DropdownMenu.Item
+						disabled={isLastActiveMonth}
+						class="flex w-full cursor-default items-center gap-2 px-3 py-1.5 text-sm outline-none data-highlighted:bg-surface-hover data-disabled:opacity-40 data-disabled:cursor-not-allowed"
+						style="color: {hasSkip ? 'var(--color-accent)' : 'var(--color-text)'}"
+						title={isLastActiveMonth ? m.entry_row_skip_last_month_tooltip() : hasSkip ? m.entry_row_unskip_tooltip() : m.entry_row_skip_tooltip()}
+						onclick={() => hasSkip ? onUnskipMonth(entry.id, month) : onSkipMonth(entry.id, month)}
+					>
+						<span>{hasSkip ? '↩' : '⊘'}</span>
+						<span>{hasSkip ? m.entry_row_action_unskip() : m.entry_row_action_skip()}</span>
+					</DropdownMenu.Item>
+				{/if}
+				<DropdownMenu.Item
+					class="flex w-full cursor-default items-center gap-2 px-3 py-1.5 text-sm outline-none data-highlighted:bg-surface-hover"
+					style="color: var(--color-text)"
+					onclick={() => onDuplicateEntry(entry)}
+				>
+					<span>⧉</span>
+					<span>{m.entry_row_duplicate()}</span>
+				</DropdownMenu.Item>
+				<DropdownMenu.Item
+					class="flex w-full cursor-default items-center gap-2 px-3 py-1.5 text-sm outline-none data-highlighted:bg-danger-hover"
+					style="color: var(--color-red)"
+					onclick={() => onDeleteEntry(entry.id)}
+				>
+					<span>✕</span>
+					<span>{m.entry_row_delete()}</span>
+				</DropdownMenu.Item>
+			</DropdownMenu.Content>
+		</DropdownMenu.Portal>
+	</DropdownMenu.Root>
+</div>
+	{/snippet}
+</ContextMenu.Trigger>
+
+<ContextMenu.Content
+	class="z-50 min-w-[160px] overflow-hidden py-1"
+	style="background-color: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius); box-shadow: var(--shadow-dropdown);"
+>
 	{#if entry.recurrence !== 'single'}
-		<button
-			type="button"
-			class="invisible p-1 text-xs opacity-60 transition-opacity hover:opacity-100 group-hover:visible"
-			class:cursor-not-allowed={isLastActiveMonth}
-			style:border-radius="var(--radius-sm)"
-			style:color={hasSkip ? 'var(--color-accent)' : 'var(--color-muted)'}
-			title={isLastActiveMonth ? m.entry_row_skip_last_month_tooltip() : hasSkip ? m.entry_row_unskip_tooltip() : m.entry_row_skip_tooltip()}
+		<ContextMenu.Item
 			disabled={isLastActiveMonth}
+			class="flex w-full cursor-default items-center gap-2 px-3 py-1.5 text-sm outline-none data-highlighted:bg-surface-hover data-disabled:opacity-40 data-disabled:cursor-not-allowed"
+			style="color: {hasSkip ? 'var(--color-accent)' : 'var(--color-text)'}"
+			title={isLastActiveMonth ? m.entry_row_skip_last_month_tooltip() : hasSkip ? m.entry_row_unskip_tooltip() : m.entry_row_skip_tooltip()}
 			onclick={() => hasSkip ? onUnskipMonth(entry.id, month) : onSkipMonth(entry.id, month)}
 		>
-			{hasSkip ? '↩' : '⊘'}
-		</button>
-	{:else}
-		<span class="p-1"></span>
+			<span>{hasSkip ? '↩' : '⊘'}</span>
+			<span>{hasSkip ? m.entry_row_action_unskip() : m.entry_row_action_skip()}</span>
+		</ContextMenu.Item>
 	{/if}
-
-	<!-- Duplicate -->
-	<button
-		type="button"
-		class="invisible p-1 text-xs opacity-60 transition-opacity hover:opacity-100 group-hover:visible"
-		style:border-radius="var(--radius-sm)"
-		style:color="var(--color-text)"
-		title={m.entry_row_duplicate()}
+	<ContextMenu.Item
+		class="flex w-full cursor-default items-center gap-2 px-3 py-1.5 text-sm outline-none data-highlighted:bg-surface-hover"
+		style="color: var(--color-text)"
 		onclick={() => onDuplicateEntry(entry)}
 	>
-		⧉
-	</button>
-
-	<!-- Delete -->
-	<button
-		type="button"
-		class="invisible p-1 text-xs opacity-60 transition-opacity hover:opacity-100 group-hover:visible"
-		style:border-radius="var(--radius-sm)"
-		style:color="var(--color-red)"
-		title={m.entry_row_delete()}
+		<span>⧉</span>
+		<span>{m.entry_row_duplicate()}</span>
+	</ContextMenu.Item>
+	<ContextMenu.Item
+		class="flex w-full cursor-default items-center gap-2 px-3 py-1.5 text-sm outline-none data-highlighted:bg-danger-hover"
+		style="color: var(--color-red)"
 		onclick={() => onDeleteEntry(entry.id)}
 	>
-		✕
-	</button>
-</div>
+		<span>✕</span>
+		<span>{m.entry_row_delete()}</span>
+	</ContextMenu.Item>
+</ContextMenu.Content>
+</ContextMenu.Root>

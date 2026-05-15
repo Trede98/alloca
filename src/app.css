@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+@theme {
+	--color-surface-hover: var(--surface-hover);
+	--color-danger-hover: color-mix(in srgb, var(--color-red) 6%, transparent);
+}
+
 /* ── Dark theme (default) ────────────────────────────────────────────────── */
 :root,
 [data-theme="dark"] {

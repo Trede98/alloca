@@ -71,6 +71,8 @@
 	"entry_row_amount_tooltip": "Clic para editar el importe del mes",
 	"entry_row_duplicate": "Duplicar entrada",
 	"entry_row_delete": "Eliminar entrada",
+	"entry_row_action_skip": "Omitir",
+	"entry_row_action_unskip": "Restaurar",
 	"entry_row_skipped": "omitido",
 	"entry_row_skipped_tooltip": "Omitido este mes — clic para restaurar",
 	"entry_row_skip_tooltip": "Omitir esta entrada para este mes",
@@ -111,7 +113,7 @@
 	"tour_step_add_entry_title": "Añadir una partida",
 	"tour_step_add_entry_desc": "Haz clic en + para añadir una nueva partida. Elige el tipo (ingreso, gasto o ahorro), la recurrencia (mensual, única o anual ÷ 12), introduce un importe y asigna una categoría.",
 	"tour_step_entry_actions_title": "Acciones rápidas",
-	"tour_step_entry_actions_desc": "Pasa el cursor sobre una partida para ver las acciones rápidas: ⊘ omitirla solo este mes, ⧉ duplicarla, o ✕ eliminarla. Haz clic en el nombre para editar todos los detalles. Haz clic en el importe para cambiarlo este mes — en partidas anuales ÷ 12, el importe mensual es fijo y no puede modificarse de forma individual.",
+	"tour_step_entry_actions_desc": "Haz clic en ⋯ sobre una partida para abrir el menú de acciones: omitir este mes, duplicar o eliminar. Haz clic en el nombre para editar todos los detalles. Haz clic en el importe para cambiarlo este mes — en partidas anuales ÷ 12, el importe mensual es fijo y no puede modificarse de forma individual.",
 	"tour_step_settings_title": "Ajustes y herramientas",
 	"tour_step_settings_desc": "Gestiona categorías, importa/exporta el presupuesto en JSON, cambia el tema o idioma, y repite el tutorial cuando quieras."
 }

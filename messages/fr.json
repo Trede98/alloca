@@ -71,6 +71,8 @@
 	"entry_row_amount_tooltip": "Cliquer pour modifier le montant du mois",
 	"entry_row_duplicate": "Dupliquer l'entrée",
 	"entry_row_delete": "Supprimer l'entrée",
+	"entry_row_action_skip": "Ignorer",
+	"entry_row_action_unskip": "Restaurer",
 	"entry_row_skipped": "ignoré",
 	"entry_row_skipped_tooltip": "Ignoré ce mois — cliquer pour restaurer",
 	"entry_row_skip_tooltip": "Ignorer cette entrée pour ce mois",
@@ -111,7 +113,7 @@
 	"tour_step_add_entry_title": "Ajouter un poste",
 	"tour_step_add_entry_desc": "Cliquez sur + pour ajouter un nouveau poste. Choisissez le type (revenu, dépense ou épargne), la récurrence (mensuel, ponctuel ou annuel ÷ 12), saisissez un montant et assignez une catégorie.",
 	"tour_step_entry_actions_title": "Actions rapides",
-	"tour_step_entry_actions_desc": "Passez la souris sur un poste pour révéler les actions rapides : ⊘ ignorer pour ce mois uniquement, ⧉ dupliquer, ou ✕ supprimer. Cliquez sur le nom pour modifier tous les détails. Cliquez sur le montant pour le remplacer ce mois — pour les postes annuels ÷ 12, le montant mensuel est fixe et ne peut pas être modifié individuellement.",
+	"tour_step_entry_actions_desc": "Cliquez sur ⋯ sur un poste pour ouvrir le menu d'actions : ignorer ce mois, dupliquer ou supprimer. Cliquez sur le nom pour modifier tous les détails. Cliquez sur le montant pour le remplacer ce mois — pour les postes annuels ÷ 12, le montant mensuel est fixe et ne peut pas être modifié individuellement.",
 	"tour_step_settings_title": "Paramètres et outils",
 	"tour_step_settings_desc": "Gérez les catégories, importez/exportez votre budget en JSON, changez le thème ou la langue, et relancez cette visite guidée à tout moment."
 }

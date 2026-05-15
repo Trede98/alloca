@@ -71,6 +71,8 @@
 	"entry_row_amount_tooltip": "Klicken um den Monatsbetrag zu bearbeiten",
 	"entry_row_duplicate": "Eintrag duplizieren",
 	"entry_row_delete": "Eintrag löschen",
+	"entry_row_action_skip": "Überspringen",
+	"entry_row_action_unskip": "Wiederherstellen",
 	"entry_row_skipped": "übersprungen",
 	"entry_row_skipped_tooltip": "Diesen Monat übersprungen — klicken um wiederherzustellen",
 	"entry_row_skip_tooltip": "Diesen Eintrag für diesen Monat überspringen",
@@ -111,7 +113,7 @@
 	"tour_step_add_entry_title": "Eintrag hinzufügen",
 	"tour_step_add_entry_desc": "Klicken Sie +, um einen neuen Eintrag hinzuzufügen. Wählen Sie den Typ (Einnahmen, Ausgaben oder Ersparnisse), die Wiederholung (monatlich, einmalig oder jährlich ÷ 12), geben Sie einen Betrag ein und weisen Sie eine Kategorie zu.",
 	"tour_step_entry_actions_title": "Schnellaktionen",
-	"tour_step_entry_actions_desc": "Bewegen Sie die Maus über einen Eintrag, um Schnellaktionen einzublenden: ⊘ nur für diesen Monat überspringen, ⧉ duplizieren oder ✕ löschen. Namen anklicken zum Bearbeiten. Betrag anklicken, um ihn für diesen Monat zu überschreiben — bei Jahresbeträgen ÷ 12 ist der Monatsbetrag fest und kann nicht einzeln geändert werden.",
+	"tour_step_entry_actions_desc": "Klicken Sie auf ⋯ bei einem Eintrag, um das Aktionsmenü zu öffnen: für diesen Monat überspringen, duplizieren oder löschen. Namen anklicken zum Bearbeiten. Betrag anklicken, um ihn für diesen Monat zu überschreiben — bei Jahresbeträgen ÷ 12 ist der Monatsbetrag fest und kann nicht einzeln geändert werden.",
 	"tour_step_settings_title": "Einstellungen & Werkzeuge",
 	"tour_step_settings_desc": "Kategorien verwalten, Budget als JSON importieren/exportieren, Design oder Sprache wechseln und die Tour jederzeit wiederholen."
 }
