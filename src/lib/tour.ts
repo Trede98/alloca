@@ -8,6 +8,10 @@ export function hasTourBeenSeen(): boolean {
 	return localStorage.getItem(TOUR_KEY) === 'true';
 }
 
+export function markTourSeen(): void {
+	localStorage.setItem(TOUR_KEY, 'true');
+}
+
 export function startTour(onSelectMonth: () => void, onTourEnd: () => void): void {
 	const d = driver({
 		animate: true,

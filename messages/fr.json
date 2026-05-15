@@ -133,5 +133,10 @@
 	"seed_entry_utilities": "Charges",
 	"seed_entry_health": "Santé",
 	"seed_entry_vacation": "Vacances",
-	"seed_entry_christmas_gifts": "Cadeaux de Noël"
+	"seed_entry_christmas_gifts": "Cadeaux de Noël",
+	"welcome_title": "Bienvenue 👋",
+	"welcome_body": "Votre budget est entièrement stocké dans votre navigateur.\nPas de compte. Pas d'envoi. Pas de suivi.",
+	"welcome_start": "Commencer à budgéter",
+	"welcome_tour": "Visite rapide",
+	"welcome_footer": "Vous pouvez revoir la visite à tout moment depuis les Paramètres."
 }

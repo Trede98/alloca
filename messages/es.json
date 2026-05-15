@@ -133,5 +133,10 @@
 	"seed_entry_utilities": "Servicios",
 	"seed_entry_health": "Salud",
 	"seed_entry_vacation": "Vacaciones",
-	"seed_entry_christmas_gifts": "Regalos de Navidad"
+	"seed_entry_christmas_gifts": "Regalos de Navidad",
+	"welcome_title": "Bienvenido 👋",
+	"welcome_body": "Tu presupuesto se guarda completamente en tu navegador.\nSin cuenta. Sin subidas. Sin rastreo.",
+	"welcome_start": "Empezar a presupuestar",
+	"welcome_tour": "Tour rápido",
+	"welcome_footer": "Puedes repetir el tour en cualquier momento desde Ajustes."
 }

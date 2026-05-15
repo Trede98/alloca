@@ -133,5 +133,10 @@
 	"seed_entry_utilities": "Nebenkosten",
 	"seed_entry_health": "Gesundheit",
 	"seed_entry_vacation": "Urlaub",
-	"seed_entry_christmas_gifts": "Weihnachtsgeschenke"
+	"seed_entry_christmas_gifts": "Weihnachtsgeschenke",
+	"welcome_title": "Willkommen 👋",
+	"welcome_body": "Dein Budget wird vollständig in deinem Browser gespeichert.\nKein Konto. Kein Upload. Kein Tracking.",
+	"welcome_start": "Budgetieren starten",
+	"welcome_tour": "Kurze Tour",
+	"welcome_footer": "Du kannst die Tour jederzeit in den Einstellungen wiederholen."
 }

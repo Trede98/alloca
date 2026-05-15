@@ -133,5 +133,10 @@
 	"seed_entry_utilities": "Utenze",
 	"seed_entry_health": "Salute",
 	"seed_entry_vacation": "Vacanze",
-	"seed_entry_christmas_gifts": "Regali di Natale"
+	"seed_entry_christmas_gifts": "Regali di Natale",
+	"welcome_title": "Benvenuto 👋",
+	"welcome_body": "Il tuo budget è salvato interamente nel browser.\nNessun account. Nessun upload. Nessun tracciamento.",
+	"welcome_start": "Inizia a budgettare",
+	"welcome_tour": "Tour rapido",
+	"welcome_footer": "Puoi rivedere il tour in qualsiasi momento dalle Impostazioni."
 }

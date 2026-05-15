@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { loadBudget, saveBudget, replaceBudget } from '$lib/db';
-	import { hasTourBeenSeen } from '$lib/tour';
+	import { hasTourBeenSeen, markTourSeen } from '$lib/tour';
+	import WelcomeDialog from '$lib/components/WelcomeDialog.svelte';
 	import { createEmptyBudget, createSeedBudget } from '$lib/seed';
 	import {
 		addEntry,
@@ -22,7 +23,7 @@
 
 	let budget = $state<Budget | null>(null);
 	let loading = $state(true);
-	let shouldStartTour = $state(false);
+	let welcomeOpen = $state(false);
 	let isTourActive = $state(false);
 	let stashedBudget = $state<Budget | null>(null);
 
@@ -50,7 +51,7 @@
 		};
 		budget = existing;
 		loading = false;
-		shouldStartTour = !hasTourBeenSeen();
+		welcomeOpen = !hasTourBeenSeen();
 	});
 
 	$effect(() => {
@@ -69,6 +70,11 @@
 			stashedBudget = null;
 		}
 		isTourActive = false;
+	}
+
+	function onWelcomeStart() {
+		markTourSeen();
+		welcomeOpen = false;
 	}
 
 	function onAddEntry(input: NewEntryInput) {
@@ -191,7 +197,8 @@
 		{categoryError}
 		{onClearCategoryError}
 		{startReset}
-		{shouldStartTour}
+		{welcomeOpen}
+		{onWelcomeStart}
 		{onTourStart}
 		{onTourEnd}
 	/>

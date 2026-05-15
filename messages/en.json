@@ -133,5 +133,10 @@
 	"seed_entry_utilities": "Utilities",
 	"seed_entry_health": "Health",
 	"seed_entry_vacation": "Vacation",
-	"seed_entry_christmas_gifts": "Christmas Gifts"
+	"seed_entry_christmas_gifts": "Christmas Gifts",
+	"welcome_title": "Welcome 👋",
+	"welcome_body": "Your budget lives entirely in your browser.\nNo account. No uploads. No tracking.",
+	"welcome_start": "Start budgeting",
+	"welcome_tour": "Quick tour",
+	"welcome_footer": "You can always replay the tour from Settings."
 }

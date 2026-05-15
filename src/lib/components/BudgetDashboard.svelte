@@ -22,9 +22,9 @@
 	import BalanceBadge from './BalanceBadge.svelte';
 	import ImportExportMenu from './ImportExportMenu.svelte';
 	import CategoryManager from './CategoryManager.svelte';
+	import WelcomeDialog from './WelcomeDialog.svelte';
 	import * as m from '$lib/paraglide/messages';
 	import { getLocale, setLocale } from '$lib/paraglide/runtime';
-	import { onMount, tick } from 'svelte';
 	import { startTour } from '$lib/tour';
 
 	const LANGUAGES = [
@@ -52,7 +52,8 @@
 		categoryError,
 		onClearCategoryError,
 		startReset,
-		shouldStartTour = false,
+		welcomeOpen = false,
+		onWelcomeStart,
 		onTourStart,
 		onTourEnd
 	}: {
@@ -72,7 +73,8 @@
 		categoryError: string;
 		onClearCategoryError: () => void;
 		startReset: () => void;
-		shouldStartTour?: boolean;
+		welcomeOpen?: boolean;
+		onWelcomeStart: () => void;
 		onTourStart: () => void;
 		onTourEnd: () => void;
 	} = $props();
@@ -199,15 +201,12 @@
 		showYearRecap = false;
 	}
 
-	onMount(async () => {
-		if (shouldStartTour) {
-			await tick();
-			resetForTour();
-			await tick();
-			onTourStart();
-			startTour(() => forceSelectMonth(0), onTourEnd);
-		}
-	});
+	function triggerTour() {
+		onWelcomeStart();
+		resetForTour();
+		onTourStart();
+		setTimeout(() => startTour(() => forceSelectMonth(0), onTourEnd), 50);
+	}
 
 	function replayTour() {
 		closePopover();
@@ -802,4 +801,10 @@
 	{onAddCategory}
 	onClose={closeDialog}
 	onSave={handleSave}
+/>
+
+<WelcomeDialog
+	open={welcomeOpen}
+	onStartBudgeting={onWelcomeStart}
+	onStartTour={triggerTour}
 />
