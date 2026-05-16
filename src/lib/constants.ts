@@ -16,6 +16,14 @@ export const RECURRENCE = {
 } as const;
 
 export const MONTHS_PER_YEAR = 12;
+
+export const CURRENCIES = [
+	'AED', 'ARS', 'AUD', 'BRL', 'CAD', 'CHF', 'CLP', 'CNY', 'COP', 'CZK',
+	'DKK', 'EGP', 'EUR', 'GBP', 'HKD', 'HUF', 'IDR', 'ILS', 'INR', 'JPY',
+	'KRW', 'MXN', 'MYR', 'NGN', 'NOK', 'NZD', 'PEN', 'PHP', 'PKR', 'PLN',
+	'RON', 'RUB', 'SAR', 'SEK', 'SGD', 'THB', 'TRY', 'TWD', 'UAH', 'USD',
+	'VND', 'ZAR'
+] as const;
 export const UNCATEGORIZED = 'Uncategorized';
 
 export const ENTRY_TYPE_LABELS: Record<(typeof ENTRY_TYPES)[number], () => string> = {

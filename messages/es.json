@@ -9,6 +9,8 @@
 	"light_mode": "Modo claro",
 	"clear_budget": "Borrar presupuesto",
 	"language": "Idioma",
+	"currency": "Moneda",
+	"currency_search_placeholder": "Buscar divisas…",
 	"cancel": "Cancelar",
 	"save": "Guardar",
 	"edit": "Editar",

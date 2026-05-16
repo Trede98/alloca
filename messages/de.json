@@ -9,6 +9,8 @@
 	"light_mode": "Helles Design",
 	"clear_budget": "Budget löschen",
 	"language": "Sprache",
+	"currency": "Währung",
+	"currency_search_placeholder": "Währungen suchen…",
 	"cancel": "Abbrechen",
 	"save": "Speichern",
 	"edit": "Bearbeiten",

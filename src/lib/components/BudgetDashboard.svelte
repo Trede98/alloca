@@ -13,7 +13,7 @@
 	import { formatCurrency, getMonthFull } from '$lib/format';
 	import { getTheme, toggleTheme } from '$lib/theme.svelte';
 	import { Switch } from 'bits-ui';
-	import { Settings2, Tag, Upload, Download, Trash2, Sun, Moon, Globe, ChevronRight, ChevronLeft, HelpCircle } from 'lucide-svelte';
+	import { Settings2, Tag, Upload, Download, Trash2, Sun, Moon, Globe, Coins, ChevronRight, ChevronLeft, HelpCircle } from 'lucide-svelte';
 	import SummaryBar from './SummaryBar.svelte';
 	import MonthCard from './MonthCard.svelte';
 	import YearRecap from './YearRecap.svelte';
@@ -26,6 +26,19 @@
 	import * as m from '$lib/paraglide/messages';
 	import { getLocale, setLocale } from '$lib/paraglide/runtime';
 	import { startTour } from '$lib/tour';
+	import { CURRENCIES } from '$lib/constants';
+
+	function getCurrencyLabel(code: string, loc: string): string {
+		const label = new Intl.DisplayNames([loc], { type: 'currency' }).of(code) ?? code;
+		return label.charAt(0).toUpperCase() + label.slice(1);
+	}
+
+	function getCurrencySymbol(code: string, loc: string): string {
+		return (0)
+			.toLocaleString(loc, { style: 'currency', currency: code, minimumFractionDigits: 0, maximumFractionDigits: 0 })
+			.replace(/[\d\s,. ]/g, '')
+			.trim();
+	}
 
 	const LANGUAGES = [
 		{ code: 'en', flag: '🇬🇧', label: 'English' },
@@ -225,7 +238,17 @@
 
 	// Mobile actions popover
 	let mobileMenuOpen = $state(false);
-	let menuView = $state<'main' | 'language'>('main');
+	let menuView = $state<'main' | 'language' | 'currency'>('main');
+	let currencyFilter = $state('');
+	const filteredCurrencies = $derived(
+		currencyFilter.trim() === ''
+			? CURRENCIES
+			: CURRENCIES.filter(
+					(code) =>
+						code.toLowerCase().includes(currencyFilter.toLowerCase()) ||
+						getCurrencyLabel(code, locale).toLowerCase().includes(currencyFilter.toLowerCase())
+				)
+	);
 
 	function openPopover() {
 		menuView = 'main';
@@ -428,6 +451,26 @@
 								</div>
 							</button>
 
+							<!-- Currency submenu trigger -->
+							<button
+								type="button"
+								role="menuitem"
+								class="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-sm transition-colors"
+								style:color="var(--color-text)"
+								onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
+								onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
+								onclick={() => { currencyFilter = ''; menuView = 'currency'; }}
+							>
+								<div class="flex items-center gap-3">
+									<Coins size={14} style="opacity:0.6" />
+									{m.currency()}
+								</div>
+								<div class="flex items-center gap-1.5">
+									<span class="font-mono text-xs opacity-60">{getCurrencySymbol(budget.currency, locale)}</span>
+									<ChevronRight size={12} style="opacity:0.4" />
+								</div>
+							</button>
+
 							<div class="my-1 border-t" style:border-color="var(--color-border)"></div>
 
 							<!-- Theme toggle row (not a button — label + Switch) -->
@@ -478,7 +521,7 @@
 								{m.clear_budget()}
 							</button>
 
-						{:else}
+						{:else if menuView === 'language'}
 							<!-- Language submenu view -->
 
 							<!-- Back button -->
@@ -517,6 +560,63 @@
 									{/if}
 								</button>
 							{/each}
+
+						{:else if menuView === 'currency'}
+							<!-- Currency submenu view -->
+
+							<!-- Back button -->
+							<button
+								type="button"
+								role="menuitem"
+								class="flex w-full items-center gap-2 px-3 py-2.5 text-sm font-medium transition-colors"
+								style:color="var(--color-text)"
+								onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
+								onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
+								onclick={() => (menuView = 'main')}
+							>
+								<ChevronLeft size={14} style="opacity:0.6" />
+								{m.currency()}
+							</button>
+
+							<div class="my-1 border-t" style:border-color="var(--color-border)"></div>
+
+							<!-- Search input -->
+							<div class="px-3 py-1.5">
+								<input
+									type="text"
+									bind:value={currencyFilter}
+									placeholder={m.currency_search_placeholder()}
+									class="w-full rounded bg-transparent px-2 py-1.5 text-sm outline-none border"
+									style:border-color="var(--color-border)"
+									style:color="var(--color-text)"
+									style:background-color="var(--color-bg)"
+								/>
+							</div>
+
+							<div class="my-1 border-t" style:border-color="var(--color-border)"></div>
+
+							<!-- Currency options -->
+							<div class="max-h-72 overflow-y-auto">
+								{#each filteredCurrencies as code (code)}
+									<button
+										type="button"
+										role="menuitem"
+										class="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-sm transition-colors"
+										style:color="var(--color-text)"
+										onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
+										onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
+										onclick={() => { onBudgetChange({ ...budget, currency: code }); menuView = 'main'; closePopover(); }}
+									>
+										<span class="text-left">{getCurrencyLabel(code, locale)}</span>
+										<div class="flex items-center gap-2">
+											<span class="font-mono text-xs opacity-50">{code}</span>
+											{#if budget.currency === code}
+												<span style:color="var(--color-accent)">✓</span>
+											{/if}
+										</div>
+									</button>
+								{/each}
+							</div>
 						{/if}
 					</div>
 

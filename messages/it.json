@@ -9,6 +9,8 @@
 	"light_mode": "Tema chiaro",
 	"clear_budget": "Azzera budget",
 	"language": "Lingua",
+	"currency": "Valuta",
+	"currency_search_placeholder": "Cerca valute…",
 	"cancel": "Annulla",
 	"save": "Salva",
 	"edit": "Modifica",

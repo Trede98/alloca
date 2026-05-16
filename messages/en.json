@@ -9,6 +9,8 @@
 	"light_mode": "Light mode",
 	"clear_budget": "Clear budget",
 	"language": "Language",
+	"currency": "Currency",
+	"currency_search_placeholder": "Search currencies…",
 	"cancel": "Cancel",
 	"save": "Save",
 	"edit": "Edit",
