@@ -1,18 +1,20 @@
 import { nanoid } from 'nanoid';
-import type { Budget, Category, Entry, EntryType, MonthSummary, Recurrence, YearRecap, YearRecapCategory, YearRecapEntry, YearSummary } from './types';
+import type { Budget, Category, Entry, EntryType, MonthSummary, Recurrence, YearRecap, YearRecapCategory, YearSummary } from './types';
+import { ENTRY_TYPE, MONTHS_PER_YEAR, RECURRENCE, UNCATEGORIZED } from './constants';
+import { BUDGET_ERROR, BudgetError } from './errors';
 
 // ─── Calculations ─────────────────────────────────────────────────────────────
 
 export function getMonthAmount(entry: Entry, month: number): number {
 	if ((entry.monthlySkips ?? []).includes(month)) return 0;
-	if (entry.recurrence === 'monthly' && month in entry.monthlyOverrides) {
+	if (entry.recurrence === RECURRENCE.MONTHLY && month in entry.monthlyOverrides) {
 		return entry.monthlyOverrides[month];
 	}
-	if (entry.recurrence === 'single') {
+	if (entry.recurrence === RECURRENCE.SINGLE) {
 		return entry.month === month ? entry.baseAmount : 0;
 	}
-	if (entry.recurrence === 'annual_distributed') {
-		const activeMonths = 12 - (entry.monthlySkips ?? []).length;
+	if (entry.recurrence === RECURRENCE.ANNUAL_DISTRIBUTED) {
+		const activeMonths = MONTHS_PER_YEAR - (entry.monthlySkips ?? []).length;
 		return entry.baseAmount / activeMonths;
 	}
 	return entry.baseAmount;
@@ -25,9 +27,9 @@ export function computeMonthSummary(budget: Budget, month: number): MonthSummary
 
 	for (const entry of budget.entries) {
 		const amount = getMonthAmount(entry, month);
-		if (entry.type === 'income') incomeTotal += amount;
-		else if (entry.type === 'expense') expenseTotal += amount;
-		else if (entry.type === 'savings') savingsTotal += amount;
+		if (entry.type === ENTRY_TYPE.INCOME) incomeTotal += amount;
+		else if (entry.type === ENTRY_TYPE.EXPENSE) expenseTotal += amount;
+		else if (entry.type === ENTRY_TYPE.SAVINGS) savingsTotal += amount;
 	}
 
 	return {
@@ -44,7 +46,7 @@ export function computeYearSummary(budget: Budget): YearSummary {
 	let expenseTotal = 0;
 	let savingsTotal = 0;
 
-	for (let m = 0; m < 12; m++) {
+	for (let m = 0; m < MONTHS_PER_YEAR; m++) {
 		const s = computeMonthSummary(budget, m);
 		incomeTotal += s.incomeTotal;
 		expenseTotal += s.expenseTotal;
@@ -60,13 +62,13 @@ export function computeYearSummary(budget: Budget): YearSummary {
 }
 
 export function getAllMonthSummaries(budget: Budget): MonthSummary[] {
-	return Array.from({ length: 12 }, (_, m) => computeMonthSummary(budget, m));
+	return Array.from({ length: MONTHS_PER_YEAR }, (_, m) => computeMonthSummary(budget, m));
 }
 
 export function computeYearRecap(budget: Budget): YearRecap {
 	const categoryMap = new Map(budget.categories.map((c) => [c.id, c.name]));
 
-	const buckets: Record<'income' | 'expense' | 'savings', Map<string, YearRecapCategory>> = {
+	const buckets: Record<EntryType, Map<string, YearRecapCategory>> = {
 		income: new Map(),
 		expense: new Map(),
 		savings: new Map()
@@ -74,12 +76,12 @@ export function computeYearRecap(budget: Budget): YearRecap {
 
 	for (const entry of budget.entries) {
 		const section = buckets[entry.type];
-		const catName = categoryMap.get(entry.category) ?? 'Uncategorized';
+		const catName = categoryMap.get(entry.category) ?? UNCATEGORIZED;
 		if (!section.has(catName)) {
 			section.set(catName, { categoryId: entry.category, categoryName: catName, yearTotal: 0, entries: [] });
 		}
 		const bucket = section.get(catName)!;
-		const entryYearTotal = Array.from({ length: 12 }, (_, m) => getMonthAmount(entry, m)).reduce((s, a) => s + a, 0);
+		const entryYearTotal = Array.from({ length: MONTHS_PER_YEAR }, (_, m) => getMonthAmount(entry, m)).reduce((s, a) => s + a, 0);
 		bucket.entries.push({ id: entry.id, name: entry.name, recurrence: entry.recurrence, yearTotal: entryYearTotal });
 		bucket.yearTotal += entryYearTotal;
 	}
@@ -96,9 +98,9 @@ export function computeYearRecap(budget: Budget): YearRecap {
 		return { type, total, categories };
 	}
 
-	const income = toSection('income', buckets.income);
-	const expenses = toSection('expense', buckets.expense);
-	const savings = toSection('savings', buckets.savings);
+	const income = toSection(ENTRY_TYPE.INCOME, buckets.income);
+	const expenses = toSection(ENTRY_TYPE.EXPENSE, buckets.expense);
+	const savings = toSection(ENTRY_TYPE.SAVINGS, buckets.savings);
 
 	return { income, expenses, savings, yearlyBalance: income.total - expenses.total - savings.total };
 }
@@ -122,10 +124,10 @@ export interface NewEntryInput {
 export function buildEntry(input: NewEntryInput): Entry {
 	if (!input.name.trim()) throw new Error('Entry name is required');
 	if (input.baseAmount < 0) throw new Error('Amount must be non-negative');
-	if (input.recurrence === 'single' && input.month === undefined) {
+	if (input.recurrence === RECURRENCE.SINGLE && input.month === undefined) {
 		throw new Error('Single entries require a month');
 	}
-	if (input.recurrence !== 'single' && input.month !== undefined) {
+	if (input.recurrence !== RECURRENCE.SINGLE && input.month !== undefined) {
 		throw new Error('Only single entries use a month');
 	}
 
@@ -164,7 +166,7 @@ export function updateEntry(
 		if (patch.baseAmount !== undefined && patch.baseAmount < 0) {
 			throw new Error('Amount must be non-negative');
 		}
-		if (patch.recurrence && patch.recurrence !== 'single') {
+		if (patch.recurrence && patch.recurrence !== RECURRENCE.SINGLE) {
 			updated.month = undefined;
 		}
 		return updated;
@@ -222,7 +224,7 @@ export function addCategory(budget: Budget, name: string): Budget {
 	const duplicate = budget.categories.some(
 		(c) => c.name.trim().toLowerCase() === trimmed.toLowerCase()
 	);
-	if (duplicate) throw new Error('category_error_duplicate');
+	if (duplicate) throw new BudgetError(BUDGET_ERROR.CATEGORY_DUPLICATE);
 	const cat: Category = { id: nanoid(), name: trimmed };
 	return touch({ ...budget, categories: [...budget.categories, cat] });
 }
@@ -233,14 +235,14 @@ export function updateCategory(budget: Budget, id: string, name: string): Budget
 	const duplicate = budget.categories.some(
 		(c) => c.id !== id && c.name.trim().toLowerCase() === trimmed.toLowerCase()
 	);
-	if (duplicate) throw new Error('category_error_duplicate');
+	if (duplicate) throw new BudgetError(BUDGET_ERROR.CATEGORY_DUPLICATE);
 	const categories = budget.categories.map((c) => (c.id === id ? { ...c, name: trimmed } : c));
 	return touch({ ...budget, categories });
 }
 
 export function deleteCategory(budget: Budget, id: string): Budget {
 	if (budget.entries.some((e) => e.category === id)) {
-		throw new Error('category_error_in_use');
+		throw new BudgetError(BUDGET_ERROR.CATEGORY_IN_USE);
 	}
 	const categories = budget.categories.filter((c) => c.id !== id);
 	return touch({ ...budget, categories });

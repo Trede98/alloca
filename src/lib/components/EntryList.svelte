@@ -6,6 +6,7 @@
 	import { ChevronDown } from 'lucide-svelte';
 	import * as m from '$lib/paraglide/messages';
 	import { getLocale } from '$lib/paraglide/runtime';
+	import { RECURRENCE, UNCATEGORIZED } from '$lib/constants';
 
 	let {
 		entries,
@@ -60,7 +61,7 @@
 	const filtered = $derived(
 		entries.filter((e) => {
 			if (e.type !== type) return false;
-			if (e.recurrence === 'single') return e.month === month;
+			if (e.recurrence === RECURRENCE.SINGLE) return e.month === month;
 			return true;
 		})
 	);
@@ -73,7 +74,7 @@
 	const grouped = $derived(() => {
 		const map = new Map<string, Entry[]>();
 		for (const e of filtered) {
-			const cat = categoryMap.get(e.category) ?? e.category ?? 'Uncategorized';
+			const cat = categoryMap.get(e.category) ?? e.category ?? UNCATEGORIZED;
 			if (!map.has(cat)) map.set(cat, []);
 			map.get(cat)!.push(e);
 		}

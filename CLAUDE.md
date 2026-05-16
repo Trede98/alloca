@@ -241,6 +241,29 @@ Avoid premature optimization.
 
 ---
 
+# CONSTANTS & MAGIC STRINGS RULE
+
+Never use raw string or number literals for domain values.
+
+**Why:** Magic strings scatter the source of truth. A typo is a silent runtime bug. TypeScript cannot catch `'expnese'` in a comparison — but referencing `ENTRY_TYPE.EXPENSE` will fail at compile time if the constant is mistyped.
+
+**Rule:**
+
+- All domain-literal values MUST be defined in `src/lib/constants.ts`
+- `EntryType` and `Recurrence` types MUST be derived from those constant arrays (`ENTRY_TYPES`, `RECURRENCES`)
+- `z.enum(...)` in `schemas.ts` MUST reference the constant arrays, not inline literals
+- Components compare values using imported constants, not raw strings
+- Magic numbers (`12` months, `11` for December index) MUST use named constants (`MONTHS_PER_YEAR`)
+- Select `<option>` elements for typed domain values MUST loop over the constant arrays with label maps (`ENTRY_TYPE_LABELS`, `RECURRENCE_LABELS`) — never hardcode individual `<option>` tags
+
+**Typed errors — no exceptions:**
+
+Domain error codes MUST be defined in `src/lib/errors.ts` as `BUDGET_ERROR` constants. Always throw `new BudgetError(BUDGET_ERROR.X)` — never `new Error('some_string_code')`. Catch sites check `e instanceof BudgetError` and resolve the label via `BUDGET_ERROR_LABELS[e.code]()`. Adding a new error type only requires touching `errors.ts`.
+
+**No magic strings anywhere. Period.**
+
+---
+
 # COMPONENT RULES
 
 Keep components minimal:

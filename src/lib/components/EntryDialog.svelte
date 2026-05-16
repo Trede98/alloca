@@ -4,11 +4,12 @@
 	import { getMonthShort } from '$lib/format';
 	import * as m from '$lib/paraglide/messages';
 	import { getLocale } from '$lib/paraglide/runtime';
+	import { ENTRY_TYPE, ENTRY_TYPES, ENTRY_TYPE_LABELS, MONTHS_PER_YEAR, RECURRENCE, RECURRENCE_LABELS, RECURRENCES } from '$lib/constants';
 
 	let {
 		open,
 		editEntry,
-		defaultType = 'expense',
+		defaultType = ENTRY_TYPE.EXPENSE,
 		categories,
 		onAddCategory,
 		onClose,
@@ -24,8 +25,8 @@
 	} = $props();
 
 	let name = $state('');
-	let type = $state<EntryType>('expense');
-	let recurrence = $state<Recurrence>('monthly');
+	let type = $state<EntryType>(ENTRY_TYPE.EXPENSE);
+	let recurrence = $state<Recurrence>(RECURRENCE.MONTHLY);
 	let categoryId = $state('');
 	let categorySearch = $state('');
 	let comboOpen = $state(false);
@@ -59,7 +60,7 @@
 		} else {
 			name = '';
 			type = defaultType;
-			recurrence = 'monthly';
+			recurrence = RECURRENCE.MONTHLY;
 			categoryId = '';
 			categorySearch = '';
 			baseAmount = '0';
@@ -145,7 +146,7 @@
 			recurrence,
 			category: categoryId,
 			baseAmount: amount,
-			month: recurrence === 'single' ? month : undefined,
+			month: recurrence === RECURRENCE.SINGLE ? month : undefined,
 			notes: notes.trim()
 		};
 
@@ -214,28 +215,28 @@
 					<label class="flex flex-col gap-1">
 						<span class="text-xs font-medium" style:color="var(--color-muted)">{m.entry_dialog_type()}</span>
 						<select bind:value={type} class={inputClass} style={inputStyle}>
-							<option value="income">{m.type_income()}</option>
-							<option value="expense">{m.type_expense()}</option>
-							<option value="savings">{m.type_savings()}</option>
+							{#each ENTRY_TYPES as t}
+								<option value={t}>{ENTRY_TYPE_LABELS[t]()}</option>
+							{/each}
 						</select>
 					</label>
 
 					<label class="flex flex-col gap-1">
 						<span class="text-xs font-medium" style:color="var(--color-muted)">{m.entry_dialog_recurrence()}</span>
 						<select bind:value={recurrence} class={inputClass} style={inputStyle}>
-							<option value="monthly">{m.recurrence_monthly()}</option>
-							<option value="annual_distributed">{m.recurrence_annual()}</option>
-							<option value="single">{m.recurrence_single()}</option>
+							{#each RECURRENCES as r}
+								<option value={r}>{RECURRENCE_LABELS[r]()}</option>
+							{/each}
 						</select>
 					</label>
 				</div>
 
 				<!-- Month picker (single only) -->
-				{#if recurrence === 'single'}
+				{#if recurrence === RECURRENCE.SINGLE}
 					<label class="flex flex-col gap-1">
 						<span class="text-xs font-medium" style:color="var(--color-muted)">{m.entry_dialog_month()}</span>
 						<select bind:value={month} class={inputClass} style={inputStyle}>
-							{#each Array.from({ length: 12 }, (_, i) => i) as i}
+							{#each Array.from({ length: MONTHS_PER_YEAR }, (_, i) => i) as i}
 								<option value={i}>{getMonthShort(i, locale)}</option>
 							{/each}
 						</select>
@@ -246,7 +247,7 @@
 				<div class="grid grid-cols-2 gap-3">
 					<label class="flex flex-col gap-1">
 						<span class="text-xs font-medium" style:color="var(--color-muted)">
-							{recurrence === 'annual_distributed' ? m.entry_dialog_annual_amount() : m.entry_dialog_amount()}
+							{recurrence === RECURRENCE.ANNUAL_DISTRIBUTED ? m.entry_dialog_annual_amount() : m.entry_dialog_amount()}
 						</span>
 						<input
 							bind:value={baseAmount}

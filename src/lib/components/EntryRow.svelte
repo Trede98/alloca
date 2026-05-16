@@ -4,6 +4,7 @@
 	import * as m from '$lib/paraglide/messages';
 	import { getLocale } from '$lib/paraglide/runtime';
 	import { DropdownMenu, ContextMenu } from 'bits-ui';
+	import { MONTHS_PER_YEAR, RECURRENCE } from '$lib/constants';
 
 	let {
 		entry,
@@ -45,11 +46,11 @@
 	let amountInput = $state('');
 	let inputEl = $state<HTMLInputElement | null>(null);
 	const locale = $derived(getLocale());
-	const isAnnualDistributed = $derived(entry.recurrence === 'annual_distributed');
+	const isAnnualDistributed = $derived(entry.recurrence === RECURRENCE.ANNUAL_DISTRIBUTED);
 	const isLastActiveMonth = $derived(
 		isAnnualDistributed &&
 		!hasSkip &&
-		(entry.monthlySkips ?? []).length === 11
+		(entry.monthlySkips ?? []).length === MONTHS_PER_YEAR - 1
 	);
 
 	function startAmountEdit() {
@@ -61,9 +62,9 @@
 	function commitAmount() {
 		const val = parseFloat(amountInput);
 		if (!isNaN(val) && val >= 0) {
-			if (entry.recurrence === 'annual_distributed') {
+			if (entry.recurrence === RECURRENCE.ANNUAL_DISTRIBUTED) {
 				// no-op
-			} else if (entry.recurrence === 'single') {
+			} else if (entry.recurrence === RECURRENCE.SINGLE) {
 				onUpdateBaseAmount(entry.id, val);
 			} else {
 				if (Math.abs(val - entry.baseAmount) < 0.01) {
@@ -204,7 +205,7 @@
 				class="z-50 min-w-[160px] overflow-hidden py-1"
 				style="background-color: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius); box-shadow: var(--shadow-dropdown);"
 			>
-				{#if entry.recurrence !== 'single'}
+				{#if entry.recurrence !== RECURRENCE.SINGLE}
 					<DropdownMenu.Item
 						disabled={isLastActiveMonth}
 						class="flex w-full cursor-default items-center gap-2 px-3 py-1.5 text-sm outline-none data-highlighted:bg-surface-hover data-disabled:opacity-40 data-disabled:cursor-not-allowed"
@@ -243,7 +244,7 @@
 	class="z-50 min-w-[160px] overflow-hidden py-1"
 	style="background-color: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius); box-shadow: var(--shadow-dropdown);"
 >
-	{#if entry.recurrence !== 'single'}
+	{#if entry.recurrence !== RECURRENCE.SINGLE}
 		<ContextMenu.Item
 			disabled={isLastActiveMonth}
 			class="flex w-full cursor-default items-center gap-2 px-3 py-1.5 text-sm outline-none data-highlighted:bg-surface-hover data-disabled:opacity-40 data-disabled:cursor-not-allowed"

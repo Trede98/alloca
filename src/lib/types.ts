@@ -1,5 +1,7 @@
-export type EntryType = 'income' | 'expense' | 'savings';
-export type Recurrence = 'monthly' | 'single' | 'annual_distributed';
+import { ENTRY_TYPES, RECURRENCES } from './constants';
+
+export type EntryType = (typeof ENTRY_TYPES)[number];
+export type Recurrence = (typeof RECURRENCES)[number];
 
 export interface Category {
 	id: string;

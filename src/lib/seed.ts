@@ -1,6 +1,7 @@
 import { nanoid } from 'nanoid';
 import type { Budget, Category } from './types';
 import * as m from '$lib/paraglide/messages';
+import { ENTRY_TYPE, MONTHS_PER_YEAR, RECURRENCE } from './constants';
 
 export function createEmptyBudget(name: string = m.seed_budget_name()): Budget {
 	const now = new Date().toISOString();
@@ -44,8 +45,8 @@ export function createSeedBudget(name: string = m.seed_budget_name()): Budget {
 			{
 				id: nanoid(),
 				name: m.seed_entry_salary(),
-				type: 'income',
-				recurrence: 'monthly',
+				type: ENTRY_TYPE.INCOME,
+				recurrence: RECURRENCE.MONTHLY,
 				category: cats.work.id,
 				baseAmount: 3000,
 				monthlyOverrides: {},
@@ -55,8 +56,8 @@ export function createSeedBudget(name: string = m.seed_budget_name()): Budget {
 			{
 				id: nanoid(),
 				name: m.seed_entry_rent(),
-				type: 'expense',
-				recurrence: 'monthly',
+				type: ENTRY_TYPE.EXPENSE,
+				recurrence: RECURRENCE.MONTHLY,
 				category: cats.housing.id,
 				baseAmount: 900,
 				monthlyOverrides: {},
@@ -66,8 +67,8 @@ export function createSeedBudget(name: string = m.seed_budget_name()): Budget {
 			{
 				id: nanoid(),
 				name: m.seed_entry_groceries(),
-				type: 'expense',
-				recurrence: 'monthly',
+				type: ENTRY_TYPE.EXPENSE,
+				recurrence: RECURRENCE.MONTHLY,
 				category: cats.food.id,
 				baseAmount: 400,
 				monthlyOverrides: {},
@@ -77,8 +78,8 @@ export function createSeedBudget(name: string = m.seed_budget_name()): Budget {
 			{
 				id: nanoid(),
 				name: m.seed_entry_transport(),
-				type: 'expense',
-				recurrence: 'monthly',
+				type: ENTRY_TYPE.EXPENSE,
+				recurrence: RECURRENCE.MONTHLY,
 				category: cats.transport.id,
 				baseAmount: 150,
 				monthlyOverrides: {},
@@ -88,8 +89,8 @@ export function createSeedBudget(name: string = m.seed_budget_name()): Budget {
 			{
 				id: nanoid(),
 				name: m.seed_entry_emergency_fund(),
-				type: 'savings',
-				recurrence: 'monthly',
+				type: ENTRY_TYPE.SAVINGS,
+				recurrence: RECURRENCE.MONTHLY,
 				category: cats.savings.id,
 				baseAmount: 300,
 				monthlyOverrides: {},
@@ -99,8 +100,8 @@ export function createSeedBudget(name: string = m.seed_budget_name()): Budget {
 			{
 				id: nanoid(),
 				name: m.seed_entry_leisure(),
-				type: 'expense',
-				recurrence: 'monthly',
+				type: ENTRY_TYPE.EXPENSE,
+				recurrence: RECURRENCE.MONTHLY,
 				category: cats.leisure.id,
 				baseAmount: 200,
 				monthlyOverrides: {},
@@ -110,8 +111,8 @@ export function createSeedBudget(name: string = m.seed_budget_name()): Budget {
 			{
 				id: nanoid(),
 				name: m.seed_entry_utilities(),
-				type: 'expense',
-				recurrence: 'monthly',
+				type: ENTRY_TYPE.EXPENSE,
+				recurrence: RECURRENCE.MONTHLY,
 				category: cats.housing.id,
 				baseAmount: 100,
 				monthlyOverrides: {},
@@ -121,8 +122,8 @@ export function createSeedBudget(name: string = m.seed_budget_name()): Budget {
 			{
 				id: nanoid(),
 				name: m.seed_entry_health(),
-				type: 'expense',
-				recurrence: 'monthly',
+				type: ENTRY_TYPE.EXPENSE,
+				recurrence: RECURRENCE.MONTHLY,
 				category: cats.health.id,
 				baseAmount: 50,
 				monthlyOverrides: {},
@@ -132,8 +133,8 @@ export function createSeedBudget(name: string = m.seed_budget_name()): Budget {
 			{
 				id: nanoid(),
 				name: m.seed_entry_vacation(),
-				type: 'expense',
-				recurrence: 'annual_distributed',
+				type: ENTRY_TYPE.EXPENSE,
+				recurrence: RECURRENCE.ANNUAL_DISTRIBUTED,
 				category: cats.leisure.id,
 				baseAmount: 1200,
 				monthlyOverrides: {},
@@ -143,11 +144,11 @@ export function createSeedBudget(name: string = m.seed_budget_name()): Budget {
 			{
 				id: nanoid(),
 				name: m.seed_entry_christmas_gifts(),
-				type: 'expense',
-				recurrence: 'single',
+				type: ENTRY_TYPE.EXPENSE,
+				recurrence: RECURRENCE.SINGLE,
 				category: cats.leisure.id,
 				baseAmount: 300,
-				month: 11,
+				month: MONTHS_PER_YEAR - 1,
 				monthlyOverrides: {},
 				monthlySkips: [],
 				notes: ''

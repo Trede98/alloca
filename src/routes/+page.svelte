@@ -20,6 +20,7 @@
 	import type { Budget, Entry } from '$lib/types';
 	import type { NewEntryInput } from '$lib/budget';
 	import * as m from '$lib/paraglide/messages';
+	import { BudgetError, BUDGET_ERROR_LABELS } from '$lib/errors';
 
 	let budget = $state<Budget | null>(null);
 	let loading = $state(true);
@@ -126,10 +127,8 @@
 	}
 
 	function resolveCategoryError(e: unknown): string {
-		if (!(e instanceof Error)) return 'Unknown error';
-		if (e.message === 'category_error_duplicate') return m.category_error_duplicate();
-		if (e.message === 'category_error_in_use') return m.category_error_in_use();
-		return e.message;
+		if (e instanceof BudgetError) return BUDGET_ERROR_LABELS[e.code]();
+		return 'Unknown error';
 	}
 
 	function onAddCategory(name: string) {

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ENTRY_TYPES, RECURRENCES } from './constants';
 
 const CategorySchema = z.object({
 	id: z.string(),
@@ -8,8 +9,8 @@ const CategorySchema = z.object({
 const EntrySchema = z.object({
 	id: z.string(),
 	name: z.string().min(1),
-	type: z.enum(['income', 'expense', 'savings']),
-	recurrence: z.enum(['monthly', 'single', 'annual_distributed']),
+	type: z.enum(ENTRY_TYPES),
+	recurrence: z.enum(RECURRENCES),
 	category: z.string(),
 	baseAmount: z.number(),
 	month: z.number().min(0).max(11).optional(),
