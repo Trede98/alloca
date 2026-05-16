@@ -184,20 +184,11 @@
 
 	<!-- More actions dropdown -->
 	<DropdownMenu.Root>
-		<DropdownMenu.Trigger>
-			{#snippet child({ props })}
-				<button
-					type="button"
-					{...props}
-					class="p-1 text-xs opacity-40 transition-opacity hover:opacity-100"
-					style:border-radius="var(--radius-sm)"
-					style:color="var(--color-text)"
-					title="More actions"
-				>
-					⋯
-				</button>
-			{/snippet}
-		</DropdownMenu.Trigger>
+		<DropdownMenu.Trigger
+			class="p-1 text-xs opacity-40 transition-opacity hover:opacity-100"
+			style="border-radius: var(--radius-sm); color: var(--color-text);"
+			title="More actions"
+		>⋯</DropdownMenu.Trigger>
 		<DropdownMenu.Portal>
 			<DropdownMenu.Content
 				sideOffset={4}

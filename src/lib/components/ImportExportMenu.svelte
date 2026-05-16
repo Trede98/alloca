@@ -2,6 +2,7 @@
 	import type { Budget } from '$lib/types';
 	import { ExportDataSchema } from '$lib/schemas';
 	import { replaceBudget } from '$lib/db';
+	import { AlertDialog } from 'bits-ui';
 	import * as m from '$lib/paraglide/messages';
 
 	let {
@@ -120,50 +121,43 @@
 />
 
 <!-- Import confirmation modal -->
-{#if pending}
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<div
-		role="dialog"
-		aria-modal="true"
-		tabindex="-1"
-		class="fixed inset-0 z-50 flex items-center justify-center p-4"
-		style:background-color="var(--overlay-bg)"
-		onkeydown={(e) => e.key === 'Escape' && cancelImport()}
-	>
-		<div
-			class="flex w-full max-w-sm flex-col gap-4 border p-5"
-			style:border-radius="var(--radius)"
-			style:background-color="var(--color-surface)"
-			style:border-color="var(--color-border)"
-			style:box-shadow="var(--shadow-modal)"
+<AlertDialog.Root open={pending !== null} onOpenChange={(v) => { if (!v) cancelImport(); }}>
+	<AlertDialog.Portal>
+		<AlertDialog.Overlay
+			class="fixed inset-0 z-50"
+			style="background-color: var(--overlay-bg);"
+		/>
+		<AlertDialog.Content
+			class="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
 		>
-			<div>
-				<h2 class="font-semibold">{m.import_export_replace_title()}</h2>
-				<p class="mt-1 text-sm" style:color="var(--color-muted)">
-					{m.import_export_replace_body({ name: pending.name, year: String(pending.year) })}
-				</p>
+			<div
+				class="pointer-events-auto flex w-full max-w-sm flex-col gap-4 border p-5"
+				style:border-radius="var(--radius)"
+				style:background-color="var(--color-surface)"
+				style:border-color="var(--color-border)"
+				style:box-shadow="var(--shadow-modal)"
+			>
+				<div>
+					<AlertDialog.Title class="font-semibold">
+						{m.import_export_replace_title()}
+					</AlertDialog.Title>
+					<AlertDialog.Description class="mt-1 text-sm" style="color: var(--color-muted);">
+						{m.import_export_replace_body({ name: pending?.name ?? '', year: String(pending?.year ?? '') })}
+					</AlertDialog.Description>
+				</div>
+				<div class="flex justify-end gap-2">
+					<AlertDialog.Cancel
+						class="px-3 py-1.5 text-sm opacity-70 transition-opacity hover:opacity-90"
+						style="border-radius: var(--radius-sm); color: var(--color-muted);"
+						onclick={cancelImport}
+					>{m.cancel()}</AlertDialog.Cancel>
+					<AlertDialog.Action
+						class="px-3 py-1.5 text-sm font-medium transition-opacity hover:opacity-90"
+						style="border-radius: var(--radius-sm); background-color: var(--color-red); color: white;"
+						onclick={confirmImport}
+					>{m.import_export_replace_confirm()}</AlertDialog.Action>
+				</div>
 			</div>
-			<div class="flex justify-end gap-2">
-				<button
-					type="button"
-					class="px-3 py-1.5 text-sm opacity-70 transition-opacity hover:opacity-90"
-					style:border-radius="var(--radius-sm)"
-					style:color="var(--color-muted)"
-					onclick={cancelImport}
-				>
-					{m.cancel()}
-				</button>
-				<button
-					type="button"
-					class="px-3 py-1.5 text-sm font-medium transition-opacity hover:opacity-90"
-					style:border-radius="var(--radius-sm)"
-					style:background-color="var(--color-red)"
-					style:color="white"
-					onclick={confirmImport}
-				>
-					{m.import_export_replace_confirm()}
-				</button>
-			</div>
-		</div>
-	</div>
-{/if}
+		</AlertDialog.Content>
+	</AlertDialog.Portal>
+</AlertDialog.Root>

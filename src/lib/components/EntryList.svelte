@@ -4,6 +4,7 @@
 	import { formatCurrency } from '$lib/format';
 	import EntryRow from './EntryRow.svelte';
 	import { ChevronDown } from 'lucide-svelte';
+	import { Collapsible } from 'bits-ui';
 	import * as m from '$lib/paraglide/messages';
 	import { getLocale } from '$lib/paraglide/runtime';
 	import { RECURRENCE, UNCATEGORIZED } from '$lib/constants';
@@ -81,14 +82,11 @@
 		return [...map.entries()].sort(([a], [b]) => a.localeCompare(b));
 	});
 
-	// Track which categories are collapsed
-	let collapsed = $state<Set<string>>(new Set());
+	let openMap = $state(new Map<string, boolean>());
 
-	function toggleCategory(cat: string) {
-		const next = new Set(collapsed);
-		if (next.has(cat)) next.delete(cat);
-		else next.add(cat);
-		collapsed = next;
+	function isOpen(cat: string) { return openMap.get(cat) ?? true; }
+	function setOpen(cat: string, v: boolean) {
+		const next = new Map(openMap); next.set(cat, v); openMap = next;
 	}
 </script>
 
@@ -115,22 +113,23 @@
 		<!-- Category groups -->
 		{#each grouped() as [cat, catEntries], gi}
 			{@const catTotal = catEntries.reduce((s, e) => s + getMonthAmount(e, month), 0)}
-			{@const isCollapsed = collapsed.has(cat)}
 
-			<div class="border-b last:border-b-0" style:border-color="var(--color-border)">
-				<!-- Category header -->
-				<button
-					type="button"
+			<Collapsible.Root
+				open={isOpen(cat)}
+				onOpenChange={(v) => setOpen(cat, v)}
+				class="border-b last:border-b-0"
+				style="border-color: var(--color-border);"
+			>
+				<Collapsible.Trigger
 					class="flex w-full items-center justify-between px-3 py-2 text-left transition-colors"
 					onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
 					onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
-					onclick={() => toggleCategory(cat)}
 				>
 					<div class="flex items-center gap-2 min-w-0">
 						<span
 							class="transition-transform duration-150"
 							style:display="inline-flex"
-							style:transform={isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)'}
+							style:transform={isOpen(cat) ? 'rotate(0deg)' : 'rotate(-90deg)'}
 						>
 							<ChevronDown size={13} style="opacity:0.5; color:var(--color-subtle)" />
 						</span>
@@ -142,9 +141,9 @@
 					<span class="shrink-0 text-sm font-medium tabular-nums" style:color="var(--color-text)">
 						{formatCurrency(catTotal, currency, locale)}
 					</span>
-				</button>
+				</Collapsible.Trigger>
 
-				{#if !isCollapsed}
+				<Collapsible.Content>
 					<div>
 						{#each catEntries as entry, ei (entry.id)}
 							<EntryRow
@@ -167,8 +166,8 @@
 							/>
 						{/each}
 					</div>
-				{/if}
-			</div>
+				</Collapsible.Content>
+			</Collapsible.Root>
 		{/each}
 	{/if}
 

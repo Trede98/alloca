@@ -2,6 +2,7 @@
 	import type { Category } from '$lib/types';
 	import * as m from '$lib/paraglide/messages';
 	import { Trash2 } from 'lucide-svelte';
+	import { Dialog } from 'bits-ui';
 
 	let {
 		categories,
@@ -176,35 +177,35 @@
 
 {#if modal}
 	<!-- Modal mode: triggered externally via bind:open -->
-	{#if open}
-		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<div
-			class="fixed inset-0 z-50 flex items-center justify-center p-4"
-			style:background-color="var(--overlay-bg)"
-			onclick={(e) => { if (e.target === e.currentTarget) close(); }}
-			onkeydown={(e) => e.key === 'Escape' && close()}
-		>
-			<div
-				class="w-full max-w-sm flex flex-col gap-4 border p-5"
-				style:border-radius="var(--radius)"
-				style:background-color="var(--color-surface)"
-				style:border-color="var(--color-border)"
-				style:box-shadow="var(--shadow-modal)"
+	<Dialog.Root bind:open onOpenChange={(v) => { if (!v) close(); }}>
+		<Dialog.Portal>
+			<Dialog.Overlay
+				class="fixed inset-0 z-50"
+				style="background-color: var(--overlay-bg);"
+			/>
+			<Dialog.Content
+				class="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
 			>
-				<div class="flex items-center justify-between">
-					<span class="text-sm font-semibold">{m.categories()}</span>
-					<button
-						type="button"
-						class="p-1 text-xs opacity-40 hover:opacity-80 transition-opacity"
-						style:color="var(--color-text)"
-						onclick={close}
-						aria-label="Close"
-					>✕</button>
+				<div
+					class="pointer-events-auto w-full max-w-sm flex flex-col gap-4 border p-5"
+					style:border-radius="var(--radius)"
+					style:background-color="var(--color-surface)"
+					style:border-color="var(--color-border)"
+					style:box-shadow="var(--shadow-modal)"
+				>
+					<div class="flex items-center justify-between">
+						<Dialog.Title class="text-sm font-semibold">{m.categories()}</Dialog.Title>
+						<Dialog.Close
+							class="p-1 text-xs opacity-40 hover:opacity-80 transition-opacity"
+							style="color: var(--color-text);"
+							aria-label="Close"
+						>✕</Dialog.Close>
+					</div>
+					{@render panelContent()}
 				</div>
-				{@render panelContent()}
-			</div>
-		</div>
-	{/if}
+			</Dialog.Content>
+		</Dialog.Portal>
+	</Dialog.Root>
 {:else}
 	<!-- Popover mode: self-contained trigger + anchored panel -->
 	<div class="relative">

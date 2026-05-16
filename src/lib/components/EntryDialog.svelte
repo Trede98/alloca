@@ -2,6 +2,7 @@
 	import type { Category, Entry, EntryType, Recurrence } from '$lib/types';
 	import type { NewEntryInput } from '$lib/budget';
 	import { getMonthShort } from '$lib/format';
+	import { Dialog, Combobox } from 'bits-ui';
 	import * as m from '$lib/paraglide/messages';
 	import { getLocale } from '$lib/paraglide/runtime';
 	import { ENTRY_TYPE, ENTRY_TYPES, ENTRY_TYPE_LABELS, MONTHS_PER_YEAR, RECURRENCE, RECURRENCE_LABELS, RECURRENCES } from '$lib/constants';
@@ -29,7 +30,6 @@
 	let recurrence = $state<Recurrence>(RECURRENCE.MONTHLY);
 	let categoryId = $state('');
 	let categorySearch = $state('');
-	let comboOpen = $state(false);
 	let baseAmount = $state('0');
 	let month = $state(0);
 	let notes = $state('');
@@ -47,7 +47,6 @@
 			return;
 		}
 		error = '';
-		comboOpen = false;
 		if (editEntry) {
 			name = editEntry.name;
 			type = editEntry.type;
@@ -80,7 +79,6 @@
 			categoryId = found.id;
 			categorySearch = found.name;
 			pendingCategoryName = '';
-			comboOpen = false;
 		}
 	});
 
@@ -95,12 +93,6 @@
 			!categories.some((c) => c.name.toLowerCase() === categorySearch.trim().toLowerCase())
 	);
 
-	function selectCategory(cat: Category) {
-		categoryId = cat.id;
-		categorySearch = cat.name;
-		comboOpen = false;
-	}
-
 	function createCategory() {
 		const trimmed = categorySearch.trim();
 		if (!trimmed) return;
@@ -108,37 +100,12 @@
 		onAddCategory(trimmed);
 	}
 
-	function onComboInput() {
-		categoryId = '';
-		comboOpen = true;
-	}
-
-	function onComboKeydown(e: KeyboardEvent) {
-		if (e.key === 'Escape') {
-			comboOpen = false;
-		}
-		if (e.key === 'Enter') {
-			e.preventDefault();
-			if (showCreateOption) {
-				createCategory();
-			} else if (filteredCategories.length === 1) {
-				selectCategory(filteredCategories[0]);
-			}
-		}
-	}
-
-	function closeComboBackdrop() {
-		comboOpen = false;
-		// If user typed but didn't select, restore previous name or clear
-		if (!categoryId) categorySearch = '';
-	}
-
 	function submit() {
 		error = '';
 		const amount = parseFloat(baseAmount);
 		if (!name.trim()) { error = m.entry_dialog_error_name(); return; }
 		if (isNaN(amount) || amount < 0) { error = m.entry_dialog_error_amount(); return; }
-		if (!categoryId) { error = m.entry_dialog_error_category(); return; }
+		if (!categoryId || categoryId === '__create__') { error = m.entry_dialog_error_category(); return; }
 
 		const input: NewEntryInput = {
 			name: name.trim(),
@@ -153,218 +120,216 @@
 		onSave(input, editEntry?.id);
 	}
 
-	function onBackdropClick(e: MouseEvent) {
-		if (e.target === e.currentTarget) onClose();
-	}
-
-	function onKeydown(e: KeyboardEvent) {
-		if (e.key === 'Escape') onClose();
-	}
-
 	const inputClass = 'border px-2.5 py-2 text-sm outline-none focus:ring-1 focus:ring-[--color-accent]/40 transition-colors';
 	const inputStyle = `background-color: var(--color-bg); border-color: var(--color-border); color: var(--color-text); border-radius: var(--radius-sm);`;
 </script>
 
-{#if open}
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<div
-		role="dialog"
-		aria-modal="true"
-		tabindex="-1"
-		class="fixed inset-0 z-50 flex items-center justify-center p-4"
-		style:background-color="var(--overlay-bg)"
-		onclick={onBackdropClick}
-		onkeydown={onKeydown}
-	>
-		<div
-			class="flex w-full max-w-md flex-col gap-4 border p-5"
-			style:border-radius="var(--radius)"
-			style:background-color="var(--color-surface)"
-			style:border-color="var(--color-border)"
-			style:box-shadow="var(--shadow-modal)"
+<Dialog.Root bind:open onOpenChange={(v) => { if (!v) onClose(); }}>
+	<Dialog.Portal>
+		<Dialog.Overlay
+			class="fixed inset-0 z-50"
+			style="background-color: var(--overlay-bg);"
+		/>
+		<Dialog.Content
+			class="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
 		>
-			<div class="flex items-center justify-between">
-				<h2 class="font-semibold">{editEntry ? m.entry_dialog_edit_title() : m.entry_dialog_new_title()}</h2>
-				<button
-					type="button"
-					class="p-1 text-sm opacity-40 transition-opacity hover:opacity-80"
-					style:border-radius="var(--radius-sm)"
-					style:color="var(--color-text)"
-					onclick={onClose}
-					aria-label="Close"
-				>
-					✕
-				</button>
-			</div>
-
-			<div class="flex flex-col gap-3">
-				<!-- Name -->
-				<label class="flex flex-col gap-1">
-					<span class="text-xs font-medium" style:color="var(--color-muted)">{m.entry_dialog_name()}</span>
-					<input
-						bind:value={name}
-						type="text"
-						placeholder={m.entry_dialog_name_placeholder()}
-						class={inputClass}
-						style={inputStyle}
-					/>
-				</label>
-
-				<!-- Type + Recurrence -->
-				<div class="grid grid-cols-2 gap-3">
-					<label class="flex flex-col gap-1">
-						<span class="text-xs font-medium" style:color="var(--color-muted)">{m.entry_dialog_type()}</span>
-						<select bind:value={type} class={inputClass} style={inputStyle}>
-							{#each ENTRY_TYPES as t}
-								<option value={t}>{ENTRY_TYPE_LABELS[t]()}</option>
-							{/each}
-						</select>
-					</label>
-
-					<label class="flex flex-col gap-1">
-						<span class="text-xs font-medium" style:color="var(--color-muted)">{m.entry_dialog_recurrence()}</span>
-						<select bind:value={recurrence} class={inputClass} style={inputStyle}>
-							{#each RECURRENCES as r}
-								<option value={r}>{RECURRENCE_LABELS[r]()}</option>
-							{/each}
-						</select>
-					</label>
+			<div
+				class="pointer-events-auto flex w-full max-w-md flex-col gap-4 border p-5"
+				style:border-radius="var(--radius)"
+				style:background-color="var(--color-surface)"
+				style:border-color="var(--color-border)"
+				style:box-shadow="var(--shadow-modal)"
+			>
+				<div class="flex items-center justify-between">
+					<Dialog.Title class="font-semibold">
+						{editEntry ? m.entry_dialog_edit_title() : m.entry_dialog_new_title()}
+					</Dialog.Title>
+					<Dialog.Close
+						class="p-1 text-sm opacity-40 transition-opacity hover:opacity-80"
+						style="border-radius: var(--radius-sm); color: var(--color-text);"
+						aria-label="Close"
+					>✕</Dialog.Close>
 				</div>
 
-				<!-- Month picker (single only) -->
-				{#if recurrence === RECURRENCE.SINGLE}
+				<div class="flex flex-col gap-3">
+					<!-- Name -->
 					<label class="flex flex-col gap-1">
-						<span class="text-xs font-medium" style:color="var(--color-muted)">{m.entry_dialog_month()}</span>
-						<select bind:value={month} class={inputClass} style={inputStyle}>
-							{#each Array.from({ length: MONTHS_PER_YEAR }, (_, i) => i) as i}
-								<option value={i}>{getMonthShort(i, locale)}</option>
-							{/each}
-						</select>
-					</label>
-				{/if}
-
-				<!-- Amount + Category -->
-				<div class="grid grid-cols-2 gap-3">
-					<label class="flex flex-col gap-1">
-						<span class="text-xs font-medium" style:color="var(--color-muted)">
-							{recurrence === RECURRENCE.ANNUAL_DISTRIBUTED ? m.entry_dialog_annual_amount() : m.entry_dialog_amount()}
-						</span>
+						<span class="text-xs font-medium" style:color="var(--color-muted)">{m.entry_dialog_name()}</span>
 						<input
-							bind:value={baseAmount}
-							type="number"
-							min="0"
-							step="0.01"
-							class={inputClass}
-							style={inputStyle}
-						/>
-					</label>
-
-					<!-- Category combobox -->
-					<div class="relative flex flex-col gap-1">
-						<span class="text-xs font-medium" style:color="var(--color-muted)">{m.entry_dialog_category()}</span>
-						<input
-							bind:value={categorySearch}
+							bind:value={name}
 							type="text"
-							placeholder={categories.length === 0 ? m.entry_dialog_type_to_create() : m.entry_dialog_search_or_create()}
+							placeholder={m.entry_dialog_name_placeholder()}
 							class={inputClass}
 							style={inputStyle}
-							oninput={onComboInput}
-							onfocus={() => (comboOpen = true)}
-							onkeydown={onComboKeydown}
-							autocomplete="off"
 						/>
-						{#if comboOpen}
-							<!-- Backdrop to close combo -->
-							<!-- svelte-ignore a11y_no_static_element_interactions -->
-							<div
-								class="fixed inset-0 z-10"
-								onclick={closeComboBackdrop}
-								onkeydown={(e) => e.key === 'Escape' && closeComboBackdrop()}
-							></div>
-							<div
-								class="absolute left-0 top-full z-20 mt-1 w-full max-h-44 overflow-y-auto border"
-								style:border-radius="var(--radius-sm)"
-								style:background-color="var(--color-surface)"
-								style:border-color="var(--color-border)"
-								style:box-shadow="var(--shadow-dropdown)"
-							>
-								{#each filteredCategories as cat (cat.id)}
-									<button
-										type="button"
-										class="w-full px-3 py-1.5 text-left text-sm transition-colors hover:opacity-80"
-										style:color="var(--color-text)"
-										style:background-color={cat.id === categoryId ? 'color-mix(in srgb, var(--color-accent) 15%, transparent)' : 'transparent'}
-										onclick={() => selectCategory(cat)}
-									>
-										{cat.name}
-									</button>
+					</label>
+
+					<!-- Type + Recurrence -->
+					<div class="grid grid-cols-2 gap-3">
+						<label class="flex flex-col gap-1">
+							<span class="text-xs font-medium" style:color="var(--color-muted)">{m.entry_dialog_type()}</span>
+							<select bind:value={type} class={inputClass} style={inputStyle}>
+								{#each ENTRY_TYPES as t}
+									<option value={t}>{ENTRY_TYPE_LABELS[t]()}</option>
 								{/each}
-								{#if showCreateOption}
-									<button
-										type="button"
-										class="w-full border-t px-3 py-1.5 text-left text-sm transition-colors hover:opacity-80"
-										style:color="var(--color-accent)"
-										style:border-color="var(--color-border)"
-										onclick={createCategory}
-									>
-										{m.entry_dialog_create_category({ name: categorySearch.trim() })}
-									</button>
-								{/if}
-								{#if filteredCategories.length === 0 && !showCreateOption}
-									<div class="px-3 py-1.5 text-sm" style:color="var(--color-muted)">
-										{m.entry_dialog_no_categories_found()}
-									</div>
-								{/if}
-							</div>
-						{/if}
+							</select>
+						</label>
+
+						<label class="flex flex-col gap-1">
+							<span class="text-xs font-medium" style:color="var(--color-muted)">{m.entry_dialog_recurrence()}</span>
+							<select bind:value={recurrence} class={inputClass} style={inputStyle}>
+								{#each RECURRENCES as r}
+									<option value={r}>{RECURRENCE_LABELS[r]()}</option>
+								{/each}
+							</select>
+						</label>
 					</div>
+
+					<!-- Month picker (single only) -->
+					{#if recurrence === RECURRENCE.SINGLE}
+						<label class="flex flex-col gap-1">
+							<span class="text-xs font-medium" style:color="var(--color-muted)">{m.entry_dialog_month()}</span>
+							<select bind:value={month} class={inputClass} style={inputStyle}>
+								{#each Array.from({ length: MONTHS_PER_YEAR }, (_, i) => i) as i}
+									<option value={i}>{getMonthShort(i, locale)}</option>
+								{/each}
+							</select>
+						</label>
+					{/if}
+
+					<!-- Amount + Category -->
+					<div class="grid grid-cols-2 gap-3">
+						<label class="flex flex-col gap-1">
+							<span class="text-xs font-medium" style:color="var(--color-muted)">
+								{recurrence === RECURRENCE.ANNUAL_DISTRIBUTED ? m.entry_dialog_annual_amount() : m.entry_dialog_amount()}
+							</span>
+							<input
+								bind:value={baseAmount}
+								type="number"
+								min="0"
+								step="0.01"
+								class={inputClass}
+								style={inputStyle}
+							/>
+						</label>
+
+						<!-- Category combobox -->
+						<div class="relative flex flex-col gap-1">
+							<span class="text-xs font-medium" style:color="var(--color-muted)">{m.entry_dialog_category()}</span>
+							<Combobox.Root
+								type="single"
+								bind:value={categoryId}
+								inputValue={categorySearch}
+								onValueChange={(v) => {
+									if (v === '__create__') {
+										createCategory();
+									} else {
+										const cat = categories.find((c) => c.id === v);
+										if (cat) categorySearch = cat.name;
+									}
+								}}
+								onOpenChange={(v) => { if (!v && !categoryId) categorySearch = ''; }}
+								loop
+							>
+								<Combobox.Input
+									placeholder={categories.length === 0 ? m.entry_dialog_type_to_create() : m.entry_dialog_search_or_create()}
+									class={inputClass}
+									style={inputStyle}
+									autocomplete="off"
+									oninput={(e) => {
+										categorySearch = (e.target as HTMLInputElement).value;
+										if (categorySearch !== categories.find((c) => c.id === categoryId)?.name) categoryId = '';
+									}}
+									onkeydown={(e) => {
+										if (e.key === 'Enter' && showCreateOption) {
+											e.preventDefault();
+											createCategory();
+										}
+									}}
+								/>
+								<Combobox.Content
+									side="bottom"
+									align="start"
+									sideOffset={4}
+									class="z-[70] w-full max-h-44 overflow-y-auto border"
+									style="border-radius: var(--radius-sm); background-color: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-dropdown);"
+								>
+									{#each filteredCategories as cat (cat.id)}
+										<Combobox.Item
+											value={cat.id}
+											label={cat.name}
+											class="w-full px-3 py-1.5 text-left text-sm transition-colors hover:opacity-80 cursor-pointer"
+											style="color: var(--color-text); background-color: {cat.id === categoryId ? 'color-mix(in srgb, var(--color-accent) 15%, transparent)' : 'transparent'};"
+										>
+											{cat.name}
+										</Combobox.Item>
+									{/each}
+									{#if showCreateOption}
+										<Combobox.Item
+											value="__create__"
+											label={categorySearch.trim()}
+											class="w-full border-t px-3 py-1.5 text-left text-sm transition-colors hover:opacity-80 cursor-pointer"
+											style="color: var(--color-accent); border-color: var(--color-border);"
+										>
+											{m.entry_dialog_create_category({ name: categorySearch.trim() })}
+										</Combobox.Item>
+									{/if}
+									{#if filteredCategories.length === 0 && !showCreateOption}
+										<div class="px-3 py-1.5 text-sm" style:color="var(--color-muted)">
+											{m.entry_dialog_no_categories_found()}
+										</div>
+									{/if}
+								</Combobox.Content>
+							</Combobox.Root>
+						</div>
+					</div>
+
+					<!-- Notes -->
+					<label class="flex flex-col gap-1">
+						<span class="text-xs font-medium" style:color="var(--color-muted)">{m.entry_dialog_notes()} <span class="opacity-60">{m.entry_dialog_optional()}</span></span>
+						<input
+							bind:value={notes}
+							type="text"
+							placeholder={m.entry_dialog_notes_placeholder()}
+							class={inputClass}
+							style={inputStyle}
+						/>
+					</label>
+
+					{#if error}
+						<p
+							class="px-3 py-2 text-xs"
+							style:border-radius="var(--radius-sm)"
+							style:color="var(--color-red)"
+							style:background-color="color-mix(in srgb, var(--color-red) 10%, transparent)"
+						>
+							{error}
+						</p>
+					{/if}
 				</div>
 
-				<!-- Notes -->
-				<label class="flex flex-col gap-1">
-					<span class="text-xs font-medium" style:color="var(--color-muted)">{m.entry_dialog_notes()} <span class="opacity-60">{m.entry_dialog_optional()}</span></span>
-					<input
-						bind:value={notes}
-						type="text"
-						placeholder={m.entry_dialog_notes_placeholder()}
-						class={inputClass}
-						style={inputStyle}
-					/>
-				</label>
-
-				{#if error}
-					<p
-						class="px-3 py-2 text-xs"
+				<div class="flex justify-end gap-2">
+					<button
+						type="button"
+						class="px-3 py-1.5 text-sm transition-opacity hover:opacity-80"
 						style:border-radius="var(--radius-sm)"
-						style:color="var(--color-red)"
-						style:background-color="color-mix(in srgb, var(--color-red) 10%, transparent)"
+						style:color="var(--color-muted)"
+						onclick={onClose}
 					>
-						{error}
-					</p>
-				{/if}
+						{m.cancel()}
+					</button>
+					<button
+						type="button"
+						class="px-4 py-1.5 text-sm font-medium transition-opacity hover:opacity-90"
+						style:border-radius="var(--radius-sm)"
+						style:background-color="var(--color-accent)"
+						style:color="var(--color-accent-fg)"
+						onclick={submit}
+					>
+						{editEntry ? m.entry_dialog_save_changes() : m.entry_dialog_add_entry()}
+					</button>
+				</div>
 			</div>
-
-			<div class="flex justify-end gap-2">
-				<button
-					type="button"
-					class="px-3 py-1.5 text-sm transition-opacity hover:opacity-80"
-					style:border-radius="var(--radius-sm)"
-					style:color="var(--color-muted)"
-					onclick={onClose}
-				>
-					{m.cancel()}
-				</button>
-				<button
-					type="button"
-					class="px-4 py-1.5 text-sm font-medium transition-opacity hover:opacity-90"
-					style:border-radius="var(--radius-sm)"
-					style:background-color="var(--color-accent)"
-					style:color="var(--color-accent-fg)"
-					onclick={submit}
-				>
-					{editEntry ? m.entry_dialog_save_changes() : m.entry_dialog_add_entry()}
-				</button>
-			</div>
-		</div>
-	</div>
-{/if}
+		</Dialog.Content>
+	</Dialog.Portal>
+</Dialog.Root>

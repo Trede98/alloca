@@ -12,7 +12,7 @@
 	} from '$lib/budget';
 	import { formatCurrency, getMonthFull } from '$lib/format';
 	import { getTheme, toggleTheme } from '$lib/theme.svelte';
-	import { Switch } from 'bits-ui';
+	import { Switch, Popover } from 'bits-ui';
 	import { Settings2, Tag, Upload, Download, Trash2, Sun, Moon, Globe, Coins, ChevronRight, ChevronLeft, HelpCircle } from 'lucide-svelte';
 	import SummaryBar from './SummaryBar.svelte';
 	import MonthCard from './MonthCard.svelte';
@@ -224,7 +224,8 @@
 	}
 
 	function replayTour() {
-		closePopover();
+		popoverOpen = false;
+		menuView = 'main';
 		setTimeout(() => {
 			resetForTour();
 			onTourStart();
@@ -237,7 +238,7 @@
 	const currentLang = $derived(LANGUAGES.find((l) => l.code === locale) ?? LANGUAGES[0]);
 
 	// Mobile actions popover
-	let mobileMenuOpen = $state(false);
+	let popoverOpen = $state(false);
 	let menuView = $state<'main' | 'language' | 'currency'>('main');
 	let currencyFilter = $state('');
 	const filteredCurrencies = $derived(
@@ -249,16 +250,6 @@
 						getCurrencyLabel(code, locale).toLowerCase().includes(currencyFilter.toLowerCase())
 				)
 	);
-
-	function openPopover() {
-		menuView = 'main';
-		mobileMenuOpen = true;
-	}
-
-	function closePopover() {
-		mobileMenuOpen = false;
-		menuView = 'main';
-	}
 
 	// Categories modal (opened from mobile popover)
 	let categoriesModalOpen = $state(false);
@@ -344,29 +335,25 @@
 
 		<!-- Right: actions popover (all breakpoints) -->
 		<div class="flex shrink-0 items-center">
-			<div class="relative">
-				<button
-					type="button"
+			<Popover.Root
+				bind:open={popoverOpen}
+				onOpenChange={(v) => { if (!v) { menuView = 'main'; currencyFilter = ''; } }}
+			>
+				<Popover.Trigger
 					class="flex items-center justify-center p-1.5 opacity-60 transition-opacity hover:opacity-90"
-					style:border-radius="var(--radius-sm)"
+					style="border-radius: var(--radius-sm);"
 					title={m.settings()}
 					data-tour="settings-btn"
-					onclick={openPopover}
 				>
 					<Settings2 size={16} />
-				</button>
+				</Popover.Trigger>
 
-				{#if mobileMenuOpen}
-					<!-- Popover panel -->
-					<div
-						role="menu"
-						tabindex="-1"
-						class="absolute right-0 top-full z-50 mt-1 min-w-[220px] border py-1"
-						style:border-radius="var(--radius)"
-						style:background-color="var(--color-surface)"
-						style:border-color="var(--color-border)"
-						style:box-shadow="var(--shadow-dropdown)"
-						onkeydown={(e) => e.key === 'Escape' && closePopover()}
+					<Popover.Content
+						side="bottom"
+						align="end"
+						sideOffset={4}
+						class="z-50 min-w-[220px] border py-1"
+						style="border-radius: var(--radius); background-color: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-dropdown);"
 					>
 						{#if menuView === 'main'}
 							<!-- Main menu -->
@@ -395,7 +382,7 @@
 								style:color="var(--color-text)"
 								onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
 								onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
-								onclick={() => { categoriesModalOpen = true; closePopover(); }}
+								onclick={() => { categoriesModalOpen = true; popoverOpen = false; menuView = 'main'; }}
 							>
 								<Tag size={14} style="opacity:0.6" />
 								{m.categories()}
@@ -409,7 +396,7 @@
 								style:color="var(--color-text)"
 								onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
 								onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
-								onclick={() => { importFileInput?.click(); closePopover(); }}
+								onclick={() => { importFileInput?.click(); popoverOpen = false; menuView = 'main'; }}
 							>
 								<Upload size={14} style="opacity:0.6" />
 								{m.import()}
@@ -423,7 +410,7 @@
 								style:color="var(--color-text)"
 								onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
 								onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
-								onclick={() => { popoverExport(); closePopover(); }}
+								onclick={() => { popoverExport(); popoverOpen = false; menuView = 'main'; }}
 							>
 								<Download size={14} style="opacity:0.6" />
 								{m.export()}
@@ -515,7 +502,7 @@
 								style:color="var(--color-red)"
 								onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'color-mix(in srgb, var(--color-red) 6%, transparent)'}
 								onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
-								onclick={() => { startReset(); closePopover(); }}
+								onclick={() => { startReset(); popoverOpen = false; menuView = 'main'; }}
 							>
 								<Trash2 size={14} />
 								{m.clear_budget()}
@@ -605,7 +592,7 @@
 										style:color="var(--color-text)"
 										onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
 										onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
-										onclick={() => { onBudgetChange({ ...budget, currency: code }); menuView = 'main'; closePopover(); }}
+										onclick={() => { onBudgetChange({ ...budget, currency: code }); menuView = 'main'; popoverOpen = false; }}
 									>
 										<span class="text-left">{getCurrencyLabel(code, locale)}</span>
 										<div class="flex items-center gap-2">
@@ -618,18 +605,8 @@
 								{/each}
 							</div>
 						{/if}
-					</div>
-
-					<!-- Click-outside overlay -->
-					<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-					<div
-						role="presentation"
-						class="fixed inset-0 z-40"
-						onclick={closePopover}
-						onkeydown={() => {}}
-					></div>
-				{/if}
-			</div>
+				</Popover.Content>
+			</Popover.Root>
 		</div>
 	</header>
 
