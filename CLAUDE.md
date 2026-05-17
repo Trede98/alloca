@@ -241,6 +241,161 @@ Avoid premature optimization.
 
 ---
 
+# I18N (PARAGLIDE)
+
+This project uses Paraglide for internationalization.
+
+Supported locales: `en`, `it`, `fr`, `es`, `de` (base: `en`).
+
+## Message Files
+
+- Source messages: `/messages/{locale}.json`
+- Compiled output: `/src/lib/paraglide/messages/` (auto-generated, do not edit)
+
+## Usage Pattern
+
+Always import messages from the generated index:
+
+```ts
+import * as m from '$lib/paraglide/messages'
+```
+
+Call each message as a function:
+
+```ts
+m.loading()                                        // no params
+m.entry_dialog_create_category({ name: 'Food' })  // with params
+```
+
+To read the current locale:
+
+```ts
+import { getLocale } from '$lib/paraglide/runtime'
+```
+
+## Rules
+
+- NEVER hardcode user-visible strings in components — always use a message function
+- NEW strings must be added to ALL locale files (`en.json`, `it.json`, `fr.json`, `es.json`, `de.json`)
+- Key naming: `snake_case`, prefixed by feature area (e.g. `entry_dialog_name`, `month_card_balance`)
+- Do NOT import files from `/messages/*.json` directly
+- Do NOT edit files under `/src/lib/paraglide/` — they are auto-generated
+
+---
+
+# BITSUI COMPONENT LIBRARY
+
+Use BitsUI headless components whenever a built-in HTML element is insufficient.
+
+Reference documentation: `/docs/implementation-specs/bits-ui-llms.md`
+
+## Component Inventory (currently used)
+
+| Component    | Used in                                     |
+|--------------|---------------------------------------------|
+| Dialog       | EntryDialog, CategoryManager, WelcomeDialog |
+| AlertDialog  | ImportExportMenu                            |
+| Combobox     | EntryDialog (category picker)               |
+| Collapsible  | EntryList, YearRecap                        |
+| DropdownMenu | EntryRow                                    |
+| ContextMenu  | EntryRow                                    |
+| Popover      | BudgetDashboard (settings)                  |
+| Switch       | BudgetDashboard                             |
+
+## Usage Pattern
+
+```svelte
+<script>
+  import { Dialog } from 'bits-ui'
+</script>
+
+<Dialog.Root>
+  <Dialog.Trigger>Open</Dialog.Trigger>
+  <Dialog.Portal>
+    <Dialog.Overlay />
+    <Dialog.Content>
+      <Dialog.Title>Title</Dialog.Title>
+      <Dialog.Close>Close</Dialog.Close>
+    </Dialog.Content>
+  </Dialog.Portal>
+</Dialog.Root>
+```
+
+## Rules
+
+- PREFER BitsUI over raw HTML for interactive elements (menus, dialogs, selects, toggles, etc.)
+- Check `/docs/implementation-specs/bits-ui-llms.md` for the component API before implementing from scratch
+- ALL styling via Tailwind classes and CSS variables — never use BitsUI built-in theme classes
+- Use `data-*` attributes (`data-highlighted`, `data-disabled`, `data-state`) for interactive state styling
+- Use `.Portal` for overlays to avoid z-index/stacking context issues
+- Do NOT wrap BitsUI components in extra abstraction layers — use them directly
+
+---
+
+# CSS TOKENS & TAILWIND CLASSES RULE
+
+## Rule: No `var(--)` in Inline Style Attributes
+
+**Never** use `style="... var(--token) ..."` or `style:property="... var(--token) ..."` in Svelte components.
+
+Everything must go through Tailwind utility classes.
+
+## How Design Tokens Work
+
+Tailwind v4 auto-generates utility classes from `@theme` tokens in `src/app.css`:
+- `--color-X` → `bg-X`, `text-X`, `border-X`, `ring-X`
+- `--radius-X` → `rounded-X`
+
+## How to Add a New Design Token
+
+When an existing utility doesn't cover a needed value:
+
+1. Add the token to the `@theme {}` block in `src/app.css`
+2. Add the same token to `[data-theme="dark"] {}`
+3. Add the same token to `[data-theme="light"] {}`
+4. Use the generated utility class in components
+
+Tokens using `color-mix()` that reference other `--color-*` tokens resolve correctly per theme automatically, because the referenced base tokens are already overridden in each `[data-theme]` block.
+
+## When to Add a Token vs Use an Existing One
+
+**Reuse an existing token** if the value is already in `@theme`.
+
+**Add a new token** when:
+- You need a tinted variant of a semantic color (e.g., `--color-red-subtle`)
+- The value must adapt between dark/light themes
+- The value is used in more than one place
+
+**Do not** add a token for a truly one-off static value — use a Tailwind arbitrary value (`bg-[#f00]`) only if non-semantic.
+
+## Conditional Styling in Svelte
+
+Use `class:` directives instead of `style:` ternaries:
+
+```svelte
+<!-- Good -->
+class:bg-accent-tint={isSelected}
+class:bg-surface={!isSelected}
+class:border-accent={isSelected}
+class:border-border={!isSelected}
+
+<!-- Bad -->
+style:background-color={isSelected ? 'var(--color-accent)' : undefined}
+```
+
+## The Only Allowed `style:` Exception
+
+Dynamic geometric transforms with runtime-computed values are the sole exception:
+
+```svelte
+<!-- OK: value depends on runtime state, no static Tailwind class covers it -->
+style:transform={isDark ? 'translateX(16px)' : 'translateX(0px)'}
+```
+
+Everything else — colors, backgrounds, borders, opacity — must be a Tailwind utility class.
+
+---
+
 # CONSTANTS & MAGIC STRINGS RULE
 
 Never use raw string or number literals for domain values.
