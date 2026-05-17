@@ -57,42 +57,42 @@
 	{#if useGrid}
 		<div class="grid grid-cols-2 gap-x-6 gap-y-1 text-sm">
 			<div class="flex items-center gap-1.5">
-				<span class="text-xs opacity-70" style:color="var(--color-muted)">{m.summary_income()}</span>
-				<span class="font-medium" style:color="var(--color-green)">{formatCurrency(summary.incomeTotal, currency, locale)}</span>
+				<span class="text-xs opacity-70 text-muted">{m.summary_income()}</span>
+				<span class="font-medium text-green">{formatCurrency(summary.incomeTotal, currency, locale)}</span>
 			</div>
 			<div class="flex items-center gap-1.5">
-				<span class="text-xs opacity-70" style:color="var(--color-muted)">{m.summary_expenses()}</span>
-				<span class="font-medium" style:color="var(--color-red)">{formatCurrency(summary.expenseTotal, currency, locale)}</span>
+				<span class="text-xs opacity-70 text-muted">{m.summary_expenses()}</span>
+				<span class="font-medium text-red">{formatCurrency(summary.expenseTotal, currency, locale)}</span>
 			</div>
 			<div class="flex items-center gap-1.5">
-				<span class="text-xs opacity-70" style:color="var(--color-muted)">{m.summary_savings()}</span>
-				<span class="font-medium" style:color="var(--color-blue)">{formatCurrency(summary.savingsTotal, currency, locale)}</span>
+				<span class="text-xs opacity-70 text-muted">{m.summary_savings()}</span>
+				<span class="font-medium text-blue">{formatCurrency(summary.savingsTotal, currency, locale)}</span>
 			</div>
 			<div class="flex items-center gap-1.5">
-				<span class="text-xs opacity-70" style:color="var(--color-muted)">{m.summary_balance()}</span>
-				<span class="font-semibold" style:color={balanced ? 'var(--color-green)' : 'var(--color-red)'}>{formatCurrency(summary.yearlyBalance, currency, locale)}</span>
+				<span class="text-xs opacity-70 text-muted">{m.summary_balance()}</span>
+				<span class="font-semibold" class:text-green={balanced} class:text-red={!balanced}>{formatCurrency(summary.yearlyBalance, currency, locale)}</span>
 			</div>
 		</div>
 	{:else}
 		<div class="flex flex-nowrap items-center gap-x-5 text-sm">
 			<div class="flex items-center gap-1.5">
-				<span class="text-xs opacity-70" style:color="var(--color-muted)">{m.summary_income()}</span>
-				<span class="font-medium" style:color="var(--color-green)">{formatCurrency(summary.incomeTotal, currency, locale)}</span>
+				<span class="text-xs opacity-70 text-muted">{m.summary_income()}</span>
+				<span class="font-medium text-green">{formatCurrency(summary.incomeTotal, currency, locale)}</span>
 			</div>
-			<span class="opacity-20 select-none" aria-hidden="true" style:color="var(--color-muted)">·</span>
+			<span class="opacity-20 select-none text-muted" aria-hidden="true">·</span>
 			<div class="flex items-center gap-1.5">
-				<span class="text-xs opacity-70" style:color="var(--color-muted)">{m.summary_expenses()}</span>
-				<span class="font-medium" style:color="var(--color-red)">{formatCurrency(summary.expenseTotal, currency, locale)}</span>
+				<span class="text-xs opacity-70 text-muted">{m.summary_expenses()}</span>
+				<span class="font-medium text-red">{formatCurrency(summary.expenseTotal, currency, locale)}</span>
 			</div>
-			<span class="opacity-20 select-none" aria-hidden="true" style:color="var(--color-muted)">·</span>
+			<span class="opacity-20 select-none text-muted" aria-hidden="true">·</span>
 			<div class="flex items-center gap-1.5">
-				<span class="text-xs opacity-70" style:color="var(--color-muted)">{m.summary_savings()}</span>
-				<span class="font-medium" style:color="var(--color-blue)">{formatCurrency(summary.savingsTotal, currency, locale)}</span>
+				<span class="text-xs opacity-70 text-muted">{m.summary_savings()}</span>
+				<span class="font-medium text-blue">{formatCurrency(summary.savingsTotal, currency, locale)}</span>
 			</div>
-			<span class="opacity-20 select-none" aria-hidden="true" style:color="var(--color-muted)">·</span>
+			<span class="opacity-20 select-none text-muted" aria-hidden="true">·</span>
 			<div class="flex items-center gap-1.5">
-				<span class="text-xs opacity-70" style:color="var(--color-muted)">{m.summary_balance()}</span>
-				<span class="font-semibold" style:color={balanced ? 'var(--color-green)' : 'var(--color-red)'}>{formatCurrency(summary.yearlyBalance, currency, locale)}</span>
+				<span class="text-xs opacity-70 text-muted">{m.summary_balance()}</span>
+				<span class="font-semibold" class:text-green={balanced} class:text-red={!balanced}>{formatCurrency(summary.yearlyBalance, currency, locale)}</span>
 			</div>
 		</div>
 	{/if}

@@ -120,33 +120,22 @@
 		onSave(input, editEntry?.id);
 	}
 
-	const inputClass = 'border px-2.5 py-2 text-sm outline-none focus:ring-1 focus:ring-[--color-accent]/40 transition-colors';
-	const inputStyle = `background-color: var(--color-bg); border-color: var(--color-border); color: var(--color-text); border-radius: var(--radius-sm);`;
+	const inputClass = 'border border-border bg-bg rounded-sm px-2.5 py-2 text-sm text-text outline-none focus:ring-1 focus:ring-[--color-accent]/40 transition-colors';
 </script>
 
 <Dialog.Root bind:open onOpenChange={(v) => { if (!v) onClose(); }}>
 	<Dialog.Portal>
-		<Dialog.Overlay
-			class="fixed inset-0 z-50"
-			style="background-color: var(--overlay-bg);"
-		/>
+		<Dialog.Overlay class="fixed inset-0 z-50 bg-overlay" />
 		<Dialog.Content
 			class="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
 		>
-			<div
-				class="pointer-events-auto flex w-full max-w-md flex-col gap-4 border p-5"
-				style:border-radius="var(--radius)"
-				style:background-color="var(--color-surface)"
-				style:border-color="var(--color-border)"
-				style:box-shadow="var(--shadow-modal)"
-			>
+			<div class="pointer-events-auto flex w-full max-w-md flex-col gap-4 rounded-radius border border-border bg-surface p-5">
 				<div class="flex items-center justify-between">
 					<Dialog.Title class="font-semibold">
 						{editEntry ? m.entry_dialog_edit_title() : m.entry_dialog_new_title()}
 					</Dialog.Title>
 					<Dialog.Close
-						class="p-1 text-sm opacity-40 transition-opacity hover:opacity-80"
-						style="border-radius: var(--radius-sm); color: var(--color-text);"
+						class="rounded-sm p-1 text-sm text-text opacity-40 transition-opacity hover:opacity-80"
 						aria-label="Close"
 					>✕</Dialog.Close>
 				</div>
@@ -154,21 +143,20 @@
 				<div class="flex flex-col gap-3">
 					<!-- Name -->
 					<label class="flex flex-col gap-1">
-						<span class="text-xs font-medium" style:color="var(--color-muted)">{m.entry_dialog_name()}</span>
+						<span class="text-xs font-medium text-muted">{m.entry_dialog_name()}</span>
 						<input
 							bind:value={name}
 							type="text"
 							placeholder={m.entry_dialog_name_placeholder()}
 							class={inputClass}
-							style={inputStyle}
 						/>
 					</label>
 
 					<!-- Type + Recurrence -->
 					<div class="grid grid-cols-2 gap-3">
 						<label class="flex flex-col gap-1">
-							<span class="text-xs font-medium" style:color="var(--color-muted)">{m.entry_dialog_type()}</span>
-							<select bind:value={type} class={inputClass} style={inputStyle}>
+							<span class="text-xs font-medium text-muted">{m.entry_dialog_type()}</span>
+							<select bind:value={type} class={inputClass}>
 								{#each ENTRY_TYPES as t}
 									<option value={t}>{ENTRY_TYPE_LABELS[t]()}</option>
 								{/each}
@@ -176,8 +164,8 @@
 						</label>
 
 						<label class="flex flex-col gap-1">
-							<span class="text-xs font-medium" style:color="var(--color-muted)">{m.entry_dialog_recurrence()}</span>
-							<select bind:value={recurrence} class={inputClass} style={inputStyle}>
+							<span class="text-xs font-medium text-muted">{m.entry_dialog_recurrence()}</span>
+							<select bind:value={recurrence} class={inputClass}>
 								{#each RECURRENCES as r}
 									<option value={r}>{RECURRENCE_LABELS[r]()}</option>
 								{/each}
@@ -188,8 +176,8 @@
 					<!-- Month picker (single only) -->
 					{#if recurrence === RECURRENCE.SINGLE}
 						<label class="flex flex-col gap-1">
-							<span class="text-xs font-medium" style:color="var(--color-muted)">{m.entry_dialog_month()}</span>
-							<select bind:value={month} class={inputClass} style={inputStyle}>
+							<span class="text-xs font-medium text-muted">{m.entry_dialog_month()}</span>
+							<select bind:value={month} class={inputClass}>
 								{#each Array.from({ length: MONTHS_PER_YEAR }, (_, i) => i) as i}
 									<option value={i}>{getMonthShort(i, locale)}</option>
 								{/each}
@@ -200,7 +188,7 @@
 					<!-- Amount + Category -->
 					<div class="grid grid-cols-2 gap-3">
 						<label class="flex flex-col gap-1">
-							<span class="text-xs font-medium" style:color="var(--color-muted)">
+							<span class="text-xs font-medium text-muted">
 								{recurrence === RECURRENCE.ANNUAL_DISTRIBUTED ? m.entry_dialog_annual_amount() : m.entry_dialog_amount()}
 							</span>
 							<input
@@ -209,13 +197,12 @@
 								min="0"
 								step="0.01"
 								class={inputClass}
-								style={inputStyle}
 							/>
 						</label>
 
 						<!-- Category combobox -->
 						<div class="relative flex flex-col gap-1">
-							<span class="text-xs font-medium" style:color="var(--color-muted)">{m.entry_dialog_category()}</span>
+							<span class="text-xs font-medium text-muted">{m.entry_dialog_category()}</span>
 							<Combobox.Root
 								type="single"
 								bind:value={categoryId}
@@ -234,7 +221,6 @@
 								<Combobox.Input
 									placeholder={categories.length === 0 ? m.entry_dialog_type_to_create() : m.entry_dialog_search_or_create()}
 									class={inputClass}
-									style={inputStyle}
 									autocomplete="off"
 									oninput={(e) => {
 										categorySearch = (e.target as HTMLInputElement).value;
@@ -251,15 +237,13 @@
 									side="bottom"
 									align="start"
 									sideOffset={4}
-									class="z-[70] w-full max-h-44 overflow-y-auto border"
-									style="border-radius: var(--radius-sm); background-color: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-dropdown);"
+									class="z-[70] w-full max-h-44 overflow-y-auto rounded-sm border border-border bg-surface"
 								>
 									{#each filteredCategories as cat (cat.id)}
 										<Combobox.Item
 											value={cat.id}
 											label={cat.name}
-											class="w-full px-3 py-1.5 text-left text-sm transition-colors hover:opacity-80 cursor-pointer"
-											style="color: var(--color-text); background-color: {cat.id === categoryId ? 'color-mix(in srgb, var(--color-accent) 15%, transparent)' : 'transparent'};"
+											class="w-full px-3 py-1.5 text-left text-sm text-text transition-colors hover:opacity-80 cursor-pointer {cat.id === categoryId ? 'bg-accent-subtle' : ''}"
 										>
 											{cat.name}
 										</Combobox.Item>
@@ -268,14 +252,13 @@
 										<Combobox.Item
 											value="__create__"
 											label={categorySearch.trim()}
-											class="w-full border-t px-3 py-1.5 text-left text-sm transition-colors hover:opacity-80 cursor-pointer"
-											style="color: var(--color-accent); border-color: var(--color-border);"
+											class="w-full border-t border-border px-3 py-1.5 text-left text-sm text-accent transition-colors hover:opacity-80 cursor-pointer"
 										>
 											{m.entry_dialog_create_category({ name: categorySearch.trim() })}
 										</Combobox.Item>
 									{/if}
 									{#if filteredCategories.length === 0 && !showCreateOption}
-										<div class="px-3 py-1.5 text-sm" style:color="var(--color-muted)">
+										<div class="px-3 py-1.5 text-sm text-muted">
 											{m.entry_dialog_no_categories_found()}
 										</div>
 									{/if}
@@ -286,23 +269,17 @@
 
 					<!-- Notes -->
 					<label class="flex flex-col gap-1">
-						<span class="text-xs font-medium" style:color="var(--color-muted)">{m.entry_dialog_notes()} <span class="opacity-60">{m.entry_dialog_optional()}</span></span>
+						<span class="text-xs font-medium text-muted">{m.entry_dialog_notes()} <span class="opacity-60">{m.entry_dialog_optional()}</span></span>
 						<input
 							bind:value={notes}
 							type="text"
 							placeholder={m.entry_dialog_notes_placeholder()}
 							class={inputClass}
-							style={inputStyle}
 						/>
 					</label>
 
 					{#if error}
-						<p
-							class="px-3 py-2 text-xs"
-							style:border-radius="var(--radius-sm)"
-							style:color="var(--color-red)"
-							style:background-color="color-mix(in srgb, var(--color-red) 10%, transparent)"
-						>
+						<p class="rounded-sm px-3 py-2 text-xs text-red bg-red-faint">
 							{error}
 						</p>
 					{/if}
@@ -311,19 +288,14 @@
 				<div class="flex justify-end gap-2">
 					<button
 						type="button"
-						class="px-3 py-1.5 text-sm transition-opacity hover:opacity-80"
-						style:border-radius="var(--radius-sm)"
-						style:color="var(--color-muted)"
+						class="rounded-sm px-3 py-1.5 text-sm text-muted transition-opacity hover:opacity-80"
 						onclick={onClose}
 					>
 						{m.cancel()}
 					</button>
 					<button
 						type="button"
-						class="px-4 py-1.5 text-sm font-medium transition-opacity hover:opacity-90"
-						style:border-radius="var(--radius-sm)"
-						style:background-color="var(--color-accent)"
-						style:color="var(--color-accent-fg)"
+						class="rounded-sm bg-accent px-4 py-1.5 text-sm font-medium text-accent-fg transition-opacity hover:opacity-90"
 						onclick={submit}
 					>
 						{editEntry ? m.entry_dialog_save_changes() : m.entry_dialog_add_entry()}

@@ -182,20 +182,16 @@
 </script>
 
 {#if loading}
-	<div
-		class="flex h-screen flex-col items-center justify-center gap-4"
-		style:background-color="var(--color-bg)"
-	>
+	<div class="flex h-screen flex-col items-center justify-center gap-4 bg-bg">
 		<div class="flex gap-1.5">
 			{#each [0, 1, 2] as i}
 				<div
-					class="h-2 w-2 animate-bounce rounded-full"
-					style:background-color="var(--color-muted)"
+					class="h-2 w-2 animate-bounce rounded-full bg-muted"
 					style:animation-delay="{i * 120}ms"
 				></div>
 			{/each}
 		</div>
-		<span class="text-sm" style:color="var(--color-muted)">{m.loading()}</span>
+		<span class="text-sm text-muted">{m.loading()}</span>
 	</div>
 {:else if budget}
 	<BudgetDashboard
@@ -226,23 +222,14 @@
 <!-- Clear budget — single unified modal -->
 <Dialog.Root bind:open={clearOpen} onOpenChange={(v) => { if (!v) cancelClear(); }}>
 	<Dialog.Portal>
-		<Dialog.Overlay
-			class="fixed inset-0 z-[60]"
-			style="background-color: var(--overlay-bg);"
-		/>
+		<Dialog.Overlay class="fixed inset-0 z-[60] bg-overlay" />
 		<Dialog.Content
 			class="fixed inset-0 z-[60] flex items-center justify-center p-4 pointer-events-none"
 		>
-			<div
-				class="pointer-events-auto flex w-full max-w-sm flex-col gap-4 border p-5"
-				style:border-radius="var(--radius)"
-				style:background-color="var(--color-surface)"
-				style:border-color="var(--color-border)"
-				style:box-shadow="var(--shadow-modal)"
-			>
+			<div class="pointer-events-auto flex w-full max-w-sm flex-col gap-4 rounded-radius border border-border bg-surface p-5">
 				<div>
 					<Dialog.Title class="font-semibold">{m.clear_budget_title()}</Dialog.Title>
-					<p class="mt-1 text-sm" style:color="var(--color-muted)">
+					<p class="mt-1 text-sm text-muted">
 						{m.clear_budget_description()}
 					</p>
 				</div>
@@ -250,24 +237,16 @@
 					bind:value={clearName}
 					type="text"
 					placeholder={m.clear_budget_placeholder()}
-					class="border px-2.5 py-2 text-sm outline-none focus:ring-1 focus:ring-[--color-accent]/40 transition-colors"
-					style:border-radius="var(--radius-sm)"
-					style:background-color="var(--color-bg)"
-					style:border-color="var(--color-border)"
-					style:color="var(--color-text)"
+					class="rounded-sm border border-border bg-bg px-2.5 py-2 text-sm text-text outline-none focus:ring-1 focus:ring-[--color-accent]/40 transition-colors"
 					onkeydown={(e) => e.key === 'Enter' && executeClear()}
 				/>
 				<div class="flex justify-end gap-2">
 					<Dialog.Close
-						class="px-3 py-1.5 text-sm transition-opacity hover:opacity-80"
-						style="border-radius: var(--radius-sm); color: var(--color-muted);"
+						class="rounded-sm px-3 py-1.5 text-sm text-muted transition-opacity hover:opacity-80"
 					>{m.cancel()}</Dialog.Close>
 					<button
 						type="button"
-						class="px-4 py-1.5 text-sm font-medium transition-opacity hover:opacity-90"
-						style:border-radius="var(--radius-sm)"
-						style:background-color="var(--color-red)"
-						style:color="white"
+						class="rounded-sm bg-red px-4 py-1.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
 						onclick={executeClear}
 					>
 						{m.clear_budget_confirm()}

@@ -45,10 +45,10 @@
 		tourAttrs?: { addBtn?: string; firstRow?: string };
 	} = $props();
 
-	const typeColors: Record<EntryType, string> = {
-		income: 'var(--color-green)',
-		expense: 'var(--color-red)',
-		savings: 'var(--color-blue)'
+	const typeColorClass: Record<EntryType, string> = {
+		income: 'text-green',
+		expense: 'text-red',
+		savings: 'text-blue'
 	};
 
 	const locale = $derived(getLocale());
@@ -92,14 +92,11 @@
 
 <div class="flex flex-col">
 	<!-- Section header -->
-	<div
-		class="flex items-center justify-between border-b px-3 py-2"
-		style:border-color="var(--color-border)"
-	>
-		<span class="text-xs font-semibold uppercase tracking-wide" style:color={typeColors[type]}>
+	<div class="flex items-center justify-between border-b border-border px-3 py-2">
+		<span class="text-xs font-semibold uppercase tracking-wide {typeColorClass[type]}">
 			{typeLabel}
 		</span>
-		<span class="text-sm font-semibold tabular-nums" style:color={typeColors[type]}>
+		<span class="text-sm font-semibold tabular-nums {typeColorClass[type]}">
 			{formatCurrency(total, currency, locale)}
 		</span>
 	</div>
@@ -107,7 +104,7 @@
 	{#if filtered.length === 0}
 		<!-- Empty state -->
 		<div class="flex flex-col items-center gap-2 px-4 py-6 text-center">
-			<p class="text-xs" style:color="var(--color-muted)">{m.entry_list_empty({ type: typeLabel.toLowerCase() })}</p>
+			<p class="text-xs text-muted">{m.entry_list_empty({ type: typeLabel.toLowerCase() })}</p>
 		</div>
 	{:else}
 		<!-- Category groups -->
@@ -117,13 +114,10 @@
 			<Collapsible.Root
 				open={isOpen(cat)}
 				onOpenChange={(v) => setOpen(cat, v)}
-				class="border-b last:border-b-0"
-				style="border-color: var(--color-border);"
+				class="border-b border-border last:border-b-0"
 			>
 				<Collapsible.Trigger
-					class="flex w-full items-center justify-between px-3 py-2 text-left transition-colors"
-					onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
-					onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
+					class="flex w-full items-center justify-between px-3 py-2 text-left transition-colors hover:bg-surface-hover"
 				>
 					<div class="flex items-center gap-2 min-w-0">
 						<span
@@ -131,14 +125,14 @@
 							style:display="inline-flex"
 							style:transform={isOpen(cat) ? 'rotate(0deg)' : 'rotate(-90deg)'}
 						>
-							<ChevronDown size={13} style="opacity:0.5; color:var(--color-subtle)" />
+							<ChevronDown size={13} class="opacity-50 text-subtle" />
 						</span>
-						<span class="text-sm truncate" style:color="var(--color-text)">{cat}</span>
-						<span class="shrink-0 text-xs" style:color="var(--color-subtle)">
+						<span class="text-sm truncate text-text">{cat}</span>
+						<span class="shrink-0 text-xs text-subtle">
 							({catEntries.length})
 						</span>
 					</div>
-					<span class="shrink-0 text-sm font-medium tabular-nums" style:color="var(--color-text)">
+					<span class="shrink-0 text-sm font-medium tabular-nums text-text">
 						{formatCurrency(catTotal, currency, locale)}
 					</span>
 				</Collapsible.Trigger>
@@ -174,8 +168,7 @@
 	<!-- Add button -->
 	<button
 		type="button"
-		class="flex items-center gap-1.5 px-3 py-2 text-xs opacity-60 transition-opacity hover:opacity-100"
-		style:color={typeColors[type]}
+		class="flex items-center gap-1.5 px-3 py-2 text-xs opacity-60 transition-opacity hover:opacity-100 {typeColorClass[type]}"
 		data-tour={tourAttrs?.addBtn}
 		onclick={() => onAddNew(type)}
 	>

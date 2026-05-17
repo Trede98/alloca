@@ -15,21 +15,17 @@
 
 {#if balanced && compact}
 	<span
-		class="inline-flex items-center px-1.5 py-0.5 text-xs font-medium"
-		style:border-radius="var(--radius-sm)"
-		style:background-color="color-mix(in srgb, var(--color-green) 15%, transparent)"
-		style:color="var(--color-green)"
+		class="inline-flex items-center rounded-sm px-1.5 py-0.5 text-xs font-medium text-green bg-green-subtle"
 	>
 		{m.balance_badge_compact()}
 	</span>
 {:else}
 	<span
-		class="inline-flex items-center px-1.5 py-0.5 text-xs font-medium"
-		style:border-radius="var(--radius-sm)"
-		style:background-color={balanced
-			? 'color-mix(in srgb, var(--color-green) 15%, transparent)'
-			: 'color-mix(in srgb, var(--color-red) 15%, transparent)'}
-		style:color={balanced ? 'var(--color-green)' : 'var(--color-red)'}
+		class="inline-flex items-center rounded-sm px-1.5 py-0.5 text-xs font-medium"
+		class:text-green={balanced}
+		class:text-red={!balanced}
+		class:bg-green-subtle={balanced}
+		class:bg-red-subtle={!balanced}
 	>
 		{balanced ? m.balance_badge_full() : formatCurrency(balance, currency, locale)}
 	</span>

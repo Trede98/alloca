@@ -19,10 +19,10 @@
 		onClose: () => void;
 	} = $props();
 
-	const typeColors: Record<EntryType, string> = {
-		income: 'var(--color-green)',
-		expense: 'var(--color-red)',
-		savings: 'var(--color-blue)'
+	const typeColorClass: Record<EntryType, string> = {
+		income: 'text-green',
+		expense: 'text-red',
+		savings: 'text-blue'
 	};
 
 	const locale = $derived(getLocale());
@@ -50,18 +50,12 @@
 </script>
 
 <!-- Header -->
-<div
-	class="flex shrink-0 items-center justify-between gap-3 border-b px-4 py-2"
-	style:border-color="var(--color-border)"
-	style:background-color="var(--color-surface)"
->
+<div class="flex shrink-0 items-center justify-between gap-3 border-b border-border bg-surface px-4 py-2">
 	<div class="flex items-center gap-2">
 		<!-- Back button (mobile) -->
 		<button
 			type="button"
-			class="p-1 text-sm opacity-60 transition-opacity hover:opacity-90 sm:hidden"
-			style:border-radius="var(--radius-sm)"
-			style:color="var(--color-text)"
+			class="rounded-sm p-1 text-sm text-text opacity-60 transition-opacity hover:opacity-90 sm:hidden"
 			onclick={onClose}
 		>
 			←
@@ -71,15 +65,16 @@
 	</div>
 
 	<div class="hidden items-center gap-3 text-sm sm:flex">
-		<span style:color="var(--color-green)">{formatCurrency(recap.income.total, currency, locale)}</span>
+		<span class="text-green">{formatCurrency(recap.income.total, currency, locale)}</span>
 		<span class="opacity-40">−</span>
-		<span style:color="var(--color-red)">{formatCurrency(recap.expenses.total, currency, locale)}</span>
+		<span class="text-red">{formatCurrency(recap.expenses.total, currency, locale)}</span>
 		<span class="opacity-40">−</span>
-		<span style:color="var(--color-blue)">{formatCurrency(recap.savings.total, currency, locale)}</span>
+		<span class="text-blue">{formatCurrency(recap.savings.total, currency, locale)}</span>
 		<span class="opacity-40">=</span>
 		<span
 			class="font-semibold"
-			style:color={isBalanced(recap.yearlyBalance) ? 'var(--color-green)' : 'var(--color-red)'}
+			class:text-green={isBalanced(recap.yearlyBalance)}
+			class:text-red={!isBalanced(recap.yearlyBalance)}
 		>
 			{formatCurrency(isBalanced(recap.yearlyBalance) ? 0 : recap.yearlyBalance, currency, locale)}
 		</span>
@@ -87,9 +82,7 @@
 
 	<button
 		type="button"
-		class="hidden shrink-0 p-1 text-sm opacity-40 transition-opacity hover:opacity-80 sm:block"
-		style:border-radius="var(--radius-sm)"
-		style:color="var(--color-text)"
+		class="hidden shrink-0 rounded-sm p-1 text-sm text-text opacity-40 transition-opacity hover:opacity-80 sm:block"
 		onclick={onClose}
 	>
 		✕
@@ -102,25 +95,13 @@
 
 		{#each sections as section}
 			{#if section.categories.length > 0}
-				<div
-					class="overflow-hidden border"
-					style:border-radius="var(--radius)"
-					style:border-color="var(--color-border)"
-					style:background-color="var(--color-surface)"
-					style:box-shadow="var(--shadow-card)"
-				>
+				<div class="overflow-hidden rounded-radius border border-border bg-surface">
 					<!-- Section header -->
-					<div
-						class="flex items-center justify-between border-b px-3 py-2"
-						style:border-color="var(--color-border)"
-					>
-						<span
-							class="text-xs font-semibold uppercase tracking-wide"
-							style:color={typeColors[section.type]}
-						>
+					<div class="flex items-center justify-between border-b border-border px-3 py-2">
+						<span class="text-xs font-semibold uppercase tracking-wide {typeColorClass[section.type]}">
 							{typeLabels[section.type]}
 						</span>
-						<span class="text-sm font-semibold tabular-nums" style:color={typeColors[section.type]}>
+						<span class="text-sm font-semibold tabular-nums {typeColorClass[section.type]}">
 							{formatCurrency(section.total, currency, locale)}
 						</span>
 					</div>
@@ -132,13 +113,10 @@
 						<Collapsible.Root
 							open={isOpen(key)}
 							onOpenChange={(v) => setOpen(key, v)}
-							class="border-b last:border-b-0"
-							style="border-color: var(--color-border);"
+							class="border-b border-border last:border-b-0"
 						>
 							<Collapsible.Trigger
-								class="flex w-full items-center justify-between px-3 py-2 text-left transition-colors"
-								onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
-								onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
+								class="flex w-full items-center justify-between px-3 py-2 text-left transition-colors hover:bg-surface-hover"
 							>
 								<div class="flex items-center gap-2">
 									<span
@@ -146,34 +124,29 @@
 										style:display="inline-flex"
 										style:transform={isOpen(key) ? 'rotate(0deg)' : 'rotate(-90deg)'}
 									>
-										<ChevronDown size={13} style="opacity:0.5; color:var(--color-subtle)" />
+										<ChevronDown size={13} class="opacity-50 text-subtle" />
 									</span>
-									<span class="text-sm" style:color="var(--color-text)">{cat.categoryName}</span>
+									<span class="text-sm text-text">{cat.categoryName}</span>
 								</div>
-								<span class="text-sm font-medium tabular-nums" style:color="var(--color-text)">
+								<span class="text-sm font-medium tabular-nums text-text">
 									{formatCurrency(cat.yearTotal, currency, locale)}
 								</span>
 							</Collapsible.Trigger>
 
 							<Collapsible.Content>
-								<div class="border-t" style:border-color="var(--color-border)">
+								<div class="border-t border-border">
 									{#each cat.entries as entry (entry.id)}
 										<div
-											class="grid items-center gap-2 px-3 py-1.5 text-sm transition-colors hover:bg-[--surface-hover]"
+											class="grid items-center gap-2 px-3 py-1.5 text-sm transition-colors hover:bg-surface-hover"
 											style="grid-template-columns: 1fr auto;"
 										>
 											<div class="flex min-w-0 items-center gap-1.5">
-												<span class="min-w-0 truncate" style:color="var(--color-text)">{entry.name}</span>
-												<span
-													class="shrink-0 px-1 py-0.5 text-xs"
-													style:border-radius="var(--radius-sm)"
-													style:color="var(--color-muted)"
-													style:background-color="var(--color-border)"
-												>
+												<span class="min-w-0 truncate text-text">{entry.name}</span>
+												<span class="shrink-0 rounded-sm bg-border px-1 py-0.5 text-xs text-muted">
 													{recurrenceBadges[entry.recurrence]}
 												</span>
 											</div>
-											<span class="tabular-nums" style:color="var(--color-text)">
+											<span class="tabular-nums text-text">
 												{formatCurrency(entry.yearTotal, currency, locale)}
 											</span>
 										</div>

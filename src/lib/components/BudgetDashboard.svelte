@@ -36,7 +36,7 @@
 	function getCurrencySymbol(code: string, loc: string): string {
 		return (0)
 			.toLocaleString(loc, { style: 'currency', currency: code, minimumFractionDigits: 0, maximumFractionDigits: 0 })
-			.replace(/[\d\s,. ]/g, '')
+			.replace(/[\d\s,. ]/g, '')
 			.trim();
 	}
 
@@ -295,22 +295,16 @@
 	}
 </script>
 
-<div class="flex h-screen flex-col overflow-hidden" style:background-color="var(--color-bg)">
+<div class="flex h-screen flex-col overflow-hidden bg-bg">
 	<!-- Top bar -->
-	<header
-		class="flex shrink-0 items-center justify-between gap-3 border-b px-4 py-2"
-		style:border-color="var(--color-border)"
-		style:background-color="var(--color-surface)"
-	>
+	<header class="flex shrink-0 items-center justify-between gap-3 border-b border-border bg-surface px-4 py-2">
 		<!-- Left: budget name + year -->
 		<span class="flex min-w-0 items-center gap-1">
 			{#if nameEditing}
 				<input
 					bind:this={nameEl}
 					bind:value={nameInput}
-					class="min-w-0 max-w-40 flex-1 bg-transparent font-semibold tracking-tight outline-none border-b"
-					style:border-color="var(--color-border)"
-					style:color="var(--color-text)"
+					class="min-w-0 max-w-40 flex-1 border-b border-border bg-transparent font-semibold tracking-tight text-text outline-none"
 					onblur={commitName}
 					onkeydown={onNameKeydown}
 				/>
@@ -340,8 +334,7 @@
 				onOpenChange={(v) => { if (!v) { menuView = 'main'; currencyFilter = ''; } }}
 			>
 				<Popover.Trigger
-					class="flex items-center justify-center p-1.5 opacity-60 transition-opacity hover:opacity-90"
-					style="border-radius: var(--radius-sm);"
+					class="flex items-center justify-center rounded-sm p-1.5 opacity-60 transition-opacity hover:opacity-90"
 					title={m.settings()}
 					data-tour="settings-btn"
 				>
@@ -352,8 +345,7 @@
 						side="bottom"
 						align="end"
 						sideOffset={4}
-						class="z-50 min-w-[220px] border py-1"
-						style="border-radius: var(--radius); background-color: var(--color-surface); border-color: var(--color-border); box-shadow: var(--shadow-dropdown);"
+						class="z-50 min-w-[220px] rounded-radius border border-border bg-surface py-1"
 					>
 						{#if menuView === 'main'}
 							<!-- Main menu -->
@@ -362,26 +354,20 @@
 							<button
 								type="button"
 								role="menuitem"
-								class="flex w-full items-center gap-3 px-3 py-2.5 text-sm transition-colors"
-								style:color="var(--color-text)"
-								onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
-								onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
+								class="flex w-full items-center gap-3 px-3 py-2.5 text-sm text-text transition-colors hover:bg-surface-hover"
 								onclick={replayTour}
 							>
 								<HelpCircle size={14} style="opacity:0.6" />
 								{m.tour_replay()}
 							</button>
 
-							<div class="my-1 border-t" style:border-color="var(--color-border)"></div>
+							<div class="my-1 border-t border-border"></div>
 
 							<!-- Categories -->
 							<button
 								type="button"
 								role="menuitem"
-								class="flex w-full items-center gap-3 px-3 py-2.5 text-sm transition-colors"
-								style:color="var(--color-text)"
-								onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
-								onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
+								class="flex w-full items-center gap-3 px-3 py-2.5 text-sm text-text transition-colors hover:bg-surface-hover"
 								onclick={() => { categoriesModalOpen = true; popoverOpen = false; menuView = 'main'; }}
 							>
 								<Tag size={14} style="opacity:0.6" />
@@ -392,10 +378,7 @@
 							<button
 								type="button"
 								role="menuitem"
-								class="flex w-full items-center gap-3 px-3 py-2.5 text-sm transition-colors"
-								style:color="var(--color-text)"
-								onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
-								onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
+								class="flex w-full items-center gap-3 px-3 py-2.5 text-sm text-text transition-colors hover:bg-surface-hover"
 								onclick={() => { importFileInput?.click(); popoverOpen = false; menuView = 'main'; }}
 							>
 								<Upload size={14} style="opacity:0.6" />
@@ -406,26 +389,20 @@
 							<button
 								type="button"
 								role="menuitem"
-								class="flex w-full items-center gap-3 px-3 py-2.5 text-sm transition-colors"
-								style:color="var(--color-text)"
-								onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
-								onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
+								class="flex w-full items-center gap-3 px-3 py-2.5 text-sm text-text transition-colors hover:bg-surface-hover"
 								onclick={() => { popoverExport(); popoverOpen = false; menuView = 'main'; }}
 							>
 								<Download size={14} style="opacity:0.6" />
 								{m.export()}
 							</button>
 
-							<div class="my-1 border-t" style:border-color="var(--color-border)"></div>
+							<div class="my-1 border-t border-border"></div>
 
 							<!-- Language submenu trigger -->
 							<button
 								type="button"
 								role="menuitem"
-								class="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-sm transition-colors"
-								style:color="var(--color-text)"
-								onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
-								onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
+								class="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-sm text-text transition-colors hover:bg-surface-hover"
 								onclick={() => (menuView = 'language')}
 							>
 								<div class="flex items-center gap-3">
@@ -442,10 +419,7 @@
 							<button
 								type="button"
 								role="menuitem"
-								class="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-sm transition-colors"
-								style:color="var(--color-text)"
-								onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
-								onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
+								class="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-sm text-text transition-colors hover:bg-surface-hover"
 								onclick={() => { currencyFilter = ''; menuView = 'currency'; }}
 							>
 								<div class="flex items-center gap-3">
@@ -458,11 +432,11 @@
 								</div>
 							</button>
 
-							<div class="my-1 border-t" style:border-color="var(--color-border)"></div>
+							<div class="my-1 border-t border-border"></div>
 
 							<!-- Theme toggle row (not a button — label + Switch) -->
 							<div class="flex items-center justify-between gap-3 px-3 py-2.5">
-								<div class="flex items-center gap-3 text-sm" style:color="var(--color-text)">
+								<div class="flex items-center gap-3 text-sm text-text">
 									{#if theme === 'dark'}
 										<Moon size={14} style="opacity:0.6" />
 										{m.dark_mode()}
@@ -474,34 +448,30 @@
 								<Switch.Root
 									checked={theme === 'dark'}
 									onCheckedChange={() => toggleTheme()}
-									class="relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2"
-									style="background-color: var(--color-theme-toggle-track)"
+									class="relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 bg-theme-toggle-track"
 								>
 									<Switch.Thumb
-										class="pointer-events-none flex h-4 w-4 items-center justify-center rounded-full shadow-sm transition-transform"
-										style="background-color: var(--color-theme-toggle-thumb); transform: {theme === 'dark' ? 'translateX(16px)' : 'translateX(0px)'}"
+										class="pointer-events-none flex h-4 w-4 items-center justify-center rounded-full transition-transform bg-theme-toggle-thumb"
+										style="transform: {theme === 'dark' ? 'translateX(16px)' : 'translateX(0px)'}"
 									>
 										{#if theme === 'dark'}
-											<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" style="color: var(--color-theme-toggle-icon)">
+											<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" class="text-theme-toggle-icon">
 												<path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/>
 											</svg>
 										{:else}
-											<Sun size={10} style="color: var(--color-theme-toggle-icon)" />
+											<Sun size={10} class="text-theme-toggle-icon" />
 										{/if}
 									</Switch.Thumb>
 								</Switch.Root>
 							</div>
 
-							<div class="my-1 border-t" style:border-color="var(--color-border)"></div>
+							<div class="my-1 border-t border-border"></div>
 
 							<!-- Clear budget -->
 							<button
 								type="button"
 								role="menuitem"
-								class="flex w-full items-center gap-3 px-3 py-2.5 text-sm transition-colors"
-								style:color="var(--color-red)"
-								onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'color-mix(in srgb, var(--color-red) 6%, transparent)'}
-								onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
+								class="flex w-full items-center gap-3 px-3 py-2.5 text-sm text-red transition-colors hover:bg-danger-hover"
 								onclick={() => { startReset(); popoverOpen = false; menuView = 'main'; }}
 							>
 								<Trash2 size={14} />
@@ -515,27 +485,21 @@
 							<button
 								type="button"
 								role="menuitem"
-								class="flex w-full items-center gap-2 px-3 py-2.5 text-sm font-medium transition-colors"
-								style:color="var(--color-text)"
-								onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
-								onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
+								class="flex w-full items-center gap-2 px-3 py-2.5 text-sm font-medium text-text transition-colors hover:bg-surface-hover"
 								onclick={() => (menuView = 'main')}
 							>
 								<ChevronLeft size={14} style="opacity:0.6" />
 								{m.language()}
 							</button>
 
-							<div class="my-1 border-t" style:border-color="var(--color-border)"></div>
+							<div class="my-1 border-t border-border"></div>
 
 							<!-- Language options -->
 							{#each LANGUAGES as lang}
 								<button
 									type="button"
 									role="menuitem"
-									class="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-sm transition-colors"
-									style:color="var(--color-text)"
-									onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
-									onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
+									class="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-sm text-text transition-colors hover:bg-surface-hover"
 									onclick={() => { setLocale(lang.code); menuView = 'main'; }}
 								>
 									<div class="flex items-center gap-3">
@@ -543,7 +507,7 @@
 										<span>{lang.label}</span>
 									</div>
 									{#if locale === lang.code}
-										<span style:color="var(--color-accent)">✓</span>
+										<span class="text-accent">✓</span>
 									{/if}
 								</button>
 							{/each}
@@ -555,17 +519,14 @@
 							<button
 								type="button"
 								role="menuitem"
-								class="flex w-full items-center gap-2 px-3 py-2.5 text-sm font-medium transition-colors"
-								style:color="var(--color-text)"
-								onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
-								onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
+								class="flex w-full items-center gap-2 px-3 py-2.5 text-sm font-medium text-text transition-colors hover:bg-surface-hover"
 								onclick={() => (menuView = 'main')}
 							>
 								<ChevronLeft size={14} style="opacity:0.6" />
 								{m.currency()}
 							</button>
 
-							<div class="my-1 border-t" style:border-color="var(--color-border)"></div>
+							<div class="my-1 border-t border-border"></div>
 
 							<!-- Search input -->
 							<div class="px-3 py-1.5">
@@ -573,14 +534,11 @@
 									type="text"
 									bind:value={currencyFilter}
 									placeholder={m.currency_search_placeholder()}
-									class="w-full rounded bg-transparent px-2 py-1.5 text-sm outline-none border"
-									style:border-color="var(--color-border)"
-									style:color="var(--color-text)"
-									style:background-color="var(--color-bg)"
+									class="w-full rounded border border-border bg-bg px-2 py-1.5 text-sm text-text outline-none"
 								/>
 							</div>
 
-							<div class="my-1 border-t" style:border-color="var(--color-border)"></div>
+							<div class="my-1 border-t border-border"></div>
 
 							<!-- Currency options -->
 							<div class="max-h-72 overflow-y-auto">
@@ -588,17 +546,14 @@
 									<button
 										type="button"
 										role="menuitem"
-										class="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-sm transition-colors"
-										style:color="var(--color-text)"
-										onmouseenter={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)'}
-										onmouseleave={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = ''}
+										class="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-sm text-text transition-colors hover:bg-surface-hover"
 										onclick={() => { onBudgetChange({ ...budget, currency: code }); menuView = 'main'; popoverOpen = false; }}
 									>
 										<span class="text-left">{getCurrencyLabel(code, locale)}</span>
 										<div class="flex items-center gap-2">
 											<span class="font-mono text-xs opacity-50">{code}</span>
 											{#if budget.currency === code}
-												<span style:color="var(--color-accent)">✓</span>
+												<span class="text-accent">✓</span>
 											{/if}
 										</div>
 									</button>
@@ -612,10 +567,8 @@
 
 	<!-- Summary strip: shown below lg, hidden at lg+ -->
 	<div
-		class="flex shrink-0 items-center justify-center border-b px-4 py-1.5 lg:hidden"
+		class="flex shrink-0 items-center justify-center border-b border-border bg-surface px-4 py-1.5 lg:hidden"
 		data-tour="summary-bar-mobile"
-		style:border-color="var(--color-border)"
-		style:background-color="var(--color-surface)"
 	>
 		<SummaryBar summary={yearSummary} currency={budget.currency} />
 	</div>
@@ -624,30 +577,27 @@
 	<div class="flex flex-1 overflow-hidden">
 		<!-- Month grid sidebar -->
 		<div
-			class="shrink-0 flex-col gap-2 overflow-y-auto border-r p-3 sm:flex w-full sm:w-[280px] sm:no-scrollbar"
+			class="shrink-0 flex-col gap-2 overflow-y-auto border-r border-border p-3 sm:flex w-full sm:w-[280px] sm:no-scrollbar"
 			class:hidden={showDetail && (selectedMonth !== null || showYearRecap)}
 			class:flex={!(showDetail && (selectedMonth !== null || showYearRecap))}
 			data-tour="month-sidebar"
-			style:border-color="var(--color-border)"
 		>
 			<!-- Year Overview button -->
 			<button
 				type="button"
 				data-tour="year-overview-btn"
-				class="flex w-full items-center justify-between border p-2.5 text-left transition-all duration-150"
-				style:border-radius="var(--radius)"
-				style:background-color={showYearRecap
-					? 'color-mix(in srgb, var(--color-accent) 12%, var(--color-surface))'
-					: 'var(--color-surface)'}
-				style:border-color={showYearRecap ? 'var(--color-accent)' : 'var(--color-border)'}
-				style:box-shadow="var(--shadow-card)"
+				class="flex w-full items-center justify-between rounded-radius border p-2.5 text-left transition-all duration-150"
+				class:bg-accent-tint={showYearRecap}
+				class:bg-surface={!showYearRecap}
+				class:border-accent={showYearRecap}
+				class:border-border={!showYearRecap}
 				onclick={selectYearOverview}
 			>
-				<span class="text-sm font-medium" style:color="var(--color-text)">{m.year_overview()}</span>
-				<span class="text-xs" style:color="var(--color-muted)">{budget.year}</span>
+				<span class="text-sm font-medium text-text">{m.year_overview()}</span>
+				<span class="text-xs text-muted">{budget.year}</span>
 			</button>
 
-			<div class="mt-1 text-xs font-medium" style:color="var(--color-muted)">
+			<div class="mt-1 text-xs font-medium text-muted">
 				{m.months_section()}
 			</div>
 			{#each monthSummaries as summary, i}
@@ -684,18 +634,14 @@
 			>
 				<!-- Month header -->
 				<div
-					class="flex shrink-0 items-center justify-between gap-3 border-b px-4 py-2"
+					class="flex shrink-0 items-center justify-between gap-3 border-b border-border bg-surface px-4 py-2"
 					data-tour="month-detail-header"
-					style:border-color="var(--color-border)"
-					style:background-color="var(--color-surface)"
 				>
 					<div class="flex items-center gap-2">
 						<!-- Back button (mobile) -->
 						<button
 							type="button"
-							class="p-1 text-sm opacity-60 transition-opacity hover:opacity-90 sm:hidden"
-							style:border-radius="var(--radius-sm)"
-							style:color="var(--color-muted)"
+							class="rounded-sm p-1 text-sm text-muted opacity-60 transition-opacity hover:opacity-90 sm:hidden"
 							onclick={() => { showDetail = false; selectedMonth = null; showYearRecap = false; }}
 						>
 							←
@@ -705,25 +651,20 @@
 					</div>
 
 					<div class="hidden items-center gap-3 text-sm sm:flex">
-						<span style:color="var(--color-green)">{formatCurrency(monthSummary.incomeTotal, budget.currency, locale)}</span>
+						<span class="text-green">{formatCurrency(monthSummary.incomeTotal, budget.currency, locale)}</span>
 						<span class="opacity-40">−</span>
-						<span style:color="var(--color-red)">{formatCurrency(monthSummary.expenseTotal, budget.currency, locale)}</span>
+						<span class="text-red">{formatCurrency(monthSummary.expenseTotal, budget.currency, locale)}</span>
 						<span class="opacity-40">−</span>
-						<span style:color="var(--color-blue)">{formatCurrency(monthSummary.savingsTotal, budget.currency, locale)}</span>
+						<span class="text-blue">{formatCurrency(monthSummary.savingsTotal, budget.currency, locale)}</span>
 						<span class="opacity-40">=</span>
-						<span
-							class="font-semibold"
-							style:color={isBalanced(monthSummary.balance) ? 'var(--color-green)' : 'var(--color-red)'}
-						>
+						<span class="font-semibold" class:text-green={isBalanced(monthSummary.balance)} class:text-red={!isBalanced(monthSummary.balance)}>
 							{formatCurrency(monthSummary.balance, budget.currency, locale)}
 						</span>
 					</div>
 
 					<button
 						type="button"
-						class="hidden shrink-0 p-1 text-sm opacity-40 transition-opacity hover:opacity-80 sm:block"
-						style:border-radius="var(--radius-sm)"
-						style:color="var(--color-text)"
+						class="hidden shrink-0 rounded-sm p-1 text-sm text-text opacity-40 transition-opacity hover:opacity-80 sm:block"
 						onclick={() => (selectedMonth = null)}
 					>
 						✕
@@ -736,35 +677,17 @@
 
 						<!-- Balance status -->
 						{#if !isBalanced(monthSummary.balance)}
-							<div
-								class="border px-4 py-3 text-sm"
-								style:border-radius="var(--radius)"
-								style:border-color="color-mix(in srgb, var(--color-red) 30%, var(--color-border))"
-								style:background-color="color-mix(in srgb, var(--color-red) 6%, var(--color-surface))"
-								style:color="var(--color-red)"
-							>
+							<div class="rounded-radius border px-4 py-3 text-sm text-red border-red-border bg-red-tint">
 								<strong>{m.balance_unbalanced()}</strong> {formatCurrency(monthSummary.balance, budget.currency, locale)} {m.balance_unbalanced_hint()} {formatCurrency(0, budget.currency, locale)}.
 							</div>
 						{:else}
-							<div
-								class="border px-3 py-2 text-sm"
-								style:border-radius="var(--radius)"
-								style:border-color="color-mix(in srgb, var(--color-green) 30%, var(--color-border))"
-								style:background-color="color-mix(in srgb, var(--color-green) 5%, var(--color-surface))"
-								style:color="var(--color-green)"
-							>
+							<div class="rounded-radius border px-3 py-2 text-sm text-green border-green-border bg-green-tint">
 								{m.balance_balanced()}
 							</div>
 						{/if}
 
 						{#each ['income', 'expense', 'savings'] as t}
-							<div
-								class="border overflow-hidden"
-								style:border-radius="var(--radius)"
-								style:border-color="var(--color-border)"
-								style:background-color="var(--color-surface)"
-								style:box-shadow="var(--shadow-card)"
-							>
+							<div class="rounded-radius border border-border bg-surface overflow-hidden">
 								<EntryList
 									entries={budget.entries}
 									categories={budget.categories}
@@ -787,38 +710,26 @@
 						{/each}
 
 						<!-- Monthly note -->
-						<div
-							class="border overflow-hidden"
-							style:border-radius="var(--radius)"
-							style:border-color="var(--color-border)"
-							style:background-color="var(--color-surface)"
-							style:box-shadow="var(--shadow-card)"
-						>
-							<div
-								class="flex items-center justify-between border-b px-3 py-2"
-								style:border-color="var(--color-border)"
-							>
-								<span class="text-xs font-medium" style:color="var(--color-muted)">{m.note_section()}</span>
+						<div class="rounded-radius border border-border bg-surface overflow-hidden">
+							<div class="flex items-center justify-between border-b border-border px-3 py-2">
+								<span class="text-xs font-medium text-muted">{m.note_section()}</span>
 								{#if noteEditing}
 									<div class="flex gap-2">
 										<button
 											type="button"
-											class="text-xs opacity-60 transition-opacity hover:opacity-80"
-											style:color="var(--color-muted)"
+											class="text-xs text-muted opacity-60 transition-opacity hover:opacity-80"
 											onclick={() => { noteText = budget.monthlyNotes[selectedMonth!] ?? ''; noteEditing = false; }}
 										>{m.cancel()}</button>
 										<button
 											type="button"
-											class="text-xs font-medium transition-opacity hover:opacity-80"
-											style:color="var(--color-accent)"
+											class="text-xs font-medium text-accent transition-opacity hover:opacity-80"
 											onclick={commitNote}
 										>{m.save()}</button>
 									</div>
 								{:else}
 									<button
 										type="button"
-										class="text-xs opacity-60 transition-opacity hover:opacity-80"
-										style:color="var(--color-accent)"
+										class="text-xs text-accent opacity-60 transition-opacity hover:opacity-80"
 										onclick={startNoteEdit}
 									>{m.edit()}</button>
 								{/if}
@@ -830,15 +741,14 @@
 									bind:value={noteText}
 									rows="3"
 									placeholder={m.note_placeholder()}
-									class="w-full resize-none px-3 py-2 text-sm outline-none"
-									style:background-color="var(--color-surface)"
-									style:color="var(--color-text)"
+									class="w-full resize-none bg-surface px-3 py-2 text-sm text-text outline-none"
 									onkeydown={onNoteKeydown}
 								></textarea>
 							{:else}
 								<div
 									class="px-3 py-2 text-sm"
-									style:color={noteText ? 'var(--color-text)' : 'var(--color-muted)'}
+									class:text-text={!!noteText}
+									class:text-muted={!noteText}
 									role="button"
 									tabindex="0"
 									onclick={startNoteEdit}
@@ -854,11 +764,8 @@
 		{:else}
 			<!-- No month selected — empty state (desktop only) -->
 			<div class="hidden lg:flex flex-1 flex-col items-center justify-center gap-3 p-8 text-center">
-				<div
-					class="h-8 w-8 rounded border-2 opacity-15"
-					style:border-color="var(--color-muted)"
-				></div>
-				<p class="text-sm" style:color="var(--color-muted)">{m.select_month_hint()}</p>
+				<div class="h-8 w-8 rounded border-2 border-muted opacity-15"></div>
+				<p class="text-sm text-muted">{m.select_month_hint()}</p>
 			</div>
 		{/if}
 	</div>

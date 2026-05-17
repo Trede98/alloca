@@ -78,8 +78,7 @@
 	}
 
 	const inputClass =
-		'border px-2.5 py-2 text-sm outline-none focus:ring-1 focus:ring-[--color-accent]/40 transition-colors';
-	const inputStyle = `background-color: var(--color-bg); border-color: var(--color-border); color: var(--color-text); border-radius: var(--radius-sm);`;
+		'border border-border bg-bg rounded-sm px-2.5 py-2 text-sm text-text outline-none focus:ring-1 focus:ring-[--color-accent]/40 transition-colors';
 </script>
 
 {#snippet panelContent()}
@@ -87,28 +86,22 @@
 	<div class="overflow-y-auto max-h-[260px]">
 	<div class="flex flex-col gap-1">
 		{#if categories.length === 0}
-			<p class="text-xs" style:color="var(--color-muted)">{m.category_manager_empty()}</p>
+			<p class="text-xs text-muted">{m.category_manager_empty()}</p>
 		{/if}
 		{#each categories as cat (cat.id)}
-			<div
-				class="flex items-center gap-1.5 py-1 border-b last:border-b-0"
-				style:border-color="var(--color-border)"
-			>
+			<div class="flex items-center gap-1.5 border-b border-border py-1 last:border-b-0">
 				{#if editingId === cat.id}
 					<input
 						bind:this={editInputEl}
 						bind:value={editingName}
 						class="{inputClass} flex-1 min-w-0"
-						style={inputStyle}
 						onblur={commitEdit}
 						onkeydown={onEditKeydown}
 					/>
 				{:else}
 					<button
 						type="button"
-						class="flex-1 min-w-0 truncate px-2 py-1 text-left text-sm hover:bg-[--surface-hover] transition-colors"
-						style:border-radius="var(--radius-sm)"
-						style:color="var(--color-text)"
+						class="flex-1 min-w-0 truncate rounded-sm px-2 py-1 text-left text-sm text-text hover:bg-surface-hover transition-colors"
 						onclick={() => startEdit(cat)}
 						title={m.category_manager_click_to_rename()}
 					>
@@ -117,9 +110,7 @@
 				{/if}
 				<button
 					type="button"
-					class="shrink-0 p-1 opacity-40 transition-opacity hover:opacity-100"
-					style:border-radius="var(--radius-sm)"
-					style:color="var(--color-red)"
+					class="shrink-0 rounded-sm p-1 text-red opacity-40 transition-opacity hover:opacity-100"
 					onclick={() => onDeleteCategory(cat.id)}
 					title={m.category_manager_delete()}
 					aria-label={m.category_manager_delete_aria({ name: cat.name })}
@@ -133,12 +124,7 @@
 
 	<!-- Error -->
 	{#if categoryError}
-		<div
-			class="flex items-center justify-between gap-2 px-2.5 py-1.5 text-xs"
-			style:border-radius="var(--radius-sm)"
-			style:color="var(--color-red)"
-			style:background-color="color-mix(in srgb, var(--color-red) 10%, transparent)"
-		>
+		<div class="flex items-center justify-between gap-2 rounded-sm bg-red-faint px-2.5 py-1.5 text-xs text-red">
 			<span>{categoryError}</span>
 			<button
 				type="button"
@@ -150,7 +136,7 @@
 	{/if}
 
 	<!-- Divider -->
-	<div class="border-t" style:border-color="var(--color-border)"></div>
+	<div class="border-t border-border"></div>
 
 	<!-- Add new -->
 	<div class="flex gap-1.5">
@@ -159,15 +145,11 @@
 			type="text"
 			placeholder={m.category_manager_placeholder()}
 			class="{inputClass} flex-1 min-w-0"
-			style={inputStyle}
 			onkeydown={onNewKeydown}
 		/>
 		<button
 			type="button"
-			class="shrink-0 px-2.5 py-1 text-xs font-medium transition-opacity hover:opacity-90"
-			style:border-radius="var(--radius-sm)"
-			style:background-color="var(--color-accent)"
-			style:color="var(--color-accent-fg)"
+			class="shrink-0 rounded-sm bg-accent px-2.5 py-1 text-xs font-medium text-accent-fg transition-opacity hover:opacity-90"
 			onclick={addNew}
 		>
 			{m.add()}
@@ -179,25 +161,15 @@
 	<!-- Modal mode: triggered externally via bind:open -->
 	<Dialog.Root bind:open onOpenChange={(v) => { if (!v) close(); }}>
 		<Dialog.Portal>
-			<Dialog.Overlay
-				class="fixed inset-0 z-50"
-				style="background-color: var(--overlay-bg);"
-			/>
+			<Dialog.Overlay class="fixed inset-0 z-50 bg-overlay" />
 			<Dialog.Content
 				class="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
 			>
-				<div
-					class="pointer-events-auto w-full max-w-sm flex flex-col gap-4 border p-5"
-					style:border-radius="var(--radius)"
-					style:background-color="var(--color-surface)"
-					style:border-color="var(--color-border)"
-					style:box-shadow="var(--shadow-modal)"
-				>
+				<div class="pointer-events-auto w-full max-w-sm flex flex-col gap-4 rounded-radius border border-border bg-surface p-5">
 					<div class="flex items-center justify-between">
 						<Dialog.Title class="text-sm font-semibold">{m.categories()}</Dialog.Title>
 						<Dialog.Close
-							class="p-1 text-xs opacity-40 hover:opacity-80 transition-opacity"
-							style="color: var(--color-text);"
+							class="p-1 text-xs text-text opacity-40 hover:opacity-80 transition-opacity"
 							aria-label="Close"
 						>✕</Dialog.Close>
 					</div>
@@ -211,10 +183,8 @@
 	<div class="relative">
 		<button
 			type="button"
-			class="px-2.5 py-1 text-xs font-medium opacity-60 transition-opacity hover:opacity-90"
-			style:border-radius="var(--radius-sm)"
-			style:color="var(--color-text)"
-			style:background-color={open ? 'var(--color-border)' : 'transparent'}
+			class="rounded-sm px-2.5 py-1 text-xs font-medium text-text opacity-60 transition-opacity hover:opacity-90"
+			class:bg-border={open}
 			onclick={toggle}
 			title="Manage categories"
 		>
@@ -231,13 +201,7 @@
 			></div>
 
 			<!-- Panel -->
-			<div
-				class="absolute right-0 top-full z-50 mt-1 flex w-60 flex-col gap-2 border p-3"
-				style:border-radius="var(--radius)"
-				style:background-color="var(--color-surface)"
-				style:border-color="var(--color-border)"
-				style:box-shadow="var(--shadow-dropdown)"
-			>
+			<div class="absolute right-0 top-full z-50 mt-1 flex w-60 flex-col gap-2 rounded-radius border border-border bg-surface p-3">
 				{@render panelContent()}
 			</div>
 		{/if}

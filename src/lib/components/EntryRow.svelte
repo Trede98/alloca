@@ -102,28 +102,19 @@
 	<div class="flex min-w-0 items-center gap-1.5">
 		<button
 			type="button"
-			class="min-w-0 truncate text-left hover:underline"
-			style:color="var(--color-text)"
+			class="min-w-0 truncate text-left text-text hover:underline"
 			onclick={() => onEdit(entry)}
 			title={entry.notes || entry.name}
 		>
 			{entry.name}
 		</button>
-		<span
-			class="shrink-0 px-1 py-0.5 text-xs"
-			style:border-radius="var(--radius-sm)"
-			style:color="var(--color-muted)"
-			style:background-color="var(--color-border)"
-		>
+		<span class="shrink-0 rounded-sm bg-border px-1 py-0.5 text-xs text-muted">
 			{recurrenceBadge}
 		</span>
 		{#if hasOverride && !isAnnualDistributed}
 			<button
 				type="button"
-				class="shrink-0 px-1 py-0.5 text-xs"
-				style:border-radius="var(--radius-sm)"
-				style:color="var(--color-yellow)"
-				style:background-color="color-mix(in srgb, var(--color-yellow) 15%, transparent)"
+				class="shrink-0 rounded-sm px-1 py-0.5 text-xs text-yellow bg-yellow-subtle"
 				title={m.entry_row_override_tooltip()}
 				onclick={() => onRemoveOverride(entry.id, month)}
 			>
@@ -131,7 +122,7 @@
 			</button>
 		{/if}
 		{#if entry.notes}
-			<span class="shrink-0 text-xs" style:color="var(--color-muted)" title={entry.notes}>💬</span>
+			<span class="shrink-0 text-xs text-muted" title={entry.notes}>💬</span>
 		{/if}
 	</div>
 
@@ -140,17 +131,14 @@
 		{#if hasSkip}
 			<button
 				type="button"
-				class="px-1.5 py-0.5 text-xs"
-				style:border-radius="var(--radius-sm)"
-				style:color="var(--color-muted)"
-				style:background-color="var(--color-border)"
+				class="rounded-sm bg-border px-1.5 py-0.5 text-xs text-muted"
 				title={m.entry_row_skipped_tooltip()}
 				onclick={() => onUnskipMonth(entry.id, month)}
 			>
 				{m.entry_row_skipped()}
 			</button>
 		{:else if isAnnualDistributed}
-			<span class="px-1.5 py-0.5" style:color="var(--color-text)">
+			<span class="px-1.5 py-0.5 text-text">
 				{formatCurrency(currentAmount, currency, locale)}
 			</span>
 		{:else if editingAmount}
@@ -160,20 +148,16 @@
 				type="number"
 				min="0"
 				step="0.01"
-				class="w-24 border px-1.5 py-0.5 text-right text-sm outline-none focus:ring-1 focus:ring-[--color-accent]/40"
-				style:border-radius="var(--radius-sm)"
-				style:background-color="var(--color-bg)"
-				style:border-color="var(--color-accent)"
-				style:color="var(--color-text)"
+				class="w-24 rounded-sm border border-accent bg-bg px-1.5 py-0.5 text-right text-sm text-text outline-none focus:ring-1 focus:ring-[--color-accent]/40"
 				onblur={commitAmount}
 				onkeydown={onAmountKeydown}
 			/>
 		{:else}
 			<button
 				type="button"
-				class="px-1.5 py-0.5 transition-colors hover:underline"
-				style:border-radius="var(--radius-sm)"
-				style:color={hasOverride ? 'var(--color-yellow)' : 'var(--color-text)'}
+				class="rounded-sm px-1.5 py-0.5 transition-colors hover:underline"
+				class:text-yellow={hasOverride}
+				class:text-text={!hasOverride}
 				onclick={startAmountEdit}
 				title={m.entry_row_amount_tooltip()}
 			>
@@ -185,22 +169,19 @@
 	<!-- More actions dropdown -->
 	<DropdownMenu.Root>
 		<DropdownMenu.Trigger
-			class="p-1 text-xs opacity-40 transition-opacity hover:opacity-100"
-			style="border-radius: var(--radius-sm); color: var(--color-text);"
+			class="rounded-sm p-1 text-xs text-text opacity-40 transition-opacity hover:opacity-100"
 			title="More actions"
 		>⋯</DropdownMenu.Trigger>
 		<DropdownMenu.Portal>
 			<DropdownMenu.Content
 				sideOffset={4}
 				align="end"
-				class="z-50 min-w-[160px] overflow-hidden py-1"
-				style="background-color: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius); box-shadow: var(--shadow-dropdown);"
+				class="z-50 min-w-[160px] overflow-hidden rounded-radius border border-border bg-surface py-1"
 			>
 				{#if entry.recurrence !== RECURRENCE.SINGLE}
 					<DropdownMenu.Item
 						disabled={isLastActiveMonth}
-						class="flex w-full cursor-default items-center gap-2 px-3 py-1.5 text-sm outline-none data-highlighted:bg-surface-hover data-disabled:opacity-40 data-disabled:cursor-not-allowed"
-						style="color: {hasSkip ? 'var(--color-accent)' : 'var(--color-text)'}"
+						class="flex w-full cursor-default items-center gap-2 px-3 py-1.5 text-sm outline-none data-highlighted:bg-surface-hover data-disabled:opacity-40 data-disabled:cursor-not-allowed {hasSkip ? 'text-accent' : 'text-text'}"
 						title={isLastActiveMonth ? m.entry_row_skip_last_month_tooltip() : hasSkip ? m.entry_row_unskip_tooltip() : m.entry_row_skip_tooltip()}
 						onclick={() => hasSkip ? onUnskipMonth(entry.id, month) : onSkipMonth(entry.id, month)}
 					>
@@ -209,16 +190,14 @@
 					</DropdownMenu.Item>
 				{/if}
 				<DropdownMenu.Item
-					class="flex w-full cursor-default items-center gap-2 px-3 py-1.5 text-sm outline-none data-highlighted:bg-surface-hover"
-					style="color: var(--color-text)"
+					class="flex w-full cursor-default items-center gap-2 px-3 py-1.5 text-sm text-text outline-none data-highlighted:bg-surface-hover"
 					onclick={() => onDuplicateEntry(entry)}
 				>
 					<span>⧉</span>
 					<span>{m.entry_row_duplicate()}</span>
 				</DropdownMenu.Item>
 				<DropdownMenu.Item
-					class="flex w-full cursor-default items-center gap-2 px-3 py-1.5 text-sm outline-none data-highlighted:bg-danger-hover"
-					style="color: var(--color-red)"
+					class="flex w-full cursor-default items-center gap-2 px-3 py-1.5 text-sm text-red outline-none data-highlighted:bg-danger-hover"
 					onclick={() => onDeleteEntry(entry.id)}
 				>
 					<span>✕</span>
@@ -232,14 +211,12 @@
 </ContextMenu.Trigger>
 
 <ContextMenu.Content
-	class="z-50 min-w-[160px] overflow-hidden py-1"
-	style="background-color: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius); box-shadow: var(--shadow-dropdown);"
+	class="z-50 min-w-[160px] overflow-hidden rounded-radius border border-border bg-surface py-1"
 >
 	{#if entry.recurrence !== RECURRENCE.SINGLE}
 		<ContextMenu.Item
 			disabled={isLastActiveMonth}
-			class="flex w-full cursor-default items-center gap-2 px-3 py-1.5 text-sm outline-none data-highlighted:bg-surface-hover data-disabled:opacity-40 data-disabled:cursor-not-allowed"
-			style="color: {hasSkip ? 'var(--color-accent)' : 'var(--color-text)'}"
+			class="flex w-full cursor-default items-center gap-2 px-3 py-1.5 text-sm outline-none data-highlighted:bg-surface-hover data-disabled:opacity-40 data-disabled:cursor-not-allowed {hasSkip ? 'text-accent' : 'text-text'}"
 			title={isLastActiveMonth ? m.entry_row_skip_last_month_tooltip() : hasSkip ? m.entry_row_unskip_tooltip() : m.entry_row_skip_tooltip()}
 			onclick={() => hasSkip ? onUnskipMonth(entry.id, month) : onSkipMonth(entry.id, month)}
 		>
@@ -248,16 +225,14 @@
 		</ContextMenu.Item>
 	{/if}
 	<ContextMenu.Item
-		class="flex w-full cursor-default items-center gap-2 px-3 py-1.5 text-sm outline-none data-highlighted:bg-surface-hover"
-		style="color: var(--color-text)"
+		class="flex w-full cursor-default items-center gap-2 px-3 py-1.5 text-sm text-text outline-none data-highlighted:bg-surface-hover"
 		onclick={() => onDuplicateEntry(entry)}
 	>
 		<span>⧉</span>
 		<span>{m.entry_row_duplicate()}</span>
 	</ContextMenu.Item>
 	<ContextMenu.Item
-		class="flex w-full cursor-default items-center gap-2 px-3 py-1.5 text-sm outline-none data-highlighted:bg-danger-hover"
-		style="color: var(--color-red)"
+		class="flex w-full cursor-default items-center gap-2 px-3 py-1.5 text-sm text-red outline-none data-highlighted:bg-danger-hover"
 		onclick={() => onDeleteEntry(entry.id)}
 	>
 		<span>✕</span>

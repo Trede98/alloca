@@ -1,8 +1,50 @@
 @import "tailwindcss";
 
 @theme {
-	--color-surface-hover: var(--surface-hover);
+	/* Design tokens — dark theme values (default).
+	   Light-mode overrides live in [data-theme="light"] below. */
+	--color-bg: #0a0a0f;
+	--color-surface: #111118;
+	--color-surface2: #18181f;
+	--color-border: #27272f;
+	--color-text: #e4e4e7;
+	--color-muted: #71717a;
+	--color-subtle: #52525b;
+	--color-green: #16a34a;
+	--color-red: #dc2626;
+	--color-blue: #3b82f6;
+	--color-yellow: #d97706;
+	--color-purple: #7c3aed;
+	--color-accent: #64748b;
+	--color-accent-fg: #f1f5f9;
+	--color-theme-toggle-track: #1e3a5f;
+	--color-theme-toggle-thumb: #f4f4f5;
+	--color-theme-toggle-icon: #fbbf24;
+
+	--radius-radius: 8px;
+	--radius-sm: 4px;
+
+	/* Dynamic/computed tokens — used as utilities via color-surface-hover / color-danger-hover */
+	--color-surface-hover: rgba(255, 255, 255, 0.04);
 	--color-danger-hover: color-mix(in srgb, var(--color-red) 6%, transparent);
+
+	/* Overlay */
+	--color-overlay: rgba(0, 0, 0, 0.58);
+
+	/* Accent tints */
+	--color-accent-subtle: color-mix(in srgb, var(--color-accent) 15%, transparent);
+	--color-accent-tint:   color-mix(in srgb, var(--color-accent) 12%, var(--color-surface));
+
+	/* Semantic tints — balance states, badges, error feedback */
+	--color-green-subtle: color-mix(in srgb, var(--color-green) 15%, transparent);
+	--color-green-tint:   color-mix(in srgb, var(--color-green) 5%,  var(--color-surface));
+	--color-green-border: color-mix(in srgb, var(--color-green) 30%, var(--color-border));
+	--color-red-subtle:   color-mix(in srgb, var(--color-red)   15%, transparent);
+	--color-red-faint:    color-mix(in srgb, var(--color-red)   10%, transparent);
+	--color-red-tint:     color-mix(in srgb, var(--color-red)   6%,  var(--color-surface));
+	--color-red-border:   color-mix(in srgb, var(--color-red)   30%, var(--color-border));
+	--color-red-strong-border: color-mix(in srgb, var(--color-red) 40%, var(--color-border));
+	--color-yellow-subtle: color-mix(in srgb, var(--color-yellow) 15%, transparent);
 }
 
 @utility no-scrollbar {
@@ -14,8 +56,7 @@
 	}
 }
 
-/* ── Dark theme (default) ────────────────────────────────────────────────── */
-:root,
+/* ── Dark theme (explicit override so data-theme="dark" also works) ───────── */
 [data-theme="dark"] {
 	--color-bg: #0a0a0f;
 	--color-surface: #111118;
@@ -35,16 +76,23 @@
 	--color-theme-toggle-thumb: #f4f4f5;
 	--color-theme-toggle-icon: #fbbf24;
 
-	--radius: 8px;
+	--radius-radius: 8px;
 	--radius-sm: 4px;
 
-	--shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
-	--shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
-	--shadow-dropdown: 0 4px 16px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.3);
-	--shadow-modal: 0 8px 32px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(0, 0, 0, 0.4);
+	--color-surface-hover: rgba(255, 255, 255, 0.04);
 
-	--surface-hover: rgba(255, 255, 255, 0.04);
-	--overlay-bg: rgba(0, 0, 0, 0.58);
+	--color-overlay: rgba(0, 0, 0, 0.58);
+	--color-accent-subtle: color-mix(in srgb, var(--color-accent) 15%, transparent);
+	--color-accent-tint:   color-mix(in srgb, var(--color-accent) 12%, var(--color-surface));
+	--color-green-subtle: color-mix(in srgb, var(--color-green) 15%, transparent);
+	--color-green-tint:   color-mix(in srgb, var(--color-green) 5%,  var(--color-surface));
+	--color-green-border: color-mix(in srgb, var(--color-green) 30%, var(--color-border));
+	--color-red-subtle:   color-mix(in srgb, var(--color-red)   15%, transparent);
+	--color-red-faint:    color-mix(in srgb, var(--color-red)   10%, transparent);
+	--color-red-tint:     color-mix(in srgb, var(--color-red)   6%,  var(--color-surface));
+	--color-red-border:   color-mix(in srgb, var(--color-red)   30%, var(--color-border));
+	--color-red-strong-border: color-mix(in srgb, var(--color-red) 40%, var(--color-border));
+	--color-yellow-subtle: color-mix(in srgb, var(--color-yellow) 15%, transparent);
 }
 
 /* ── Light theme ─────────────────────────────────────────────────────────── */
@@ -52,7 +100,7 @@
 	--color-bg: #fafafa;
 	--color-surface: #ffffff;
 	--color-surface2: #f4f4f5;
-	--color-border: #e4e4e7;
+	--color-border: #d4d4d8;
 	--color-text: #09090b;
 	--color-muted: #71717a;
 	--color-subtle: #a1a1aa;
@@ -67,16 +115,23 @@
 	--color-theme-toggle-thumb: #fff7ed;
 	--color-theme-toggle-icon: #f97316;
 
-	--radius: 8px;
+	--radius-radius: 8px;
 	--radius-sm: 4px;
 
-	--shadow: none;
-	--shadow-card: none;
-	--shadow-dropdown: 0 2px 8px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.06);
-	--shadow-modal: 0 4px 24px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.06);
+	--color-surface-hover: rgba(0, 0, 0, 0.03);
 
-	--surface-hover: rgba(0, 0, 0, 0.03);
-	--overlay-bg: rgba(0, 0, 0, 0.58);
+	--color-overlay: rgba(0, 0, 0, 0.58);
+	--color-accent-subtle: color-mix(in srgb, var(--color-accent) 15%, transparent);
+	--color-accent-tint:   color-mix(in srgb, var(--color-accent) 12%, var(--color-surface));
+	--color-green-subtle: color-mix(in srgb, var(--color-green) 15%, transparent);
+	--color-green-tint:   color-mix(in srgb, var(--color-green) 5%,  var(--color-surface));
+	--color-green-border: color-mix(in srgb, var(--color-green) 30%, var(--color-border));
+	--color-red-subtle:   color-mix(in srgb, var(--color-red)   15%, transparent);
+	--color-red-faint:    color-mix(in srgb, var(--color-red)   10%, transparent);
+	--color-red-tint:     color-mix(in srgb, var(--color-red)   6%,  var(--color-surface));
+	--color-red-border:   color-mix(in srgb, var(--color-red)   30%, var(--color-border));
+	--color-red-strong-border: color-mix(in srgb, var(--color-red) 40%, var(--color-border));
+	--color-yellow-subtle: color-mix(in srgb, var(--color-yellow) 15%, transparent);
 }
 
 * {
@@ -118,8 +173,7 @@ input[type="number"]::-webkit-outer-spin-button {
 .alloca-tour-popover.driver-popover {
 	background-color: var(--color-surface);
 	border: 1px solid var(--color-border);
-	border-radius: var(--radius);
-	box-shadow: var(--shadow-modal);
+	border-radius: var(--radius-radius);
 	color: var(--color-text);
 	font-family: system-ui, -apple-system, sans-serif;
 	font-size: 14px;
