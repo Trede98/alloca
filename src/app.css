@@ -3,10 +3,10 @@
 @theme {
 	/* Design tokens — dark theme values (default).
 	   Light-mode overrides live in [data-theme="light"] below. */
-	--color-bg: #0a0a0f;
-	--color-surface: #111118;
-	--color-surface2: #18181f;
-	--color-border: #27272f;
+	--color-bg: #09090b;
+	--color-surface: #18181b;
+	--color-surface2: #27272a;
+	--color-border: #3f3f46;
 	--color-text: #e4e4e7;
 	--color-muted: #71717a;
 	--color-subtle: #52525b;
@@ -15,8 +15,8 @@
 	--color-blue: #3b82f6;
 	--color-yellow: #d97706;
 	--color-purple: #7c3aed;
-	--color-accent: #64748b;
-	--color-accent-fg: #f1f5f9;
+	--color-accent: #71717a;
+	--color-accent-fg: #fafafa;
 	--color-theme-toggle-track: #1e3a5f;
 	--color-theme-toggle-thumb: #f4f4f5;
 	--color-theme-toggle-icon: #fbbf24;
@@ -25,7 +25,7 @@
 	--radius-sm: 4px;
 
 	/* Dynamic/computed tokens — used as utilities via color-surface-hover / color-danger-hover */
-	--color-surface-hover: rgba(255, 255, 255, 0.04);
+	--color-surface-hover: rgba(255, 255, 255, 0.05);
 	--color-danger-hover: color-mix(in srgb, var(--color-red) 6%, transparent);
 
 	/* Overlay */
@@ -58,10 +58,10 @@
 
 /* ── Dark theme (explicit override so data-theme="dark" also works) ───────── */
 [data-theme="dark"] {
-	--color-bg: #0a0a0f;
-	--color-surface: #111118;
-	--color-surface2: #18181f;
-	--color-border: #27272f;
+	--color-bg: #09090b;
+	--color-surface: #18181b;
+	--color-surface2: #27272a;
+	--color-border: #3f3f46;
 	--color-text: #e4e4e7;
 	--color-muted: #71717a;
 	--color-subtle: #52525b;
@@ -70,8 +70,8 @@
 	--color-blue: #3b82f6;
 	--color-yellow: #d97706;
 	--color-purple: #7c3aed;
-	--color-accent: #64748b;
-	--color-accent-fg: #f1f5f9;
+	--color-accent: #71717a;
+	--color-accent-fg: #fafafa;
 	--color-theme-toggle-track: #1e3a5f;
 	--color-theme-toggle-thumb: #f4f4f5;
 	--color-theme-toggle-icon: #fbbf24;
@@ -79,7 +79,7 @@
 	--radius-radius: 8px;
 	--radius-sm: 4px;
 
-	--color-surface-hover: rgba(255, 255, 255, 0.04);
+	--color-surface-hover: rgba(255, 255, 255, 0.05);
 
 	--color-overlay: rgba(0, 0, 0, 0.58);
 	--color-accent-subtle: color-mix(in srgb, var(--color-accent) 15%, transparent);
