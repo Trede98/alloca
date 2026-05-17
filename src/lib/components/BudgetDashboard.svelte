@@ -13,7 +13,7 @@
 	import { formatCurrency, getMonthFull } from '$lib/format';
 	import { getTheme, toggleTheme } from '$lib/theme.svelte';
 	import { Switch, Popover } from 'bits-ui';
-	import { Settings2, Tag, Upload, Download, Trash2, Sun, Moon, Globe, Coins, ChevronRight, ChevronLeft, HelpCircle } from 'lucide-svelte';
+	import { Settings2, Tag, Upload, Download, Trash2, Sun, Moon, Globe, Coins, ChevronRight, ChevronLeft, HelpCircle, Save, RefreshCw, Cloud } from 'lucide-svelte';
 	import SummaryBar from './SummaryBar.svelte';
 	import MonthCard from './MonthCard.svelte';
 	import YearRecap from './YearRecap.svelte';
@@ -21,6 +21,8 @@
 	import EntryDialog from './EntryDialog.svelte';
 	import BalanceBadge from './BalanceBadge.svelte';
 	import ImportExportMenu from './ImportExportMenu.svelte';
+	import CloudSyncDialog from './CloudSyncDialog.svelte';
+	import { getSyncState, pushToCloud, getLastSyncAt, getActiveAccount } from '$lib/sync';
 	import CategoryManager from './CategoryManager.svelte';
 	import WelcomeDialog from './WelcomeDialog.svelte';
 	import * as m from '$lib/paraglide/messages';
@@ -253,6 +255,19 @@
 
 	// Categories modal (opened from mobile popover)
 	let categoriesModalOpen = $state(false);
+	let syncDialogOpen = $state(false);
+
+	const syncState = $derived(getSyncState());
+	const hasSyncedBefore = $derived(
+		syncState.connected.length > 0 &&
+		getLastSyncAt() > 0
+	);
+
+	async function handleHeaderPush() {
+		const active = getActiveAccount();
+		if (!active) return;
+		await pushToCloud(active, budget);
+	}
 
 	// Refs into ImportExportMenu (headless mode)
 	let importFileInput = $state<HTMLInputElement | null>(null);
@@ -329,6 +344,20 @@
 
 		<!-- Right: actions popover (all breakpoints) -->
 		<div class="flex shrink-0 items-center">
+			{#if hasSyncedBefore}
+				<button
+					type="button"
+					disabled={syncState.status === 'syncing'}
+					class="flex items-center gap-1 rounded-sm p-1.5 opacity-60 transition-opacity hover:opacity-90 disabled:opacity-30"
+					title={m.sync_force_save()}
+					onclick={handleHeaderPush}
+				>
+					{#if syncState.status === 'syncing'}
+						<RefreshCw size={14} class="animate-spin" />
+					{/if}
+					<Save size={16} />
+				</button>
+			{/if}
 			<Popover.Root
 				bind:open={popoverOpen}
 				onOpenChange={(v) => { if (!v) { menuView = 'main'; currencyFilter = ''; } }}
@@ -394,6 +423,17 @@
 							>
 								<Download size={14} style="opacity:0.6" />
 								{m.export()}
+							</button>
+
+							<!-- Cloud Sync -->
+							<button
+								type="button"
+								role="menuitem"
+								class="flex w-full items-center gap-3 px-3 py-2.5 text-sm text-text transition-colors hover:bg-surface-hover"
+								onclick={() => { syncDialogOpen = true; popoverOpen = false; menuView = 'main'; }}
+							>
+								<Cloud size={14} class="opacity-60" />
+								{m.sync_dialog_title()}
 							</button>
 
 							<div class="my-1 border-t border-border"></div>
@@ -773,6 +813,9 @@
 
 <!-- ImportExportMenu in headless mode: provides file input + confirmation modal, no visible buttons -->
 <ImportExportMenu {budget} {onImport} headless={true} bind:fileInput={importFileInput} />
+
+<!-- Cloud Sync dialog -->
+<CloudSyncDialog bind:open={syncDialogOpen} {budget} {onImport} />
 
 <!-- Categories modal (opened from mobile popover) -->
 {#if categoriesModalOpen}

@@ -37,3 +37,5 @@ export const RECURRENCE_LABELS: Record<(typeof RECURRENCES)[number], () => strin
 	annual_distributed: () => m.recurrence_annual(),
 	single: () => m.recurrence_single()
 };
+
+export const SYNC_STORAGE_PREFIX = 'alloca_sync_';

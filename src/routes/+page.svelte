@@ -17,11 +17,14 @@
 		deleteCategory
 	} from '$lib/budget';
 	import BudgetDashboard from '$lib/components/BudgetDashboard.svelte';
+	import ConflictDialog from '$lib/components/ConflictDialog.svelte';
 	import { Dialog } from 'bits-ui';
 	import type { Budget, Entry } from '$lib/types';
 	import type { NewEntryInput } from '$lib/budget';
 	import * as m from '$lib/paraglide/messages';
 	import { BudgetError, BUDGET_ERROR_LABELS } from '$lib/errors';
+	import { initSync, stopPolling, pushToCloud, getSyncState, getActiveAccount } from '$lib/sync';
+	import { onDestroy } from 'svelte';
 
 	let budget = $state<Budget | null>(null);
 	let loading = $state(true);
@@ -54,10 +57,30 @@
 		budget = existing;
 		loading = false;
 		welcomeOpen = !hasTourBeenSeen();
+		// Non-blocking: restore sync session if any providers were connected
+		initSync(existing, onImport).catch(() => {});
+	});
+
+	onDestroy(() => {
+		stopPolling();
 	});
 
 	$effect(() => {
 		if (!isTourActive && budget) saveBudget($state.snapshot(budget) as Budget);
+	});
+
+	// Debounced cloud autosave: push only to the provider that loaded the budget
+	let cloudSaveTimer: ReturnType<typeof setTimeout> | null = null;
+	$effect(() => {
+		if (isTourActive || !budget) return;
+		const snapshot = $state.snapshot(budget) as Budget;
+		if (cloudSaveTimer !== null) clearTimeout(cloudSaveTimer);
+		cloudSaveTimer = setTimeout(async () => {
+			cloudSaveTimer = null;
+			const activeAccount = getActiveAccount();
+			if (!activeAccount) return;
+			await pushToCloud(activeAccount, snapshot);
+		}, 2000);
 	});
 
 	function onTourStart() {
@@ -218,6 +241,9 @@
 		{onTourEnd}
 	/>
 {/if}
+
+<!-- Conflict resolution dialog (global — not nested inside CloudSyncDialog) -->
+<ConflictDialog {onImport} />
 
 <!-- Clear budget — single unified modal -->
 <Dialog.Root bind:open={clearOpen} onOpenChange={(v) => { if (!v) cancelClear(); }}>
